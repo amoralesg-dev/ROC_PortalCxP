@@ -1,0 +1,39 @@
+.rassini-toolbar {
+  background-color: var(--rassini-primary, #f79433);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 64px;
+}
+
+.header-logo {
+  height: 40px;
+  width: auto;
+  margin-left: 16px;
+  object-fit: contain;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-text {
+  font-size: 14px;
+  margin-right: 16px;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.content-body {
+  padding: 24px;
+  background-color: #f5f6f8;
+  min-height: calc(100vh - 64px);
+  box-sizing: border-box;
+}
+
+.app-container {
+  margin: 0 auto;
+  max-width: 1200px;
+}

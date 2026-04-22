@@ -1,0 +1,135 @@
+<mat-card class="pagos-card">
+  <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center;">
+      <mat-icon style="font-size: 32px; width: 32px; height: 32px; color: var(--rassini-secondary)">account_balance_wallet</mat-icon>
+      <div style="margin-left: 12px;">
+        <mat-card-title>Clasificación de Pagos</mat-card-title>
+        <mat-card-subtitle>Panel de autorización y gestión de pagos pendientes</mat-card-subtitle>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-right: 16px;">
+      <button mat-stroked-button color="primary" (click)="guardar()" style="border-radius: 20px;">
+        <mat-icon>save</mat-icon>
+        Guardar
+      </button>
+      <button mat-flat-button color="primary" (click)="enviarPagos()" [disabled]="!selection.hasValue()" style="border-radius: 20px;">
+        <mat-icon>send</mat-icon>
+        Enviar pago
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="filters-container">
+      <span class="filters-label">
+        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">filter_list</mat-icon>
+        Filtrar por categoría
+      </span>
+      <mat-form-field appearance="outline" class="tipo-pago-select" subscriptSizing="dynamic">
+        <mat-label>Catálogo de Tipo de Pago</mat-label>
+        <mat-select [value]="selectedTipo" (selectionChange)="onTipoChange($event)">
+          <mat-option *ngFor="let tipo of tiposDePago" [value]="tipo">
+            {{ tipo }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" class="pagos-table">
+
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef style="width: 48px;">
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> FOLIO </th>
+        <td mat-cell *matCellDef="let element"> <strong>{{element.id}}</strong> </td>
+      </ng-container>
+
+      <!-- Proveedor Column -->
+      <ng-container matColumnDef="proveedor">
+        <th mat-header-cell *matHeaderCellDef> PROVEEDOR </th>
+        <td mat-cell *matCellDef="let element"> {{element.proveedor}} </td>
+      </ng-container>
+
+      <!-- Nombre Column -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef> NOMBRE </th>
+        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+      </ng-container>
+
+      <!-- Monto Column -->
+      <ng-container matColumnDef="monto">
+        <th mat-header-cell *matHeaderCellDef style="text-align: right;"> MONTO TOTAL </th>
+        <td mat-cell *matCellDef="let element" style="text-align: right; font-weight: 600; color: var(--rassini-primary)">
+          {{element.monto | currency}}
+        </td>
+      </ng-container>
+
+      <!-- Moneda Column -->
+      <ng-container matColumnDef="moneda">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> MONEDA </th>
+        <td mat-cell *matCellDef="let element" style="text-align: center;"> {{element.moneda}} </td>
+      </ng-container>
+
+      <!-- Descripcion Column -->
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef> DESCRIPCIÓN </th>
+        <td mat-cell *matCellDef="let element"> {{element.descripcion}} </td>
+      </ng-container>
+
+      <!-- Tipo Column -->
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef> TIPO DE PAGO </th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="element.tipo" class="tipo-badge">{{element.tipo}}</span>
+          <mat-form-field *ngIf="!element.tipo" appearance="outline" subscriptSizing="dynamic" style="width: 140px; font-size: 12px; margin: 4px 0;">
+            <mat-label>Clasificar</mat-label>
+            <mat-select [(value)]="element.tipo">
+              <mat-option *ngFor="let t of tiposEditables" [value]="t">{{t}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Estatus Column -->
+      <ng-container matColumnDef="estatus">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> ESTATUS </th>
+        <td mat-cell *matCellDef="let element" style="text-align: center;">
+          <span class="status-badge">
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle; margin-right: 2px;">pending</mat-icon>
+            {{element.estatus | uppercase}}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Match no records logic -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-table" colspan="9">
+          <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #cbd0d6; margin-bottom: 8px;">inbox</mat-icon>
+          <br>
+          No se encontraron pagos pendientes bajo esta categoría.
+        </td>
+      </tr>
+    </table>
+    </div>
+  </mat-card-content>
+</mat-card>

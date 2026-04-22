@@ -1,0 +1,19 @@
+<mat-toolbar class="rassini-toolbar">
+  <img src="img/Logo_naranja_blanco.png" alt="Rassini Logo" class="header-logo" />
+  <span class="spacer"></span>
+  <span class="user-text">Área de Finanzas</span>
+  <button mat-icon-button>
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <button mat-icon-button>
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</mat-toolbar>
+
+<main class="content-body">
+  <div class="app-container">
+    <app-pagos-table></app-pagos-table>
+  </div>
+</main>
+
+<router-outlet></router-outlet>

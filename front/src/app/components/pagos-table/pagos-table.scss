@@ -1,0 +1,120 @@
+.pagos-card {
+  margin: 16px auto;
+  width: 98%;
+  max-width: 2800px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+mat-card-header {
+  margin-bottom: 24px;
+  border-bottom: 2px solid #f1f2f5;
+  padding-bottom: 16px;
+  flex-shrink: 0;
+}
+
+mat-card-title {
+  color: var(--rassini-secondary, #f1592a);
+  font-weight: 700;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #fafbfa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #eef0f2;
+  flex-shrink: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #ebecf0;
+  width: 100%;
+  flex-grow: 1;
+}
+
+.filters-label {
+  font-size: 14px;
+  color: var(--rassini-dark, #58585a);
+  font-weight: 600;
+}
+
+.tipo-pago-select {
+  width: 250px;
+}
+
+.pagos-table {
+  width: 100%;
+  box-shadow: none !important;
+  border: none;
+  min-width: 1200px;
+  table-layout: auto;
+  box-shadow: none !important;
+  border: 1px solid #ebecf0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th.mat-header-cell {
+  background-color: var(--rassini-primary, #f79433) !important;
+  color: white !important;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 16px !important;
+}
+
+td.mat-cell {
+  padding: 16px !important;
+  color: var(--rassini-dark, #58585a);
+  font-size: 14px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+tr.mat-row:hover {
+  background-color: #fafbfc;
+}
+
+.empty-table {
+  padding: 32px;
+  text-align: center;
+  color: #7a828a;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.tipo-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: #f8f9fa;
+  color: var(--rassini-dark, #58585a);
+  border: 1px solid #ebecf0;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(247, 148, 51, 0.15); /* primary rgba */
+  color: #d17519; /* dark primary */
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
