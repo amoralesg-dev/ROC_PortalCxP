@@ -13,7 +13,11 @@
         <mat-icon>save</mat-icon>
         Guardar
       </button>
-      <button mat-flat-button color="primary" (click)="enviarPagos()" [disabled]="!selection.hasValue()" style="border-radius: 20px;">
+      <button mat-flat-button color="accent" (click)="aplicarMasa()" [disabled]="!selection.hasValue()" style="border-radius: 20px;">
+        <mat-icon>check_circle</mat-icon>
+        Aplicar
+      </button>
+      <button mat-flat-button color="primary" (click)="enviarPagos()" style="border-radius: 20px;">
         <mat-icon>send</mat-icon>
         Enviar pago
       </button>
@@ -24,13 +28,33 @@
     <div class="filters-container">
       <span class="filters-label">
         <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">filter_list</mat-icon>
-        Filtrar por categoría
+        Filtros
+      </span>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 200px;">
+        <mat-label>Código Proveedor</mat-label>
+        <input matInput [(ngModel)]="codigoProveedorFiltro" (keyup.enter)="buscarPorFiltros()" placeholder="Ej. PRV01">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 200px;">
+        <mat-label>RFC Beneficiario</mat-label>
+        <input matInput [(ngModel)]="rfcBeneficiarioFiltro" (keyup.enter)="buscarPorFiltros()" placeholder="Ej. ABC123456T1">
+      </mat-form-field>
+
+      <button mat-stroked-button color="primary" (click)="buscarPorFiltros()" style="border-radius: 20px; height: 40px; margin-right: 16px;">
+        <mat-icon>search</mat-icon>
+        Buscar
+      </button>
+
+      <span class="filters-label" style="margin-left: 16px;">
+        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">category</mat-icon>
+        Categoría
       </span>
       <mat-form-field appearance="outline" class="tipo-pago-select" subscriptSizing="dynamic">
         <mat-label>Catálogo de Tipo de Pago</mat-label>
         <mat-select [value]="selectedTipo" (selectionChange)="onTipoChange($event)">
-          <mat-option *ngFor="let tipo of tiposDePago" [value]="tipo">
-            {{ tipo }}
+          <mat-option *ngFor="let tipo of tiposDePagoCatalogo" [value]="tipo.dealType">
+            {{ tipo.descripcion }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -101,12 +125,11 @@
           <mat-form-field *ngIf="!element.tipo" appearance="outline" subscriptSizing="dynamic" style="width: 140px; font-size: 12px; margin: 4px 0;">
             <mat-label>Clasificar</mat-label>
             <mat-select [(value)]="element.tipo">
-              <mat-option *ngFor="let t of tiposEditables" [value]="t">{{t}}</mat-option>
+              <mat-option *ngFor="let t of tiposDePagoCatalogo" [value]="t.dealType">{{t.descripcion}}</mat-option>
             </mat-select>
           </mat-form-field>
         </td>
       </ng-container>
-
       <!-- Estatus Column -->
       <ng-container matColumnDef="estatus">
         <th mat-header-cell *matHeaderCellDef style="text-align: center;"> ESTATUS </th>
@@ -131,5 +154,14 @@
       </tr>
     </table>
     </div>
+
+    <!-- Paginator Component -->
+    <mat-paginator [length]="totalElements"
+                   [pageSize]="pageSize"
+                   [pageIndex]="pageIndex"
+                   [pageSizeOptions]="[5, 10, 25, 100]"
+                   (page)="onPageChange($event)"
+                   aria-label="Seleccionar página">
+    </mat-paginator>
   </mat-card-content>
 </mat-card>

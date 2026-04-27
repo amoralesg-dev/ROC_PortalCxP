@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface PagoDto {
@@ -18,6 +18,26 @@ export interface PagoDto {
   cuentaBeneficiario: string;
 }
 
+export interface Page<T> {
+  content: T[];
+  empty: boolean;
+  first: boolean;
+  last: boolean;
+  number: number;
+  numberOfElements: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface TipoPagoDto {
+  id: number;
+  dealType: string;
+  descripcion: string;
+  corpo: boolean;
+  bu: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,9 +46,27 @@ export class PagoService {
 
   constructor(private http: HttpClient) {}
 
-  getPagosPendientesFiltro(): Observable<PagoDto[]> {
-    // Default GET request, user did not provide POST body despite name filter, assuming GET or ignoring body for now, or maybe it's a POST if it requires a body? User didn't specify. Assuming GET like standard unless specified.
-    // Usually 'filtro' implies a POST, but maybe it's just GET returning the json. Let's make it GET.
-    return this.http.get<PagoDto[]>(`${this.baseUrl}/pagos/pendientes/filtro`);
+  getCatalogosTipoPago(): Observable<TipoPagoDto[]> {
+    return this.http.get<TipoPagoDto[]>(`${this.baseUrl}/catalogos/tipo-pago`);
+  }
+
+  getPagosPendientesFiltro(
+    codigoProveedor?: string,
+    rfcBeneficiario?: string,
+    page: number = 0,
+    size: number = 10
+  ): Observable<Page<PagoDto>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (codigoProveedor) {
+      params = params.set('codigoProveedor', codigoProveedor);
+    }
+    if (rfcBeneficiario) {
+      params = params.set('rfcBeneficiario', rfcBeneficiario);
+    }
+
+    return this.http.get<Page<PagoDto>>(`${this.baseUrl}/pagos/pendientes/filtro/paginado`, { params });
   }
 }

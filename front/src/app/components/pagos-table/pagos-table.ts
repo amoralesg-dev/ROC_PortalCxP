@@ -7,9 +7,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormsModule } from '@angular/forms';
-import { PagoService, PagoDto } from '../../services/pago.service';
+import { PagoService, PagoDto, Page, TipoPagoDto } from '../../services/pago.service';
 
 export interface Pago {
   id: number;
@@ -34,6 +36,8 @@ export interface Pago {
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
+    MatPaginatorModule,
+    MatInputModule,
     FormsModule
   ],
   templateUrl: './pagos-table.html',
@@ -41,9 +45,15 @@ export interface Pago {
 })
 export class PagosTable implements OnInit {
   displayedColumns: string[] = ['select', 'id', 'proveedor', 'nombre', 'monto', 'moneda', 'descripcion', 'tipo', 'estatus'];
-  tiposDePago: string[] = ['Todos', 'Nómina', 'Proveedores', 'Servicios', 'Impuestos', 'Otros'];
-  tiposEditables: string[] = ['Nómina', 'Proveedores', 'Servicios', 'Impuestos', 'Otros'];
-  selectedTipo: string = 'Todos';
+  tiposDePagoCatalogo: TipoPagoDto[] = [];
+  selectedTipo: string | number = 'Todos';
+
+  codigoProveedorFiltro: string = '';
+  rfcBeneficiarioFiltro: string = '';
+
+  totalElements: number = 0;
+  pageSize: number = 10;
+  pageIndex: number = 0;
 
   dataSource = new MatTableDataSource<Pago>([]);
   originalData: Pago[] = [];
@@ -52,13 +62,25 @@ export class PagosTable implements OnInit {
   constructor(private pagoService: PagoService) {}
 
   ngOnInit() {
+    this.cargarCatalogos();
     this.cargarPagos();
   }
 
+  cargarCatalogos() {
+    this.pagoService.getCatalogosTipoPago().subscribe({
+      next: (data) => {
+        this.tiposDePagoCatalogo = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar catálogos', error);
+      }
+    });
+  }
+
   cargarPagos() {
-    this.pagoService.getPagosPendientesFiltro().subscribe({
-      next: (data: PagoDto[]) => {
-        this.originalData = data.map(item => ({
+    this.pagoService.getPagosPendientesFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.pageIndex, this.pageSize).subscribe({
+      next: (data: Page<PagoDto>) => {
+        this.originalData = data.content.map(item => ({
           id: item.id,
           proveedor: item.codigoProveedor || '',
           nombre: item.nombreBeneficiario || '',
@@ -68,12 +90,32 @@ export class PagosTable implements OnInit {
           estatus: 'Pendiente',
           tipo: ''
         }));
-        this.dataSource.data = [...this.originalData];
+        this.totalElements = data.totalElements;
+        this.aplicarFiltroTipo();
       },
       error: (error) => {
         console.error('Error al cargar pagos pendientes', error);
       }
     });
+  }
+
+  aplicarFiltroTipo() {
+    if (this.selectedTipo === 'Todos') {
+      this.dataSource.data = [...this.originalData];
+    } else {
+      this.dataSource.data = this.originalData.filter(p => p.tipo === this.selectedTipo);
+    }
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.cargarPagos();
+  }
+
+  buscarPorFiltros() {
+    this.pageIndex = 0;
+    this.cargarPagos();
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -100,10 +142,16 @@ export class PagosTable implements OnInit {
 
   onTipoChange(event: MatSelectChange) {
     this.selectedTipo = event.value;
-    if (this.selectedTipo === 'Todos') {
-      this.dataSource.data = [...this.originalData];
-    } else {
-      this.dataSource.data = this.originalData.filter(p => p.tipo === this.selectedTipo);
-    }
+    // this.aplicarFiltroTipo();
+  }
+
+  aplicarMasa() {
+    this.selection.selected.forEach(p => {
+      if (this.selectedTipo !== 'Todos') {
+        p.tipo = this.selectedTipo as string;
+      }
+      // p.estatus = 'Aplicado';
+    });
+    this.selection.clear();
   }
 }
