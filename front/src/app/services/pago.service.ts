@@ -16,6 +16,7 @@ export interface PagoDto {
   tipoCambio: string;
   nombreBeneficiario: string;
   cuentaBeneficiario: string;
+  nombreArchivo: string;
 }
 
 export interface Page<T> {

@@ -5,11 +5,11 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 64px;
+  height: 80px;
 }
 
 .header-logo {
-  height: 40px;
+  height: 60px;
   width: auto;
   margin-left: 16px;
   object-fit: contain;
@@ -29,11 +29,11 @@
 .content-body {
   padding: 24px;
   background-color: #f5f6f8;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 80px);
   box-sizing: border-box;
 }
 
 .app-container {
   margin: 0 auto;
-  max-width: 1200px;
+  max-width: 98vw;
 }

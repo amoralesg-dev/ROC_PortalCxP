@@ -16,10 +16,12 @@ import { PagoService, PagoDto, Page, TipoPagoDto } from '../../services/pago.ser
 export interface Pago {
   id: number;
   proveedor: string;
+  rfc: string;
   nombre: string;
   monto: number;
   moneda: string;
   descripcion: string;
+  archivo: string;
   estatus: string;
   tipo: string;
 }
@@ -44,7 +46,7 @@ export interface Pago {
   styleUrl: './pagos-table.scss',
 })
 export class PagosTable implements OnInit {
-  displayedColumns: string[] = ['select', 'id', 'proveedor', 'nombre', 'monto', 'moneda', 'descripcion', 'tipo', 'estatus'];
+  displayedColumns: string[] = ['select', 'id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'tipo', 'estatus'];
   tiposDePagoCatalogo: TipoPagoDto[] = [];
   selectedTipo: string | number = 'Todos';
 
@@ -83,10 +85,12 @@ export class PagosTable implements OnInit {
         this.originalData = data.content.map(item => ({
           id: item.id,
           proveedor: item.codigoProveedor || '',
+          rfc:item.rfcBeneficiario || '',
           nombre: item.nombreBeneficiario || '',
           monto: Number(item.monto) || 0,
           moneda: item.moneda || '',
           descripcion: item.referencia || '',
+          archivo: item.nombreArchivo || '',
           estatus: 'Pendiente',
           tipo: ''
         }));
@@ -118,6 +122,14 @@ export class PagosTable implements OnInit {
     this.cargarPagos();
   }
 
+  limpiarFiltros() {
+    this.codigoProveedorFiltro = '';
+    this.rfcBeneficiarioFiltro = '';
+    this.selectedTipo = 'Todos';
+    this.pageIndex = 0;
+    this.cargarPagos();
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -133,7 +145,14 @@ export class PagosTable implements OnInit {
   }
 
   guardar() {
-    console.log('Guardando datos', this.dataSource.data);
+    this.selection.selected.forEach(p => {
+      if (this.selectedTipo !== 'Todos') {
+        p.tipo = this.selectedTipo as string;
+      }
+      // p.estatus = 'Aplicado';
+    });
+    this.selection.clear();
+    this.selectedTipo = 'Todos';
   }
 
   enviarPagos() {
@@ -153,5 +172,6 @@ export class PagosTable implements OnInit {
       // p.estatus = 'Aplicado';
     });
     this.selection.clear();
+    this.selectedTipo = 'Todos';
   }
 }
