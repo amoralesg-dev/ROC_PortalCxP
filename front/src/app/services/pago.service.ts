@@ -17,6 +17,7 @@ export interface PagoDto {
   nombreBeneficiario: string;
   cuentaBeneficiario: string;
   nombreArchivo: string;
+  tipoPago:string;
 }
 
 export interface Page<T> {
@@ -37,6 +38,15 @@ export interface TipoPagoDto {
   descripcion: string;
   corpo: boolean;
   bu: string | null;
+}
+
+export interface ClasificarPagoItem {
+  id: number;
+  dealType: string;
+}
+
+export interface ClasificarPagosRequest {
+  items: ClasificarPagoItem[];
 }
 
 @Injectable({
@@ -69,5 +79,10 @@ export class PagoService {
     }
 
     return this.http.get<Page<PagoDto>>(`${this.baseUrl}/pagos/pendientes/filtro/paginado`, { params });
+  }
+
+  clasificarPagos(request: ClasificarPagosRequest): Observable<string> {
+    // Specify responseType as 'text' since the API returns a String directly, not JSON.
+    return this.http.put(`${this.baseUrl}/pagos/clasificacion`, request, { responseType: 'text' });
   }
 }

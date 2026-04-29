@@ -11,7 +11,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormsModule } from '@angular/forms';
-import { PagoService, PagoDto, Page, TipoPagoDto } from '../../services/pago.service';
+import { PagoService, PagoDto, Page, TipoPagoDto, ClasificarPagosRequest, ClasificarPagoItem } from '../../services/pago.service';
 
 export interface Pago {
   id: number;
@@ -92,7 +92,7 @@ export class PagosTable implements OnInit {
           descripcion: item.referencia || '',
           archivo: item.nombreArchivo || '',
           estatus: 'Pendiente',
-          tipo: ''
+          tipo: item.tipoPago || ''
         }));
         this.totalElements = data.totalElements;
         this.aplicarFiltroTipo();
@@ -145,14 +145,30 @@ export class PagosTable implements OnInit {
   }
 
   guardar() {
-    this.selection.selected.forEach(p => {
-      if (this.selectedTipo !== 'Todos') {
-        p.tipo = this.selectedTipo as string;
+    const items: ClasificarPagoItem[] = this.selection.selected.map(p => ({
+      id: p.id,
+      dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo
+    }));
+
+    const request: ClasificarPagosRequest = { items };
+
+    this.pagoService.clasificarPagos(request).subscribe({
+      next: (response) => {
+        console.log('Clasificación guardada con éxito:', response);
+        // Opcional: Actualizar el estado de la tabla después del guardado
+        this.selection.selected.forEach(p => {
+          if (this.selectedTipo !== 'Todos') {
+            p.tipo = this.selectedTipo as string;
+          }
+        });
+
+        this.selection.clear();
+        this.selectedTipo = 'Todos';
+      },
+      error: (error) => {
+        console.error('Error al clasificar los pagos:', error);
       }
-      // p.estatus = 'Aplicado';
     });
-    this.selection.clear();
-    this.selectedTipo = 'Todos';
   }
 
   enviarPagos() {
