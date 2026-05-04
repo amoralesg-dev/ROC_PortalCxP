@@ -118,3 +118,13 @@ tr.mat-row:hover {
   font-size: 13px;
   font-weight: 700;
 }
+
+::ng-deep .success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #f44336;
+  color: white;
+}

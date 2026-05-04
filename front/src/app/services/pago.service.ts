@@ -78,11 +78,22 @@ export class PagoService {
       params = params.set('rfcBeneficiario', rfcBeneficiario);
     }
 
+    const authBu = sessionStorage.getItem('auth_bu');
+    if (authBu) {
+      params = params.set('bu', authBu);
+    }
+
     return this.http.get<Page<PagoDto>>(`${this.baseUrl}/pagos/pendientes/filtro/paginado`, { params });
   }
 
   clasificarPagos(request: ClasificarPagosRequest): Observable<string> {
+    let params = new HttpParams();
+    const authBu = sessionStorage.getItem('auth_bu');
+    if (authBu) {
+      params = params.set('bu', authBu);
+    }
+
     // Specify responseType as 'text' since the API returns a String directly, not JSON.
-    return this.http.put(`${this.baseUrl}/pagos/clasificacion`, request, { responseType: 'text' });
+    return this.http.put(`${this.baseUrl}/pagos/clasificacion`, request, { params, responseType: 'text' });
   }
 }

@@ -1,19 +1,24 @@
-<mat-toolbar class="rassini-toolbar">
-  <img src="img/RASSINI_Logo_blanco.png" alt="Rassini Logo" class="header-logo" />
-  <span class="spacer"></span>
-  <span class="user-text">Área de Finanzas</span>
-  <button mat-icon-button>
-    <mat-icon>account_circle</mat-icon>
-  </button>
-  <button mat-icon-button>
-    <mat-icon>exit_to_app</mat-icon>
-  </button>
-</mat-toolbar>
 
-<main class="content-body">
-  <div class="app-container">
-    <app-pagos-table></app-pagos-table>
-  </div>
-</main>
+<ng-container *ngIf="authService.isLoggedIn()">
+  <mat-toolbar class="rassini-toolbar">
+    <img src="img/RASSINI_Logo_blanco.png" alt="Rassini Logo" class="header-logo" />
+    <span class="spacer"></span>
+    <span class="user-text">Área de Finanzas</span>
+    <button mat-icon-button>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <button mat-icon-button (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+    </button>
+  </mat-toolbar>
 
-<router-outlet></router-outlet>
+  <main class="content-body">
+    <div class="app-container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</ng-container>
+
+<ng-container *ngIf="!authService.isLoggedIn()">
+  <router-outlet></router-outlet>
+</ng-container>

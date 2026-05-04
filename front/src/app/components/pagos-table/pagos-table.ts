@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormsModule } from '@angular/forms';
 import { PagoService, PagoDto, Page, TipoPagoDto, ClasificarPagosRequest, ClasificarPagoItem } from '../../services/pago.service';
@@ -40,6 +41,7 @@ export interface Pago {
     MatCheckboxModule,
     MatPaginatorModule,
     MatInputModule,
+    MatSnackBarModule,
     FormsModule
   ],
   templateUrl: './pagos-table.html',
@@ -61,7 +63,10 @@ export class PagosTable implements OnInit {
   originalData: Pago[] = [];
   selection = new SelectionModel<Pago>(true, []);
 
-  constructor(private pagoService: PagoService) {}
+  constructor(
+    private pagoService: PagoService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.cargarCatalogos();
@@ -155,18 +160,23 @@ export class PagosTable implements OnInit {
     this.pagoService.clasificarPagos(request).subscribe({
       next: (response) => {
         console.log('Clasificación guardada con éxito:', response);
-        // Opcional: Actualizar el estado de la tabla después del guardado
-        this.selection.selected.forEach(p => {
-          if (this.selectedTipo !== 'Todos') {
-            p.tipo = this.selectedTipo as string;
-          }
+        this.snackBar.open('Clasificación guardada con éxito', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
         });
 
         this.selection.clear();
         this.selectedTipo = 'Todos';
+
+        this.cargarPagos();
       },
       error: (error) => {
         console.error('Error al clasificar los pagos:', error);
+        const errorMessage = error.error?.message || 'Ocurrió un error al clasificar los pagos.';
+        this.snackBar.open(errorMessage, 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }

@@ -1,0 +1,37 @@
+
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <img src="img/RASSINI_Logo_color.png" alt="Rassini Logo" class="login-logo" onerror="this.src='img/RASSINI_Logo_blanco.png'"/>
+      </mat-card-title>
+      <mat-card-subtitle>
+        Portal Cuentas por Pagar
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuario</mat-label>
+          <input matInput type="text" [(ngModel)]="username" name="username" required>
+          <mat-icon matPrefix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" [(ngModel)]="password" name="password" required>
+          <mat-icon matPrefix>lock</mat-icon>
+        </mat-form-field>
+        
+        <button mat-flat-button color="primary" type="submit" class="full-width submit-btn" [disabled]="!loginForm.form.valid">
+          Ingresar
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
