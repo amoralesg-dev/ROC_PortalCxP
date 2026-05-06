@@ -13,7 +13,7 @@
         <mat-icon>save</mat-icon>
         Guardar
       </button>
-      <button mat-flat-button color="primary" (click)="enviarPagos()" style="border-radius: 20px;">
+      <button *ngIf="pagosValidados" mat-flat-button color="primary" (click)="enviarPagos()" style="border-radius: 20px;">
         <mat-icon>send</mat-icon>
         Enviar pago
       </button>

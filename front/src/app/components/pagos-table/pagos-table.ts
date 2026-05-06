@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSelectModule, MatSelectChange } from '@angular/material/select';
@@ -63,14 +63,18 @@ export class PagosTable implements OnInit {
   originalData: Pago[] = [];
   selection = new SelectionModel<Pago>(true, []);
 
+  pagosValidados: boolean = false;
+
   constructor(
     private pagoService: PagoService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.cargarCatalogos();
     this.cargarPagos();
+    this.validarPagosStatus();
   }
 
   cargarCatalogos() {
@@ -167,8 +171,10 @@ export class PagosTable implements OnInit {
 
         this.selection.clear();
         this.selectedTipo = 'Todos';
-
+        this.pagosValidados = false;
+        this.validarPagosStatus();
         this.cargarPagos();
+
       },
       error: (error) => {
         console.error('Error al clasificar los pagos:', error);
@@ -183,6 +189,31 @@ export class PagosTable implements OnInit {
 
   enviarPagos() {
     console.log('Enviando pagos', this.selection.selected);
+  }
+
+  validarPagosStatus() {
+    this.pagoService.validarPagos().subscribe({
+      next: (response) => {
+        const valor = response ? response.trim() : '';
+
+        if (valor === '1') {
+          this.pagosValidados = true;
+        } else {
+          this.pagosValidados = false;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al validar el estado de los pagos silenciosamente:', error);
+        this.pagosValidados = false;
+        const errorMessage = error.error?.message || 'Error en la validación.';
+        this.snackBar.open(errorMessage, 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   onTipoChange(event: MatSelectChange) {

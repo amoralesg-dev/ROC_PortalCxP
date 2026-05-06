@@ -96,4 +96,14 @@ export class PagoService {
     // Specify responseType as 'text' since the API returns a String directly, not JSON.
     return this.http.put(`${this.baseUrl}/pagos/clasificacion`, request, { params, responseType: 'text' });
   }
+
+  validarPagos(): Observable<string> {
+    let params = new HttpParams();
+    const authBu = sessionStorage.getItem('auth_bu');
+    if (authBu) {
+      params = params.set('bu', authBu);
+    }
+
+    return this.http.post(`${this.baseUrl}/pagos/validar`, {}, { params, responseType: 'text' });
+  }
 }
