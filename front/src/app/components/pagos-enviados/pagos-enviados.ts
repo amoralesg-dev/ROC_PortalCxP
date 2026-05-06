@@ -28,7 +28,7 @@ export interface Pago {
 }
 
 @Component({
-  selector: 'app-pagos-table',
+  selector: 'app-pagos-enviados',
   standalone: true,
   imports: [
     CommonModule,
@@ -44,11 +44,11 @@ export interface Pago {
     MatSnackBarModule,
     FormsModule
   ],
-  templateUrl: './pagos-table.html',
-  styleUrl: './pagos-table.scss',
+  templateUrl: './pagos-enviados.html',
+  styleUrl: './pagos-enviados.scss',
 })
-export class PagosTable implements OnInit {
-  displayedColumns: string[] = ['select', 'id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'tipo', 'estatus'];
+export class PagosEnviadosComponent implements OnInit {
+  displayedColumns: string[] = ['id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'tipo', 'estatus'];
   tiposDePagoCatalogo: TipoPagoDto[] = [];
   selectedTipo: string | number = 'Todos';
 
@@ -89,7 +89,7 @@ export class PagosTable implements OnInit {
   }
 
   cargarPagos() {
-    this.pagoService.getPagosPendientesFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.pageIndex, this.pageSize).subscribe({
+    this.pagoService.getPagosEnviadosFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.pageIndex, this.pageSize).subscribe({
       next: (data: Page<PagoDto>) => {
         this.originalData = data.content.map(item => ({
           id: item.id,

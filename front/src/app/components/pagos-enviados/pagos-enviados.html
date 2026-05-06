@@ -1,22 +1,14 @@
 <mat-card class="pagos-card">
   <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
     <div style="display: flex; align-items: center;">
-      <mat-icon style="font-size: 32px; width: 32px; height: 32px; color: var(--rassini-secondary)">account_balance_wallet</mat-icon>
+      <mat-icon style="font-size: 32px; width: 32px; height: 32px; color: var(--rassini-secondary)">history</mat-icon>
       <div style="margin-left: 12px;">
-        <mat-card-title>Pagos Pendientes de Clasificación</mat-card-title>
-        <mat-card-subtitle>Gestión de pagos pendientes</mat-card-subtitle>
+        <mat-card-title>Histórico de Pagos Enviados</mat-card-title>
+        <mat-card-subtitle>Consulta de pagos procesados y enviados</mat-card-subtitle>
       </div>
     </div>
 
     <div style="display: flex; gap: 12px; margin-right: 16px;">
-      <button mat-stroked-button color="primary" (click)="guardar()" [disabled]="!selection.hasValue() || selectedTipo === 'Todos'" style="border-radius: 20px;">
-        <mat-icon>save</mat-icon>
-        Guardar
-      </button>
-      <button *ngIf="pagosValidados" mat-flat-button color="primary" (click)="enviarPagos()" style="border-radius: 20px;">
-        <mat-icon>send</mat-icon>
-        Enviar pago
-      </button>
     </div>
   </mat-card-header>
 
@@ -46,39 +38,11 @@
         <mat-icon>clear</mat-icon>
         Limpiar
       </button>
-
-      <span class="filters-label" style="margin-left: 16px;">
-        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">category</mat-icon>
-        Tipo de pago
-      </span>
-      <mat-form-field appearance="outline" class="tipo-pago-select" subscriptSizing="dynamic">
-        <mat-label>Catálogo de Tipo de Pago</mat-label>
-        <mat-select [value]="selectedTipo" (selectionChange)="onTipoChange($event)">
-          <mat-option *ngFor="let tipo of tiposDePagoCatalogo" [value]="tipo.dealType">
-            {{ tipo.descripcion }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
     </div>
 
     <div class="table-wrapper">
       <table mat-table [dataSource]="dataSource" class="pagos-table">
 
-        <!-- Checkbox Column -->
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef style="width: 48px;">
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
 
       <!-- ID Column -->
       <ng-container matColumnDef="id">

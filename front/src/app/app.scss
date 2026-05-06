@@ -1,18 +1,11 @@
 .rassini-toolbar {
-  background-color: var(--rassini-primary, #f79433);
+  background-color: #1976d2;
   color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  height: 80px;
 }
 
 .header-logo {
-  height: 60px;
-  width: auto;
-  margin-left: 16px;
-  object-fit: contain;
+  height: 40px;
+  margin-right: 16px;
 }
 
 .spacer {
@@ -22,8 +15,26 @@
 .user-text {
   font-size: 14px;
   margin-right: 16px;
-  font-weight: 400;
-  opacity: 0.9;
+  font-weight: 500;
+}
+
+.sidenav-container {
+  height: calc(100vh - 64px);
+}
+
+.sidenav {
+  width: 280px;
+}
+
+.content-body {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100%;
+}
+
+.active-link {
+  background-color: rgba(0, 0, 0, 0.04);
+  font-weight: 500;
 }
 
 .content-body {
