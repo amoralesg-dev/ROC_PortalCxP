@@ -23,6 +23,7 @@ export interface Pago {
   moneda: string;
   descripcion: string;
   archivo: string;
+  archivo_envio: string;
   estatus: string;
   tipo: string;
 }
@@ -48,7 +49,7 @@ export interface Pago {
   styleUrl: './pagos-enviados.scss',
 })
 export class PagosEnviadosComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'tipo', 'estatus'];
+  displayedColumns: string[] = ['id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'archivo_envio', 'tipo', 'estatus'];
   tiposDePagoCatalogo: TipoPagoDto[] = [];
   selectedTipo: string | number = 'Todos';
 
@@ -100,7 +101,8 @@ export class PagosEnviadosComponent implements OnInit {
           moneda: item.moneda || '',
           descripcion: item.referencia || '',
           archivo: item.nombreArchivo || '',
-          estatus: 'Pendiente',
+          archivo_envio: item.nombreArchivoEnvio || '',
+          estatus: 'Enviado',
           tipo: item.tipoPago || ''
         }));
         this.totalElements = data.totalElements;
