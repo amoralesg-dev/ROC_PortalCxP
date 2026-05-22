@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PagoService, PagoDto, Page, TipoPagoDto, ClasificarPagosRequest, ClasificarPagoItem } from '../../services/pago.service';
 
 export interface Pago {
@@ -25,6 +27,7 @@ export interface Pago {
   archivo: string;
   estatus: string;
   tipo: string;
+  decisionDuplicado?: 'Aceptar' | 'Rechazar';
 }
 
 @Component({
@@ -42,7 +45,9 @@ export interface Pago {
     MatPaginatorModule,
     MatInputModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
+    MatTooltipModule,
+    MatMenuModule
   ],
   templateUrl: './pagos-table.html',
   styleUrl: './pagos-table.scss',
@@ -54,6 +59,8 @@ export class PagosTable implements OnInit {
 
   codigoProveedorFiltro: string = '';
   rfcBeneficiarioFiltro: string = '';
+  tipoPagoFiltro: string = 'Todos';
+  estatusFiltro: string = 'Todos';
 
   totalElements: number = 0;
   pageSize: number = 10;
@@ -100,7 +107,7 @@ export class PagosTable implements OnInit {
           moneda: item.moneda || '',
           descripcion: item.referencia || '',
           archivo: item.nombreArchivo || '',
-          estatus: 'Pendiente',
+          estatus: item.duplicado === 'S' ? 'Duplicado' : 'Pendiente',
           tipo: item.tipoPago || ''
         }));
         this.totalElements = data.totalElements;
@@ -153,7 +160,27 @@ export class PagosTable implements OnInit {
         this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
+  tieneDuplicadosPendientes(): boolean {
+    return this.dataSource.data.some(p => p.estatus === 'Duplicado' && !p.decisionDuplicado);
+  }
+
+  isGuardarDisabled(): boolean {
+    return !this.selection.hasValue() || this.selectedTipo === 'Todos' || this.tieneDuplicadosPendientes();
+  }
+
+  isEnviarDisabled(): boolean {
+    return !this.pagosValidados || this.tieneDuplicadosPendientes();
+  }
+
   guardar() {
+    if (this.tieneDuplicadosPendientes()) {
+      this.snackBar.open('Debes tomar una decisión (Aceptar/Rechazar) para todos los duplicados antes de guardar.', 'Cerrar', {
+        duration: 4000,
+        panelClass: ['warn-snackbar']
+      });
+      return;
+    }
+
     const items: ClasificarPagoItem[] = this.selection.selected.map(p => ({
       id: p.id,
       dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo
@@ -188,6 +215,14 @@ export class PagosTable implements OnInit {
   }
 
   enviarPagos() {
+    if (this.tieneDuplicadosPendientes()) {
+      this.snackBar.open('Debes tomar una decisión (Aceptar/Rechazar) para todos los duplicados antes de enviar.', 'Cerrar', {
+        duration: 4000,
+        panelClass: ['warn-snackbar']
+      });
+      return;
+    }
+
     this.pagoService.enviarPagos().subscribe({
       next: (response) => {
         console.log('Envío de pagos exitoso:', response);
@@ -249,5 +284,14 @@ export class PagosTable implements OnInit {
     });
     this.selection.clear();
     this.selectedTipo = 'Todos';
+  }
+
+  toggleDecision(element: Pago, decision: 'Aceptar' | 'Rechazar') {
+    if (element.decisionDuplicado === decision) {
+      element.decisionDuplicado = undefined; // uncheck
+      element.estatus = 'Duplicado'; // revert if unchecked completely? we only visually change to Pendiente/Rechazado or keep logic simple.
+    } else {
+      element.decisionDuplicado = decision;
+    }
   }
 }
