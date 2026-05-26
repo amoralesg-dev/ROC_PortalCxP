@@ -96,20 +96,36 @@ export class PagosTable implements OnInit {
   }
 
   cargarPagos() {
-    this.pagoService.getPagosPendientesFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.pageIndex, this.pageSize).subscribe({
+    this.pagoService.getPagosPendientesFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.tipoPagoFiltro, this.estatusFiltro, this.pageIndex, this.pageSize).subscribe({
       next: (data: Page<PagoDto>) => {
-        this.originalData = data.content.map(item => ({
-          id: item.id,
-          proveedor: item.codigoProveedor || '',
-          rfc:item.rfcBeneficiario || '',
-          nombre: item.nombreBeneficiario || '',
-          monto: Number(item.monto) || 0,
-          moneda: item.moneda || '',
-          descripcion: item.referencia || '',
-          archivo: item.nombreArchivo || '',
-          estatus: item.duplicado === 'S' ? 'Duplicado' : 'Pendiente',
-          tipo: item.tipoPago || ''
-        }));
+        this.originalData = data.content.map(item => {
+          let estatus = 'Pendiente';
+          let decisionDuplicado: 'Aceptar' | 'Rechazar' | undefined = undefined;
+
+          if (item.duplicado === 'S') {
+            estatus = 'Duplicado';
+          } else if (item.duplicado === 'A') {
+            estatus = 'Duplicado';
+            decisionDuplicado = 'Aceptar';
+          } else if (item.duplicado === 'R') {
+            estatus = 'Duplicado';
+            decisionDuplicado = 'Rechazar';
+          }
+
+          return {
+            id: item.id,
+            proveedor: item.codigoProveedor || '',
+            rfc:item.rfcBeneficiario || '',
+            nombre: item.nombreBeneficiario || '',
+            monto: Number(item.monto) || 0,
+            moneda: item.moneda || '',
+            descripcion: item.referencia || '',
+            archivo: item.nombreArchivo || '',
+            estatus: estatus,
+            tipo: item.tipoPago || '',
+            decisionDuplicado: decisionDuplicado
+          };
+        });
         this.totalElements = data.totalElements;
         this.aplicarFiltroTipo();
       },
@@ -183,7 +199,8 @@ export class PagosTable implements OnInit {
 
     const items: ClasificarPagoItem[] = this.selection.selected.map(p => ({
       id: p.id,
-      dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo
+      dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo,
+      decisionDuplicado: p.decisionDuplicado
     }));
 
     const request: ClasificarPagosRequest = { items };

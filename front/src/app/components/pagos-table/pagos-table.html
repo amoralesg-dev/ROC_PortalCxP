@@ -152,12 +152,6 @@
         <th mat-header-cell *matHeaderCellDef> TIPO DE PAGO </th>
         <td mat-cell *matCellDef="let element">
           <span *ngIf="element.tipo" class="tipo-badge">{{element.tipo}}</span>
-          <mat-form-field *ngIf="!element.tipo" appearance="outline" subscriptSizing="dynamic" style="width: 140px; font-size: 12px; margin: 4px 0;">
-            <mat-label>Clasificar</mat-label>
-            <mat-select [(value)]="element.tipo">
-              <mat-option *ngFor="let t of tiposDePagoCatalogo" [value]="t.dealType">{{t.descripcion}}</mat-option>
-            </mat-select>
-          </mat-form-field>
         </td>
       </ng-container>
       <!-- Estatus Column -->

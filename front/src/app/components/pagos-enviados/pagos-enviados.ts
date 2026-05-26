@@ -90,7 +90,7 @@ export class PagosEnviadosComponent implements OnInit {
   }
 
   cargarPagos() {
-    this.pagoService.getPagosEnviadosFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.pageIndex, this.pageSize).subscribe({
+    this.pagoService.getPagosEnviadosFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, undefined, undefined, this.pageIndex, this.pageSize).subscribe({
       next: (data: Page<PagoDto>) => {
         this.originalData = data.content.map(item => ({
           id: item.id,
@@ -158,7 +158,8 @@ export class PagosEnviadosComponent implements OnInit {
   guardar() {
     const items: ClasificarPagoItem[] = this.selection.selected.map(p => ({
       id: p.id,
-      dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo
+      dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo,
+      decisionDuplicado: (p as any).decisionDuplicado
     }));
 
     const request: ClasificarPagosRequest = { items };
