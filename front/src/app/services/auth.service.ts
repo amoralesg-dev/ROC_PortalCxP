@@ -23,7 +23,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8081/portal';
+  private baseUrl = 'http://10.15.1.25:8082/ms-pagos';
 
   constructor(private http: HttpClient, private router: Router) { }
 

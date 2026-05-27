@@ -48,7 +48,7 @@ export interface ClasificarPagosRequest {
 }
 @Injectable({ providedIn: 'root' })
 export class PagoService {
-  private baseUrl = 'http://localhost:8081/portal';
+  private baseUrl = 'http://10.15.1.25:8082/ms-pagos';
   constructor(private http: HttpClient) {}
   getCatalogosTipoPago(): Observable<TipoPagoDto[]> {
     return this.http.get<TipoPagoDto[]>(`${this.baseUrl}/catalogos/tipo-pago`);
