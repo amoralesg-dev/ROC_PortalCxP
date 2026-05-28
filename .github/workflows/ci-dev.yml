@@ -1,0 +1,128 @@
+name: CI DEV Front
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validar versiones
+        run: |
+          node -v
+          npm -v
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar Angular DEV
+        run: npm run build:dev
+
+      - name: Validar carpeta build
+        run: ls -la dist/front/browser
+
+      - name: Subir build Angular
+        uses: actions/upload-artifact@v4
+        with:
+          name: roc-portalcxp-front-dev
+          path: front/dist/front/browser
+          if-no-files-found: error
+
+  deploy-dev:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: [self-hosted, Windows, X64, frontend, angular, dev]
+
+    steps:
+      - name: Descargar build Angular
+        uses: actions/download-artifact@v4
+        with:
+          name: roc-portalcxp-front-dev
+          path: C:\deploy\ROC_PortalCxP
+
+      - name: Validar artifact descargado
+        shell: cmd
+        run: dir C:\deploy\ROC_PortalCxP
+
+      - name: Crear carpeta backup si no existe
+        shell: cmd
+        run: |
+          if not exist C:\apps-front\ROC_PortalCxP\backup mkdir C:\apps-front\ROC_PortalCxP\backup
+
+      - name: Respaldar versión actual
+        shell: cmd
+        run: |
+          if exist C:\apps-front\ROC_PortalCxP\current\index.html (
+            powershell -Command "Compress-Archive -Path 'C:\apps-front\ROC_PortalCxP\current\*' -DestinationPath 'C:\apps-front\ROC_PortalCxP\backup\ROC_PortalCxP-%GITHUB_RUN_NUMBER%.zip' -Force"
+          )
+
+      - name: Limpiar carpeta current
+        shell: cmd
+        run: |
+          powershell -Command "Remove-Item -Path 'C:\apps-front\ROC_PortalCxP\current\*' -Recurse -Force"
+
+      - name: Copiar nuevo build
+        shell: cmd
+        run: |
+          xcopy C:\deploy\ROC_PortalCxP\* C:\apps-front\ROC_PortalCxP\current\ /E /I /Y
+
+      - name: Crear web.config para Angular IIS
+        shell: cmd
+        run: |
+          (
+          echo ^<?xml version="1.0" encoding="utf-8"?^>
+          echo ^<configuration^>
+          echo   ^<system.webServer^>
+          echo     ^<defaultDocument^>
+          echo       ^<files^>
+          echo         ^<clear /^>
+          echo         ^<add value="index.html" /^>
+          echo       ^</files^>
+          echo     ^</defaultDocument^>
+          echo     ^<rewrite^>
+          echo       ^<rules^>
+          echo         ^<rule name="Angular Routes" stopProcessing="true"^>
+          echo           ^<match url=".*" /^>
+          echo           ^<conditions logicalGrouping="MatchAll"^>
+          echo             ^<add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /^>
+          echo             ^<add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /^>
+          echo           ^</conditions^>
+          echo           ^<action type="Rewrite" url="/index.html" /^>
+          echo         ^</rule^>
+          echo       ^</rules^>
+          echo     ^</rewrite^>
+          echo   ^</system.webServer^>
+          echo ^</configuration^>
+          ) > C:\apps-front\ROC_PortalCxP\current\web.config
+
+      - name: Validar archivos publicados
+        shell: cmd
+        run: dir C:\apps-front\ROC_PortalCxP\current
+
+      - name: Validar sitio local
+        shell: cmd
+        run: curl http://localhost:8080
+
+      - name: Validar ruta Angular login
+        shell: cmd
+        run: curl http://localhost:8080/login

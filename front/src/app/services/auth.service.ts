@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export interface LoginRequest {
   usuario: string;
@@ -23,8 +24,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://10.15.1.25:8082/ms-pagos';
-
+  private baseUrl = environment.baseUrl;
   constructor(private http: HttpClient, private router: Router) { }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
