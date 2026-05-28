@@ -25,7 +25,6 @@ export interface LoginResponse {
 })
 export class AuthService {
   private baseUrl = environment.baseUrl;
-
   constructor(private http: HttpClient, private router: Router) { }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {

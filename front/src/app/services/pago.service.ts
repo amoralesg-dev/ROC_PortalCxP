@@ -52,7 +52,7 @@ export interface ClasificarPagosRequest {
 export class PagoService {
   private baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient) {}
+constructor(private http: HttpClient) {}
   getCatalogosTipoPago(): Observable<TipoPagoDto[]> {
     return this.http.get<TipoPagoDto[]>(`${this.baseUrl}/catalogos/tipo-pago`);
   }
