@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: .
+        working-directory: front
 
     steps:
       - name: Descargar código
@@ -26,20 +26,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
+
+      - name: Validar versiones
+        run: |
+          node -v
+          npm -v
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install
 
       - name: Compilar Angular DEV
         run: npm run build:dev
+
+      - name: Validar carpeta build
+        run: ls -la dist/front/browser
 
       - name: Subir build Angular
         uses: actions/upload-artifact@v4
         with:
           name: roc-portalcxp-front-dev
-          path: dist/front/browser
+          path: front/dist/front/browser
           if-no-files-found: error
 
   deploy-dev:
