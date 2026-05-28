@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
 export interface PagoDto {
   id: number;
   empresa: string;
@@ -48,7 +50,8 @@ export interface ClasificarPagosRequest {
 }
 @Injectable({ providedIn: 'root' })
 export class PagoService {
-  private baseUrl = 'http://localhost:8081/portal';
+  private baseUrl = environment.baseUrl;
+
   constructor(private http: HttpClient) {}
   getCatalogosTipoPago(): Observable<TipoPagoDto[]> {
     return this.http.get<TipoPagoDto[]>(`${this.baseUrl}/catalogos/tipo-pago`);
