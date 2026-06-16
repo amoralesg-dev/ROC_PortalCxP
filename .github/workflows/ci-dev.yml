@@ -1,129 +1,99 @@
-name: CI PROD Front
+name: CI PROD
 
 on:
-push:
-branches:
-- dev
-- main
+  push:
+    branches:
+      - DEV
+      - main
 
-workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
-contents: read
+  contents: read
 
 jobs:
-build:
-runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-defaults:
-  run:
-    working-directory: front
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
 
-steps:
-  - name: Descargar código
-    uses: actions/checkout@v4
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
 
-  - name: Configurar Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: '24'
+      - name: Compilar y correr tests
+        run: mvn clean verify -Dspring.profiles.active=test -e
 
-  - name: Validar versiones
-    run: |
-      node -v
-      npm -v
+      - name: Subir reportes de Surefire
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+          if-no-files-found: warn
 
-  - name: Instalar dependencias
-    run: npm install
+      - name: Subir JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ms-pagos-jar
+          path: target/ms-pagos.jar
+          if-no-files-found: error
 
-  - name: Compilar Angular DEV
-    run: npm run build:dev
+  deploy-prod:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, Windows, X64, backend, ms-pagos, dev]
 
-  - name: Validar carpeta build
-    run: ls -la dist/front/browser
+    steps:
+      - name: Descargar JAR generado
+        uses: actions/download-artifact@v4
+        with:
+          name: ms-pagos-jar
+          path: C:\deploy\ms-pagos
 
-  - name: Subir build Angular
-    uses: actions/upload-artifact@v4
-    with:
-      name: roc-portalcxp-front-dev
-      path: front/dist/front/browser
-      if-no-files-found: error
+      - name: Validar artifact descargado
+        shell: cmd
+        run: dir C:\deploy\ms-pagos
 
-deploy-prod:
-needs: build
-if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-runs-on: [self-hosted, Windows, X64, frontend, angular, dev]
+      - name: Detener servicio
+        shell: cmd
+        run: |
+          net stop ms-pagos-dev || exit /b 0
 
-steps:
-  - name: Descargar build Angular
-    uses: actions/download-artifact@v4
-    with:
-      name: roc-portalcxp-front-dev
-      path: C:\deploy\ROC_PortalCxP
+      - name: Crear carpeta backup si no existe
+        shell: cmd
+        run: |
+          if not exist C:\apps\ms-pagos\backup mkdir C:\apps\ms-pagos\backup
 
-  - name: Validar artifact descargado
-    shell: cmd
-    run: dir C:\deploy\ROC_PortalCxP
+      - name: Respaldar JAR actual
+        shell: cmd
+        run: |
+          if exist C:\apps\ms-pagos\ms-pagos.jar (
+            copy C:\apps\ms-pagos\ms-pagos.jar C:\apps\ms-pagos\backup\ms-pagos-%GITHUB_RUN_NUMBER%.jar
+          )
 
-  - name: Crear carpeta backup si no existe
-    shell: cmd
-    run: |
-      if not exist C:\apps-front\ROC_PortalCxP\backup mkdir C:\apps-front\ROC_PortalCxP\backup
+      - name: Copiar nuevo JAR
+        shell: cmd
+        run: |
+          copy C:\deploy\ms-pagos\ms-pagos.jar C:\apps\ms-pagos\ms-pagos.jar /Y
 
-  - name: Respaldar versión actual
-    shell: cmd
-    run: |
-      if exist C:\apps-front\ROC_PortalCxP\current\index.html (
-        powershell -Command "Compress-Archive -Path 'C:\apps-front\ROC_PortalCxP\current\*' -DestinationPath 'C:\apps-front\ROC_PortalCxP\backup\ROC_PortalCxP-%GITHUB_RUN_NUMBER%.zip' -Force"
-      )
+      - name: Validar JAR desplegado
+        shell: cmd
+        run: dir C:\apps\ms-pagos\*.jar
 
-  - name: Limpiar carpeta current
-    shell: cmd
-    run: |
-      powershell -Command "Remove-Item -Path 'C:\apps-front\ROC_PortalCxP\current\*' -Recurse -Force"
+      - name: Iniciar servicio
+        shell: cmd
+        run: net start ms-pagos-dev
 
-  - name: Copiar nuevo build
-    shell: cmd
-    run: |
-      xcopy C:\deploy\ROC_PortalCxP\* C:\apps-front\ROC_PortalCxP\current\ /E /I /Y
+      - name: Esperar arranque
+        shell: cmd
+        run: ping 127.0.0.1 -n 16 > nul
 
-  - name: Crear web.config para Angular IIS
-    shell: cmd
-    run: |
-      (
-      echo ^<?xml version="1.0" encoding="utf-8"?^>
-      echo ^<configuration^>
-      echo   ^<system.webServer^>
-      echo     ^<defaultDocument^>
-      echo       ^<files^>
-      echo         ^<clear /^>
-      echo         ^<add value="index.html" /^>
-      echo       ^</files^>
-      echo     ^</defaultDocument^>
-      echo     ^<rewrite^>
-      echo       ^<rules^>
-      echo         ^<rule name="Angular Routes" stopProcessing="true"^>
-      echo           ^<match url=".*" /^>
-      echo           ^<conditions logicalGrouping="MatchAll"^>
-      echo             ^<add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /^>
-      echo             ^<add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /^>
-      echo           ^</conditions^>
-      echo           ^<action type="Rewrite" url="/index.html" /^>
-      echo         ^</rule^>
-      echo       ^</rules^>
-      echo     ^</rewrite^>
-      echo   ^</system.webServer^>
-      echo ^</configuration^>
-      ) > C:\apps-front\ROC_PortalCxP\current\web.config
-
-  - name: Validar archivos publicados
-    shell: cmd
-    run: dir C:\apps-front\ROC_PortalCxP\current
-
-  - name: Validar sitio local
-    shell: cmd
-    run: curl http://localhost:8080
-
-  - name: Validar ruta Angular login
-    shell: cmd
-    run: curl http://localhost:8080/login
+      - name: Validar health
+        shell: cmd
+        run: curl http://localhost:8082/ms-pagos/actuator/health
