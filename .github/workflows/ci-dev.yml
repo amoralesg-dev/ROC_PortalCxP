@@ -1,10 +1,11 @@
-name: CI DEV Front
+name: CI PROD Front
 
 on:
   push:
     branches:
       - dev
       - main
+
   workflow_dispatch:
 
 permissions:
@@ -48,9 +49,9 @@ jobs:
           path: front/dist/front/browser
           if-no-files-found: error
 
-  deploy-dev:
+  deploy-prod:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, Windows, X64, frontend, angular, dev]
 
     steps:
