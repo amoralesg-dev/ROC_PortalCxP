@@ -1,6 +1,5 @@
 name: CI PROD
 
-
 on:
   push:
     branches:
