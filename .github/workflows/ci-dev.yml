@@ -66,7 +66,7 @@ jobs:
       - name: Descargar build Angular
         uses: actions/download-artifact@v4
         with:
-          name: roc-portalcxp-front-dev
+          name: roc-portalcxp-front
           path: C:\deploy\ROC_PortalCxP
 
       - name: Validar artifact descargado
@@ -145,7 +145,7 @@ jobs:
       - name: Descargar build Angular
         uses: actions/download-artifact@v4
         with:
-          name: roc-portalcxp-front-dev
+          name: roc-portalcxp-front
           path: C:\deploy\ROC_PortalCxP
 
       - name: Validar artifact descargado
