@@ -1,4 +1,4 @@
-name: CI ROC_PortalCxP
+name: CI CD ROC_PortalCxP
 
 on:
   push:
