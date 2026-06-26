@@ -6,6 +6,17 @@
     <img src="img/RASSINI_Logo_blanco.png" alt="Rassini Logo" class="header-logo" />
     <span class="spacer"></span>
     <span class="user-text">Área de Finanzas</span>
+    
+    <span
+      class="environment-badge"
+      [class.environment-local]="!isProduction"
+      [class.environment-prod]="isProduction">
+
+      {{ environmentName }}
+
+    </span>
+
+
     <button mat-icon-button>
       <mat-icon>account_circle</mat-icon>
     </button>

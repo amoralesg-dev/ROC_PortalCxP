@@ -9,6 +9,8 @@ import {
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
+import { EnvironmentBadgeService } from '../../services/environment-badge.service';
+
 
 import {
   AppToast,
@@ -57,10 +59,19 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
 
   private clickHandler?: (event: Event) => void;
 
+  get environmentName(): string {
+    return this.environmentBadgeService.environmentName;
+  }
+
+  get environmentClass(): string {
+    return this.environmentBadgeService.environmentClass;
+  }
+
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly toast: Toast
+    private readonly toast: Toast,
+    private readonly environmentBadgeService: EnvironmentBadgeService
   ) {}
 
   ngAfterViewInit(): void {
