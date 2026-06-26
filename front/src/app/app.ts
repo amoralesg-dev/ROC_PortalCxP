@@ -1,14 +1,14 @@
 
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +19,33 @@ import { AuthService } from './services/auth.service';
 })
 export class App {
   protected readonly title = signal('Rassini - Pagos');
+  
+  
+  
+  
+  readonly environmentName = environment.environmentName.toUpperCase();
+
+  readonly isProduction = environment.production;
+
+  readonly environmentClass = this.getEnvironmentClass();
+
+  private getEnvironmentClass(): string {
+
+    if (this.isProduction) {
+      return 'environment-prod';
+    }
+
+    if (environment.environmentName === 'dev') {
+      return 'environment-dev';
+    }
+
+    return 'environment-local';
+
+  }
+
+
+
+
 
   constructor(public authService: AuthService) {}
 
