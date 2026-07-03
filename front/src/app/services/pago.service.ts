@@ -20,7 +20,8 @@ export interface PagoDto {
   nombreArchivo: string;
   nombreArchivoEnvio?: string;
   tipoPago: string;
-  duplicado?: string;
+  mensaje?: string;
+  estatus?: string;
 }
 export interface Page<T> {
   content: T[];
@@ -43,7 +44,6 @@ export interface TipoPagoDto {
 export interface ClasificarPagoItem {
   id: number;
   dealType: string;
-  decisionDuplicado?: string;
 }
 export interface ClasificarPagosRequest {
   items: ClasificarPagoItem[];
@@ -141,4 +141,61 @@ constructor(private http: HttpClient) {}
     }
     return this.http.post(`${this.baseUrl}/pagos/enviar`, {}, { params, responseType: 'text' });
   }
+  getPagosErroresFiltro(
+    codigoProveedor?: string,
+    rfcBeneficiario?: string,
+    page: number = 0,
+    size: number = 10,
+  ): Observable<Page<PagoDto>> {
+
+      let params = new HttpParams()
+        .set('page', page.toString())
+        .set('size', size.toString());
+
+      if (codigoProveedor) {
+        params = params.set('codigoProveedor', codigoProveedor);
+      }
+
+      if (rfcBeneficiario) {
+        params = params.set('rfcBeneficiario', rfcBeneficiario);
+      }
+
+      const authBu = sessionStorage.getItem('auth_bu');
+
+      if (authBu) {
+        params = params.set('bu', authBu);
+      }
+
+      return this.http.get<Page<PagoDto>>(
+        `${this.baseUrl}/pagos/errores/filtro/paginado`,
+        {
+          params,
+        }
+      );
+    }
+  rechazarPago(id: number): Observable<string> {
+  return this.http.put(
+      `${this.baseUrl}/pagos/rechazar/${id}`,
+      {},
+      {
+        responseType: 'text'
+      }
+    );
+  }
+  rechazarPagos(ids: number[]): Observable<string> {
+    return this.http.put(
+      `${this.baseUrl}/pagos/rechazar`,
+      ids,
+      {
+        responseType: 'text'
+      }
+    );
+
+  }
+
+
+
+
+
+
 }

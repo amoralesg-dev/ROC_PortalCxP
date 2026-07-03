@@ -50,7 +50,6 @@
         <mat-select [(ngModel)]="estatusFiltro" (selectionChange)="buscarPorFiltros()">
           <mat-option value="Todos">Todos</mat-option>
           <mat-option value="Pendiente">Pendiente</mat-option>
-          <mat-option value="Duplicado">Duplicado</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -156,32 +155,29 @@
       </ng-container>
       <!-- Estatus Column -->
       <ng-container matColumnDef="estatus">
-        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> ESTATUS </th>
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          ESTATUS
+        </th>
+
         <td mat-cell *matCellDef="let element" style="text-align: center;">
-          <ng-container *ngIf="element.estatus === 'Duplicado'; else pendingStatus">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin: 4px 0;">
-              <span class="status-badge status-badge-warn">
-                <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle; margin-right: 2px;">error_outline</mat-icon>
-                DUPLICADO
-              </span>
-              <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-size: 12px;">
-                <mat-checkbox [checked]="element.decisionDuplicado === 'Aceptar'"
-                              (change)="toggleDecision(element, 'Aceptar')"
-                              color="primary">Aceptar</mat-checkbox>
-                <mat-checkbox [checked]="element.decisionDuplicado === 'Rechazar'"
-                              (change)="toggleDecision(element, 'Rechazar')"
-                              color="warn">Rechazar</mat-checkbox>
-              </div>
-            </div>
-          </ng-container>
-          <ng-template #pendingStatus>
-            <span class="status-badge" [ngClass]="{'status-badge-pend': element.estatus === 'Pendiente', 'status-badge-warn': element.estatus === 'Rechazado'}">
-              <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle; margin-right: 2px;">
-                {{element.estatus === 'Rechazado' ? 'cancel' : 'pending'}}
-              </mat-icon>
-              {{element.estatus | uppercase}}
-            </span>
-          </ng-template>
+          <span
+            class="status-badge"
+            [ngClass]="{
+              'status-badge-pend': element.estatus === 'Pendiente'
+            }">
+
+            <mat-icon
+              style="font-size: 14px;
+                    width: 14px;
+                    height: 14px;
+                    vertical-align: middle;
+                    margin-right: 2px;">
+              pending
+            </mat-icon>
+
+            {{ element.estatus | uppercase }}
+
+          </span>
         </td>
       </ng-container>
 

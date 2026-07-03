@@ -1,0 +1,52 @@
+export const ERROR_MESSAGES: Record<string, string> = {
+
+        ERR001: 'Empresa es obligatoria',
+        ERR002: 'Cuenta ordenante es obligatoria',
+        ERR003: 'Moneda ordenante es obligatoria',
+        ERR004: 'Referencia es obligatoria',
+        ERR005: 'Fecha envío es obligatoria',
+        ERR006: 'Fecha valor es obligatoria',
+        ERR007: 'Monto es obligatorio',
+        ERR008: 'Moneda es obligatoria',
+        ERR009: 'Nombre beneficiario es obligatorio',
+        ERR010: 'Cuenta beneficiario es obligatoria',
+        ERR011: 'Moneda beneficiario es obligatoria',
+        ERR012: 'Nombre archivo es obligatorio',
+
+        ERR013: 'Empresa excede longitud máxima de 10',
+        ERR014: 'Cuenta ordenante excede longitud máxima de 35',
+        ERR015: 'Moneda ordenante excede longitud máxima de 3',
+        ERR016: 'Referencia excede longitud máxima de 255',
+        ERR017: 'Información adicional excede longitud máxima de 2000',
+        ERR018: 'Fecha envío excede longitud máxima de 10',
+        ERR019: 'Fecha valor excede longitud máxima de 10',
+        ERR020: 'Moneda excede longitud máxima de 3',
+        ERR021: 'Código proveedor excede longitud máxima de 10',
+        ERR022: 'Nombre beneficiario excede longitud máxima de 35',
+        ERR023: 'RFC beneficiario excede longitud máxima de 35',
+        ERR024: 'Cuenta beneficiario excede longitud máxima de 35',
+        ERR025: 'Moneda beneficiario excede longitud máxima de 3',
+        ERR026: 'Nombre archivo excede longitud máxima de 35',
+
+        ERR027: 'No es posible validar supplier porque Empresa viene vacía',
+        ERR028: 'No es posible validar supplier porque Cuenta Beneficiario viene vacía',
+        ERR029: 'Cuenta Beneficiario debe tener al menos 8 caracteres',
+        ERR030: 'No existe supplier',
+        ERR031: 'Existe más de un supplier',
+
+        ERR032: 'Supplier Name es obligatorio',
+        ERR033: 'Street Name es obligatorio',
+        ERR034: 'Street Number es obligatorio',
+        ERR035: 'Zip Code es obligatorio',
+        ERR036: 'City Code es obligatorio',
+        ERR037: 'State Code es obligatorio',
+        ERR038: 'Country Code es obligatorio',
+        ERR039: 'Beneficiary Bank Name es obligatorio',
+        ERR040: 'Bank Country es obligatorio',
+        ERR041: 'Routing Code ABA o SWIFT es obligatorio',
+        ERR042: 'Routing Code intermediario es obligatorio cuando existe cuenta intermediaria',
+        ERR043: 'País intermediario es obligatorio cuando existe cuenta intermediaria',
+
+        ERR044: 'Registro duplicado en archivo o base de datos'
+
+    }

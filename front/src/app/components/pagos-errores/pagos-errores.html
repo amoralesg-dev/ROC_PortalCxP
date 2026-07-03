@@ -1,0 +1,106 @@
+<app-page-header
+    title="Errores de Pagos"
+    subtitle="Registros con errores de validación">
+</app-page-header>
+
+<app-page-toolbar>
+    <p-button
+        label="Rechazar Seleccionados"
+        icon="pi pi-times"
+        severity="danger"
+        [disabled]="!selectedRows.length"
+        (onClick)="rechazarSeleccionados()">
+    </p-button>
+
+
+</app-page-toolbar>
+
+<app-page-content>
+
+    <app-data-table
+        [columns]="columns"
+        [data]="errores"
+        (rowsSelected)="onSelectionChange($event)"
+        [globalFilterFields]="[
+            'codigoProveedor',
+            'rfcBeneficiario',
+            'nombreBeneficiario',
+            'monto',
+            'moneda',
+            'referencia',
+            'archivo'
+        ]">
+
+        <ng-template #actions let-row>
+
+            <div
+                style="
+                    display:flex;
+                    flex-direction:row;
+                    gap:.5rem;
+                    align-items:center;
+                ">
+
+                <p-button
+                    icon="pi pi-eye"
+                    severity="info"
+                    [rounded]="true"
+                    (onClick)="verErrores(row)">
+                </p-button>
+
+                <p-button
+                    icon="pi pi-times"
+                    severity="danger"
+                    [rounded]="true"
+                    (onClick)="rechazarRegistro(row)">
+                </p-button>
+
+            </div>
+
+        </ng-template>
+
+    </app-data-table>
+
+</app-page-content>
+
+<app-app-dialog
+    [(visible)]="mostrarErroresDialog"
+    title="Detalle de errores"
+    width="40rem">
+
+    @if (erroresDetalle.length) {
+
+        <ul>
+
+            @for (
+                error of erroresDetalle;
+                track error
+            ) {
+
+                <li>
+
+                    <strong>
+                        {{ error }}
+                    </strong>
+
+                    -
+
+                    {{ obtenerDescripcionError(error) }}
+
+                </li>
+
+            }
+
+        </ul>
+
+    } @else {
+
+        <p>
+
+            No existen errores registrados.
+
+        </p>
+
+    }
+
+</app-app-dialog>
