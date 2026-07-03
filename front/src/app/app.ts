@@ -9,11 +9,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { AuthService } from './services/auth.service';
 import { environment } from '../environments/environment';
+import {
+  AppToast,
+  AppConfirmDialog,
+  AppLoader
+} from 'rassini-ui';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, MatToolbarModule, MatIconModule, MatButtonModule, MatSidenavModule, MatListModule],
+  imports: [CommonModule, RouterOutlet, RouterModule, MatToolbarModule, MatIconModule, MatButtonModule, MatSidenavModule, MatListModule, AppToast, AppConfirmDialog,AppLoader],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -47,7 +52,9 @@ export class App {
 
 
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService) {
+    console.log('APP ROOT');
+  }
 
   logout() {
     this.authService.logout();

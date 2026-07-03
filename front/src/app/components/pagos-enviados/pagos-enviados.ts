@@ -102,7 +102,7 @@ export class PagosEnviadosComponent implements OnInit {
           descripcion: item.referencia || '',
           archivo: item.nombreArchivo || '',
           archivo_envio: item.nombreArchivoEnvio || '',
-          estatus: 'Enviado',
+          estatus: item.estatus || '',
           tipo: item.tipoPago || ''
         }));
         this.totalElements = data.totalElements;

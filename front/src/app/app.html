@@ -36,6 +36,11 @@
           <mat-icon matListItemIcon>history</mat-icon>
           <span matListItemTitle>Pagos Enviados</span>
         </a>
+        <a
+          mat-list-item routerLink="/pagos-errores" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>error_outline</mat-icon>
+          <span matListItemTitle>Errores de Pagos</span>
+        </a>
       </mat-nav-list>
     </mat-sidenav>
 
@@ -52,3 +57,14 @@
 <ng-container *ngIf="!authService.isLoggedIn()">
   <router-outlet></router-outlet>
 </ng-container>
+
+
+
+
+
+<app-app-loader></app-app-loader>
+
+<app-app-toast></app-app-toast>
+
+<app-app-confirm-dialog></app-app-confirm-dialog>
+
