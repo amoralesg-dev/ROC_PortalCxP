@@ -43,10 +43,13 @@
 
                 <p-button
                     icon="pi pi-eye"
-                    severity="info"
+                    severity="primary"
                     [rounded]="true"
-                    (onClick)="verErrores(row)">
+                    (onClick)="verErrores(row)"
+                    [pTooltip]="obtenerErroresTooltip(row)"
+                    tooltipPosition="left">
                 </p-button>
+
 
                 <p-button
                     icon="pi pi-times"

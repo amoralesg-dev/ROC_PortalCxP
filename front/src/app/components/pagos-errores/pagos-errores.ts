@@ -9,16 +9,14 @@ import { ChangeDetectorRef } from '@angular/core';
 import { ERROR_MESSAGES } from '../../constants/error-messages';
 import { PAGOS_ERRORES_COLUMNS } from '../../constants/pagos-errores-columns';
 import { ConfirmationService } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
 
 import {
   PageHeaderComponent,
   PageToolbarComponent,
   PageContentComponent,
   DataTable,
-  DataTableColumn,
-  AppConfirmDialog,
   AppDialog,
-  Dialog,
   Toast
 } from 'rassini-ui';
 
@@ -31,8 +29,8 @@ import {
     PageContentComponent,
     DataTable,
     AppDialog,
-    AppConfirmDialog,
-    ButtonModule
+    ButtonModule,
+    TooltipModule
   ],
   templateUrl: './pagos-errores.html',
   styleUrl: './pagos-errores.scss'
@@ -42,12 +40,7 @@ export class PagosErroresComponent {
     
     ngOnInit(): void {
 
-        
- console.log('TOAST', this.toast);
-
-    console.log('CONFIRMATION', this.confirmationService);
-
-            this.cargarErrores();
+        this.cargarErrores();
 
     }
 
@@ -55,7 +48,6 @@ export class PagosErroresComponent {
     constructor(private pagoService: PagoService,
                 private cdr: ChangeDetectorRef,
                 private readonly confirmationService: ConfirmationService,
-                private readonly dialog: Dialog,
                 private readonly toast: Toast) 
     {
     }
@@ -66,15 +58,15 @@ export class PagosErroresComponent {
 
     erroresDetalle: string[] = [];
 
-    errores: any[] = [];
+    errores: PagoDto[] = [];
 
-    selectedRows: any[] = [];
+    selectedRows: PagoDto[] = [];
 
-    onSelectionChange(rows: any[]): void {
+    onSelectionChange(rows: PagoDto[]): void {
         this.selectedRows = rows;
     }
 
-    verErrores(row: any): void {
+    verErrores(row: PagoDto): void {
 
         this.erroresDetalle =
             row.mensaje
@@ -95,13 +87,13 @@ export class PagosErroresComponent {
 
     }
 
-    rechazarRegistro(row: any): void {
+    rechazarRegistro(row: PagoDto): void {
 
         this.confirmationService.confirm({
 
             header: 'Rechazar Registro',
 
-            message: `¿Deseas rechazar el registro ${row.id}?`,
+            message: `¿Deseas rechazar todos los registros del archivo ${row.nombreArchivo}?`,
 
             acceptLabel: 'Rechazar',
 
@@ -153,6 +145,14 @@ export class PagosErroresComponent {
             (row: any) => row.id
         );
 
+        const archivos = [
+            ...new Set(
+                this.selectedRows.map(
+                    row => row.nombreArchivo
+                )
+            )
+        ];
+
         if (!ids.length) {
             return;
         }
@@ -161,7 +161,7 @@ export class PagosErroresComponent {
 
             header: 'Rechazar Registros',
 
-            message: `¿Deseas rechazar ${ids.length} registro(s)?`,
+            message: `¿Deseas rechazar todos los registros de ${archivos.length} archivo(s)?`,
 
             acceptLabel: 'Rechazar',
 
@@ -221,7 +221,7 @@ export class PagosErroresComponent {
 
                     this.cdr.detectChanges();
 
-                    console.log(data);
+             
 
                 },
 
@@ -235,6 +235,24 @@ export class PagosErroresComponent {
                 }
 
             });
+
+    }
+    obtenerErroresTooltip(row: any): string {
+
+        if (!row.mensaje) {
+            return 'Sin errores';
+        }
+
+        return row.mensaje
+            .split('|')
+            .map((error: string) => {
+
+                const codigo = error.trim();
+
+                return `${codigo} - ${this.obtenerDescripcionError(codigo)}`;
+
+            })
+            .join('\n');
 
     }
 
