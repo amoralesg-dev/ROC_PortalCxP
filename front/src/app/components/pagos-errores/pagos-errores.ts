@@ -10,6 +10,7 @@ import { ERROR_MESSAGES } from '../../constants/error-messages';
 import { PAGOS_ERRORES_COLUMNS } from '../../constants/pagos-errores-columns';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
+import { TablePageEvent } from 'primeng/table';
 
 import {
   PageHeaderComponent,
@@ -271,6 +272,21 @@ export class PagosErroresComponent {
             .join('\n');
 
     }
+
+    onPage(event: TablePageEvent): void {
+
+        this.pageIndex = Math.floor(
+            (event.first ?? 0) /
+            (event.rows ?? this.pageSize)
+        );
+
+        this.pageSize =
+            event.rows ?? this.pageSize;
+
+        this.cargarErrores();
+
+    }
+
 
     
     
