@@ -42,6 +42,11 @@ export const PAGOS_ERRORES_COLUMNS: DataTableColumn[] = [
         sortable: true
     },
     {
+        field: 'errores',
+        header: 'Errores',
+        sortable: false
+    },
+    {
         field: 'actions',
         header: 'Acciones',
         type: 'actions'

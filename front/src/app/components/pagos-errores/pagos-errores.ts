@@ -37,6 +37,10 @@ import {
 })
 export class PagosErroresComponent {
 
+    pageIndex = 0;
+    pageSize = 10;
+    totalElements = 0;
+
     
     ngOnInit(): void {
 
@@ -212,16 +216,33 @@ export class PagosErroresComponent {
     cargarErrores(): void {
 
         this.pagoService
-            .getPagosErroresFiltro()
+            .getPagosErroresFiltro(undefined,undefined,this.pageIndex,this.pageSize)
             .subscribe({
 
                 next: (data: Page<PagoDto>) => {
-                    
-                    this.errores = data.content;
+                    this.totalElements = data.totalElements;
+
+                    this.errores = data.content.map(item => ({
+
+                        ...item,
+
+                        errores: item.mensaje
+                            ? (() => {
+
+                                const errores = item.mensaje
+                                    .split('|')
+                                    .map((e: string) => e.trim());
+
+                                return errores.length > 2
+                                    ? `${errores.slice(0, 2).join(', ')}...`
+                                    : errores.join(', ');
+
+                            })()
+                            : ''
+
+                    }));
 
                     this.cdr.detectChanges();
-
-             
 
                 },
 
@@ -237,6 +258,7 @@ export class PagosErroresComponent {
             });
 
     }
+
     obtenerErroresTooltip(row: any): string {
 
         if (!row.mensaje) {

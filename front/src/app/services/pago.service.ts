@@ -22,6 +22,7 @@ export interface PagoDto {
   tipoPago: string;
   mensaje?: string;
   estatus?: string;
+
 }
 export interface Page<T> {
   content: T[];
@@ -141,6 +142,7 @@ constructor(private http: HttpClient) {}
     }
     return this.http.post(`${this.baseUrl}/pagos/enviar`, {}, { params, responseType: 'text' });
   }
+
   getPagosErroresFiltro(
     codigoProveedor?: string,
     rfcBeneficiario?: string,
@@ -173,6 +175,7 @@ constructor(private http: HttpClient) {}
         }
       );
     }
+
   rechazarPago(id: number): Observable<string> {
   return this.http.put(
       `${this.baseUrl}/pagos/rechazar/${id}`,
