@@ -97,7 +97,7 @@ export class PagosErroresComponent {
 
             header: 'Rechazar Registro',
 
-            message: `¿Deseas rechazar todos los registros del archivo ${row.nombreArchivo}?`,
+            message: '¿Deseas rechazar este registro?',
 
             acceptLabel: 'Rechazar',
 
@@ -149,13 +149,7 @@ export class PagosErroresComponent {
             (row: any) => row.id
         );
 
-        const archivos = [
-            ...new Set(
-                this.selectedRows.map(
-                    row => row.nombreArchivo
-                )
-            )
-        ];
+        
 
         if (!ids.length) {
             return;
@@ -165,7 +159,7 @@ export class PagosErroresComponent {
 
             header: 'Rechazar Registros',
 
-            message: `¿Deseas rechazar todos los registros de ${archivos.length} archivo(s)?`,
+           message: `¿Deseas rechazar ${ids.length} registro(s)?`,
 
             acceptLabel: 'Rechazar',
 

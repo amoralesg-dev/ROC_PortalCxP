@@ -20,8 +20,6 @@
     <app-data-table
         [columns]="columns"
         [data]="errores"
-        [lazy]="true"
-        [totalRecords]="totalElements"
         [rows]="pageSize"
         (rowsSelected)="onSelectionChange($event)"
         [globalFilterFields]="[
