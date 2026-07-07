@@ -20,6 +20,7 @@
     <app-data-table
         [columns]="columns"
         [data]="errores"
+        [rows]="pageSize"
         (rowsSelected)="onSelectionChange($event)"
         [globalFilterFields]="[
             'codigoProveedor',

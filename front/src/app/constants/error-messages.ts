@@ -47,6 +47,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
         ERR042: 'Routing Code intermediario es obligatorio cuando existe cuenta intermediaria',
         ERR043: 'País intermediario es obligatorio cuando existe cuenta intermediaria',
 
-        ERR044: 'Registro duplicado en archivo o base de datos'
+        ERR044: 'Registro duplicado en archivo o base de datos',
+        ERR998: 'Archivo contiene errores en otros registros'    
 
     }
