@@ -25,6 +25,8 @@
         [totalRecords]="totalElements"
         (pageChange)="onPage($event)"
         (rowsSelected)="onSelectionChange($event)"
+        [remoteFilter]="true"
+        (globalFilterChange)="onGlobalFilter($event)">
         [globalFilterFields]="[
             'codigoProveedor',
             'rfcBeneficiario',
