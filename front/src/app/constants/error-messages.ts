@@ -31,8 +31,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
         ERR027: 'No es posible validar supplier porque Empresa viene vacía',
         ERR028: 'No es posible validar supplier porque Cuenta Beneficiario viene vacía',
         ERR029: 'Cuenta Beneficiario debe tener al menos 8 caracteres',
-        ERR030: 'No existe supplier',
-        ERR031: 'Existe más de un supplier',
+        ERR030: 'La cuenta beneficiaria del proveedor, no existe en Integrity.',
+        ERR031: 'Existe más de un supplier para Empresa y Cuenta Beneficiario usando últimos 8 caracteres',
 
         ERR032: 'Supplier Name es obligatorio',
         ERR033: 'Street Name es obligatorio',
@@ -48,6 +48,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
         ERR043: 'País intermediario es obligatorio cuando existe cuenta intermediaria',
 
         ERR044: 'Registro duplicado en archivo o base de datos',
+        ERR045: 'No existe supplier para el código proveedor',
         ERR998: 'Archivo contiene errores en otros registros'    
 
     }

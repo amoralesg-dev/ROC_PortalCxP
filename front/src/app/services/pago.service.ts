@@ -72,6 +72,8 @@ constructor(private http: HttpClient) {}
     if (rfcBeneficiario) {
       params = params.set('rfcBeneficiario', rfcBeneficiario);
     }
+    
+
     if (tipoPago && tipoPago !== 'Todos' && tipoPago !== '') {
       params = params.set('tipoPago', tipoPago);
     }
@@ -144,8 +146,7 @@ constructor(private http: HttpClient) {}
   }
 
   getPagosErroresFiltro(
-    codigoProveedor?: string,
-    rfcBeneficiario?: string,
+    search?: string,
     page: number = 0,
     size: number = 10,
   ): Observable<Page<PagoDto>> {
@@ -154,12 +155,8 @@ constructor(private http: HttpClient) {}
         .set('page', page.toString())
         .set('size', size.toString());
 
-      if (codigoProveedor) {
-        params = params.set('codigoProveedor', codigoProveedor);
-      }
-
-      if (rfcBeneficiario) {
-        params = params.set('rfcBeneficiario', rfcBeneficiario);
+      if (search) {
+        params = params.set('search', search);
       }
 
       const authBu = sessionStorage.getItem('auth_bu');

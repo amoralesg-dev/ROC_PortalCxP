@@ -211,7 +211,7 @@ export class PagosErroresComponent {
     cargarErrores(): void {
 
         this.pagoService
-            .getPagosErroresFiltro(undefined,undefined,this.pageIndex,this.pageSize)
+            .getPagosErroresFiltro(this.search,this.pageIndex,this.pageSize)
             .subscribe({
 
                 next: (data: Page<PagoDto>) => {
@@ -286,10 +286,20 @@ export class PagosErroresComponent {
         this.cargarErrores();
 
     }
+    search = '';
 
+    onGlobalFilter(value: string): void {
 
-    
-    
+        console.log('Filtro remoto:', value);
 
+        this.search = value;
+
+        this.pageIndex = 0;
+
+        console.log('voy a cargar errores');
+
+        this.cargarErrores();
+
+    }
 
 }

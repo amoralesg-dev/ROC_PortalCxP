@@ -5,9 +5,7 @@
 
   <div class="login-header-info">
 
-    <span class="login-title">
-      Portal Cuentas por Pagar
-    </span>
+    
 
     <span class="environment-badge {{ environmentClass }}">
       {{ environmentName }}
@@ -15,7 +13,8 @@
 
   </div>
 
-  <rui-login #ruiLoginHost>
+  <rui-login #ruiLoginHost
+    [applicationName]="'Portal de Cuentas por Pagar'">
   </rui-login>
 
 </div>
