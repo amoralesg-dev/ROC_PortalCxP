@@ -21,6 +21,9 @@
         [columns]="columns"
         [data]="errores"
         [rows]="pageSize"
+        [lazy]="true"
+        [totalRecords]="totalElements"
+        (pageChange)="onPage($event)"
         (rowsSelected)="onSelectionChange($event)"
         [globalFilterFields]="[
             'codigoProveedor',
