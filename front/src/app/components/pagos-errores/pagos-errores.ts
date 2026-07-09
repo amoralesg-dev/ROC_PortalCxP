@@ -11,6 +11,7 @@ import { PAGOS_ERRORES_COLUMNS } from '../../constants/pagos-errores-columns';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TablePageEvent } from 'primeng/table';
+import { TableLazyLoadEvent } from 'primeng/table';
 
 import {
   PageHeaderComponent,
@@ -41,6 +42,8 @@ export class PagosErroresComponent {
     pageIndex = 0;
     pageSize = 10;
     totalElements = 0;
+    sortField = '';
+    sortOrder = 1;
 
     
     ngOnInit(): void {
@@ -211,8 +214,13 @@ export class PagosErroresComponent {
     cargarErrores(): void {
 
         this.pagoService
-            .getPagosErroresFiltro(this.search,this.pageIndex,this.pageSize)
-            .subscribe({
+            .getPagosErroresFiltro(
+                this.search,
+                this.pageIndex,
+                this.pageSize,
+                this.sortField,
+                this.sortOrder === 1 ? 'ASC' : 'DESC'
+            ).subscribe({
 
                 next: (data: Page<PagoDto>) => {
                     this.totalElements = data.totalElements;
@@ -297,6 +305,32 @@ export class PagosErroresComponent {
         this.pageIndex = 0;
 
         console.log('voy a cargar errores');
+
+        this.cargarErrores();
+
+    }
+   onLazyLoad(event: TableLazyLoadEvent): void {
+
+        this.pageIndex = Math.floor(
+            (event.first ?? 0) /
+            (event.rows ?? this.pageSize)
+        );
+
+        this.pageSize =
+            event.rows ?? this.pageSize;
+
+        this.sortField =
+            event.sortField?.toString() ?? '';
+
+        this.sortOrder =
+            event.sortOrder ?? 1;
+
+        console.log(
+            'sortField:',
+            this.sortField,
+            'sortOrder:',
+            this.sortOrder
+        );
 
         this.cargarErrores();
 

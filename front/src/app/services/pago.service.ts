@@ -149,12 +149,22 @@ constructor(private http: HttpClient) {}
     search?: string,
     page: number = 0,
     size: number = 10,
+    sortField?: string,
+    sortOrder?: string
   ): Observable<Page<PagoDto>> {
 
       let params = new HttpParams()
         .set('page', page.toString())
         .set('size', size.toString());
 
+      if (sortField) {
+          params = params.set('sortField', sortField);
+      }
+
+      if (sortOrder) {
+          params = params.set('sortOrder', sortOrder);
+      }
+      
       if (search) {
         params = params.set('search', search);
       }
