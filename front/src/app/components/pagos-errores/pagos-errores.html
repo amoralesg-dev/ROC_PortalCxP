@@ -1,6 +1,7 @@
 <app-page-header
-    title="Errores de Pagos"
-    subtitle="Registros con errores de validación">
+    title="Errores de Pago"
+    subtitle="Consulta y administración de registros"
+    icon="pi pi-exclamation-triangle">
 </app-page-header>
 
 <app-page-toolbar>
@@ -17,16 +18,14 @@
 
 <app-page-content>
 
+    
     <app-data-table
         [columns]="columns"
         [data]="errores"
         [rows]="pageSize"
         [lazy]="true"
         [totalRecords]="totalElements"
-        (pageChange)="onPage($event)"
-        (rowsSelected)="onSelectionChange($event)"
         [remoteFilter]="true"
-        (globalFilterChange)="onGlobalFilter($event)">
         [globalFilterFields]="[
             'codigoProveedor',
             'rfcBeneficiario',
@@ -35,7 +34,13 @@
             'moneda',
             'referencia',
             'archivo'
-        ]">
+        ]"
+        emptyTitle="No existen errores"
+        emptyMessage="No se encontraron registros con los filtros seleccionados"
+        (lazyLoadChange)="onLazyLoad($event)"
+        (rowsSelected)="onSelectionChange($event)"
+        (globalFilterChange)="onGlobalFilter($event)">
+
 
         <ng-template #actions let-row>
 
