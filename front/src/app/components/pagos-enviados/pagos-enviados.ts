@@ -13,6 +13,10 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormsModule } from '@angular/forms';
 import { PagoService, PagoDto, Page, TipoPagoDto, ClasificarPagosRequest, ClasificarPagoItem } from '../../services/pago.service';
+import {
+  TranslatePipe,
+  TranslateService
+} from '@ngx-translate/core';
 
 export interface Pago {
   id: number;
@@ -43,7 +47,8 @@ export interface Pago {
     MatPaginatorModule,
     MatInputModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
+    TranslatePipe
   ],
   templateUrl: './pagos-enviados.html',
   styleUrl: './pagos-enviados.scss',
@@ -51,7 +56,7 @@ export interface Pago {
 export class PagosEnviadosComponent implements OnInit {
   displayedColumns: string[] = ['id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'archivo_envio', 'tipo', 'estatus'];
   tiposDePagoCatalogo: TipoPagoDto[] = [];
-  selectedTipo: string | number = 'Todos';
+  selectedTipo: string | number = '';
 
   codigoProveedorFiltro: string = '';
   rfcBeneficiarioFiltro: string = '';
@@ -67,12 +72,14 @@ export class PagosEnviadosComponent implements OnInit {
   pagosValidados: boolean = false;
 
   constructor(
-    private pagoService: PagoService,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private readonly pagoService: PagoService,
+    private readonly snackBar: MatSnackBar,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly translate: TranslateService
   ) {}
 
   ngOnInit() {
+    this.selectedTipo = this.translate.instant('sentpage.all');
     this.cargarCatalogos();
     this.cargarPagos();
     this.validarPagosStatus();
@@ -115,7 +122,10 @@ export class PagosEnviadosComponent implements OnInit {
   }
 
   aplicarFiltroTipo() {
-    if (this.selectedTipo === 'Todos') {
+    if (
+    this.selectedTipo ===
+    this.translate.instant('sentpage.all')
+  ) {
       this.dataSource.data = [...this.originalData];
     } else {
       this.dataSource.data = this.originalData.filter(p => p.tipo === this.selectedTipo);
@@ -136,7 +146,7 @@ export class PagosEnviadosComponent implements OnInit {
   limpiarFiltros() {
     this.codigoProveedorFiltro = '';
     this.rfcBeneficiarioFiltro = '';
-    this.selectedTipo = 'Todos';
+    this.selectedTipo = this.translate.instant('sentpage.all');
     this.pageIndex = 0;
     this.cargarPagos();
   }
@@ -158,7 +168,10 @@ export class PagosEnviadosComponent implements OnInit {
   guardar() {
     const items: ClasificarPagoItem[] = this.selection.selected.map(p => ({
       id: p.id,
-      dealType: this.selectedTipo !== 'Todos' ? (this.selectedTipo as string) : p.tipo,
+      dealType:
+            this.selectedTipo !== this.translate.instant('sentpage.all')
+                ? (this.selectedTipo as string)
+                : p.tipo,
       decisionDuplicado: (p as any).decisionDuplicado
     }));
 
@@ -167,13 +180,21 @@ export class PagosEnviadosComponent implements OnInit {
     this.pagoService.clasificarPagos(request).subscribe({
       next: (response) => {
         console.log('Clasificación guardada con éxito:', response);
-        this.snackBar.open('Clasificación guardada con éxito', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(
+            this.translate.instant(
+                'sentpage.saveSuccess'
+            ),
+            this.translate.instant(
+                'sentpage.close'
+            ),
+            {
+                duration: 3000,
+                panelClass: ['success-snackbar']
+            }
+        );
 
         this.selection.clear();
-        this.selectedTipo = 'Todos';
+        this.selectedTipo = this.translate.instant('sentpage.all');
         this.pagosValidados = false;
         this.validarPagosStatus();
         this.cargarPagos();
@@ -181,11 +202,21 @@ export class PagosEnviadosComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al clasificar los pagos:', error);
-        const errorMessage = error.error?.message || 'Ocurrió un error al clasificar los pagos.';
-        this.snackBar.open(errorMessage, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        const errorMessage =
+          error.error?.message ||
+          this.translate.instant(
+              'sentpage.saveError'
+          );
+        this.snackBar.open(
+            errorMessage,
+            this.translate.instant(
+                'sentpage.close'
+            ),
+            {
+                duration: 5000,
+                panelClass: ['error-snackbar']
+            }
+        );
       }
     });
   }
@@ -194,21 +225,40 @@ export class PagosEnviadosComponent implements OnInit {
     this.pagoService.enviarPagos().subscribe({
       next: (response) => {
         console.log('Envío de pagos exitoso:', response);
-        this.snackBar.open('Envío de pagos exitoso', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(
+            this.translate.instant(
+                'sentpage.sendSuccess'
+            ),
+            this.translate.instant(
+                'sentpage.close'
+            ),
+            {
+                duration: 3000,
+                panelClass: ['success-snackbar']
+            }
+        );
         this.selection.clear();
+        this.selectedTipo = this.translate.instant('sentpage.all');
         this.pagosValidados = false;
         this.cargarPagos();
       },
       error: (error) => {
         console.error('Error al enviar los pagos:', error);
-        const errorMessage = error.error?.message || 'Ocurrió un error al enviar los pagos.';
-        this.snackBar.open(errorMessage, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        const errorMessage =
+          error.error?.message ||
+          this.translate.instant(
+              'sentpage.sendError'
+          );
+        this.snackBar.open(
+            errorMessage,
+            this.translate.instant(
+                'sentpage.close'
+            ),
+            {
+                duration: 5000,
+                panelClass: ['error-snackbar']
+            }
+        );
       }
     });
   }
@@ -228,11 +278,21 @@ export class PagosEnviadosComponent implements OnInit {
       error: (error) => {
         console.error('Error al validar el estado de los pagos silenciosamente:', error);
         this.pagosValidados = false;
-        const errorMessage = error.error?.message || 'Error en la validación.';
-        this.snackBar.open(errorMessage, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        const errorMessage =
+          error.error?.message ||
+          this.translate.instant(
+              'sentpage.validationError'
+          );
+        this.snackBar.open(
+          errorMessage,
+          this.translate.instant(
+              'sentpage.close'
+          ),
+          {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+          }
+      );
         this.cdr.detectChanges();
       }
     });
@@ -245,12 +305,15 @@ export class PagosEnviadosComponent implements OnInit {
 
   aplicarMasa() {
     this.selection.selected.forEach(p => {
-      if (this.selectedTipo !== 'Todos') {
+      if (
+          this.selectedTipo !==
+          this.translate.instant('sentpage.all')
+      ) {
         p.tipo = this.selectedTipo as string;
       }
       // p.estatus = 'Aplicado';
     });
     this.selection.clear();
-    this.selectedTipo = 'Todos';
+    this.selectedTipo = this.translate.instant('sentpage.all');
   }
 }

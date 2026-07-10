@@ -1,24 +1,21 @@
 <app-page-header
-    title="Errores de Pago"
-    subtitle="Consulta y administración de registros"
+    [title]="'errorpage.title' | translate"
+    [subtitle]="'errorpage.subtitle' | translate"
     icon="pi pi-exclamation-triangle">
 </app-page-header>
 
 <app-page-toolbar>
     <p-button
-        label="Rechazar Seleccionados"
+        [label]="'errorpage.rejectSelected' | translate"
         icon="pi pi-times"
         severity="danger"
         [disabled]="!selectedRows.length"
         (onClick)="rechazarSeleccionados()">
     </p-button>
-
-
 </app-page-toolbar>
 
 <app-page-content>
 
-    
     <app-data-table
         [columns]="columns"
         [data]="errores"
@@ -35,12 +32,12 @@
             'referencia',
             'archivo'
         ]"
-        emptyTitle="No existen errores"
-        emptyMessage="No se encontraron registros con los filtros seleccionados"
+        [searchPlaceholder]="'common.search' | translate"
+        [emptyTitle]="'errorpage.emptyTitle' | translate"
+        [emptySubtitle]="'errorpage.emptySubtitle' | translate"
         (lazyLoadChange)="onLazyLoad($event)"
         (rowsSelected)="onSelectionChange($event)"
         (globalFilterChange)="onGlobalFilter($event)">
-
 
         <ng-template #actions let-row>
 
@@ -61,7 +58,6 @@
                     tooltipPosition="left">
                 </p-button>
 
-
                 <p-button
                     icon="pi pi-times"
                     severity="danger"
@@ -79,7 +75,7 @@
 
 <app-app-dialog
     [(visible)]="mostrarErroresDialog"
-    title="Detalle de errores"
+    [title]="'errorpage.errorDetailTitle' | translate"
     width="40rem">
 
     @if (erroresDetalle.length) {
@@ -111,7 +107,7 @@
 
         <p>
 
-            No existen errores registrados.
+            {{ 'errorpage.noErrorsRegistered' | translate }}
 
         </p>
 

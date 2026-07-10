@@ -7,11 +7,15 @@ import {
 } from '../../services/pago.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { ERROR_MESSAGES } from '../../constants/error-messages';
-import { PAGOS_ERRORES_COLUMNS } from '../../constants/pagos-errores-columns';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TablePageEvent } from 'primeng/table';
 import { TableLazyLoadEvent } from 'primeng/table';
+
+import {
+  TranslatePipe,
+  TranslateService
+} from '@ngx-translate/core';
 
 import {
   PageHeaderComponent,
@@ -19,7 +23,8 @@ import {
   PageContentComponent,
   DataTable,
   AppDialog,
-  Toast
+  Toast,
+  DataTableColumn
 } from 'rassini-ui';
 
 @Component({
@@ -32,7 +37,8 @@ import {
     DataTable,
     AppDialog,
     ButtonModule,
-    TooltipModule
+    TooltipModule,
+    TranslatePipe
   ],
   templateUrl: './pagos-errores.html',
   styleUrl: './pagos-errores.scss'
@@ -44,23 +50,33 @@ export class PagosErroresComponent {
     totalElements = 0;
     sortField = '';
     sortOrder = 1;
+    
 
     
     ngOnInit(): void {
+
+        
+
+        this.inicializarColumnas();
+
+        this.loadErrorsMessages();
 
         this.cargarErrores();
 
     }
 
 
-    constructor(private pagoService: PagoService,
-                private cdr: ChangeDetectorRef,
+
+    constructor(private readonly pagoService: PagoService,
+                private readonly cdr: ChangeDetectorRef,
                 private readonly confirmationService: ConfirmationService,
-                private readonly toast: Toast) 
+                private readonly toast: Toast,
+                private readonly translate: TranslateService) 
     {
     }
 
-    readonly columns = PAGOS_ERRORES_COLUMNS;
+    columns: DataTableColumn[] = [];
+
 
     mostrarErroresDialog = false;
 
@@ -69,6 +85,8 @@ export class PagosErroresComponent {
     errores: PagoDto[] = [];
 
     selectedRows: PagoDto[] = [];
+
+    errorMessagesTraducidos: Record<string, string> = {};
 
     onSelectionChange(rows: PagoDto[]): void {
         this.selectedRows = rows;
@@ -88,24 +106,34 @@ export class PagosErroresComponent {
 
     readonly mensajesError = ERROR_MESSAGES;
 
+    
     obtenerDescripcionError(codigo: string): string {
 
-        return this.mensajesError[codigo] ??
-            codigo;
+        return this.errorMessagesTraducidos[codigo]
+            ?? codigo;
 
     }
+
 
     rechazarRegistro(row: PagoDto): void {
 
         this.confirmationService.confirm({
 
-            header: 'Rechazar Registro',
+            header: this.translate.instant(
+                'errorpage.confirmRejectTitle'
+            ),
 
-            message: '¿Deseas rechazar este registro?',
+            message: this.translate.instant(
+                'errorpage.confirmRejectMessage'
+            ),
 
-            acceptLabel: 'Rechazar',
+            acceptLabel: this.translate.instant(
+                'errorpage.reject'
+            ),
 
-            rejectLabel: 'Cancelar',
+            rejectLabel: this.translate.instant(
+                'errorpage.cancel'
+            ),
 
             acceptButtonProps: {
                 severity: 'danger'
@@ -124,7 +152,9 @@ export class PagosErroresComponent {
                         next: () => {
 
                             this.toast.success(
-                                'Registro rechazado correctamente'
+                                this.translate.instant(
+                                    'errorpage.successReject'
+                                )
                             );
 
                             this.cargarErrores();
@@ -134,7 +164,9 @@ export class PagosErroresComponent {
                         error: () => {
 
                             this.toast.error(
-                                'Error al rechazar registro'
+                                this.translate.instant(
+                                    'errorpage.errorReject'
+                                )
                             );
 
                         }
@@ -161,13 +193,24 @@ export class PagosErroresComponent {
 
         this.confirmationService.confirm({
 
-            header: 'Rechazar Registros',
+            header: this.translate.instant(
+                'errorpage.confirmRejectMultipleTitle'
+            ),
 
-           message: `¿Deseas rechazar ${ids.length} registro(s)?`,
+            message: this.translate.instant(
+                'errorpage.confirmRejectMultipleMessage',
+                {
+                    count: ids.length
+                }
+            ),
 
-            acceptLabel: 'Rechazar',
+            acceptLabel: this.translate.instant(
+                'errorpage.reject'
+            ),
 
-            rejectLabel: 'Cancelar',
+            rejectLabel: this.translate.instant(
+                'errorpage.cancel'
+            ),
 
             acceptButtonProps: {
                 severity: 'danger'
@@ -186,7 +229,9 @@ export class PagosErroresComponent {
                         next: () => {
 
                             this.toast.success(
-                                'Registros rechazados correctamente'
+                                this.translate.instant(
+                                    'errorpage.successRejectMultiple'
+                                )
                             );
 
                             this.selectedRows = [];
@@ -198,7 +243,9 @@ export class PagosErroresComponent {
                         error: () => {
 
                             this.toast.error(
-                                'Error al rechazar registros'
+                                this.translate.instant(
+                                    'errorpage.errorRejectMultiple'
+                                )
                             );
 
                         }
@@ -252,7 +299,9 @@ export class PagosErroresComponent {
                 error: (error) => {
 
                     console.error(
-                        'Error al cargar errores',
+                        this.translate.instant(
+                            'errorpage.errorLoading'
+                        ),
                         error
                     );
 
@@ -265,7 +314,9 @@ export class PagosErroresComponent {
     obtenerErroresTooltip(row: any): string {
 
         if (!row.mensaje) {
-            return 'Sin errores';
+            return this.translate.instant(
+                'errorpage.noErrorsTooltip'
+            );
         }
 
         return row.mensaje
@@ -333,6 +384,89 @@ export class PagosErroresComponent {
         );
 
         this.cargarErrores();
+
+    }
+
+    private inicializarColumnas(): void {
+
+        this.translate
+            .get('errorpage.tableColumns')
+            .subscribe(columns => {
+
+                this.columns = [
+                    {
+                        field: 'id',
+                        header: columns.folio,
+                        sortable: true
+                    },
+                    {
+                        field: 'codigoProveedor',
+                        header: columns.provider,
+                        sortable: true
+                    },
+                    {
+                        field: 'rfcBeneficiario',
+                        header: columns.rfc,
+                        sortable: true
+                    },
+                    {
+                        field: 'nombreBeneficiario',
+                        header: columns.name,
+                        sortable: true
+                    },
+                    {
+                        field: 'monto',
+                        header: columns.amount,
+                        sortable: true
+                    },
+                    {
+                        field: 'moneda',
+                        header: columns.currency,
+                        sortable: true
+                    },
+                    {
+                        field: 'referencia',
+                        header: columns.reference,
+                        sortable: true
+                    },
+                    {
+                        field: 'nombreArchivo',
+                        header: columns.file,
+                        sortable: true
+                    },
+                    {
+                        field: 'errores',
+                        header: columns.errors,
+                        sortable: false
+                    },
+                    {
+                        field: 'actions',
+                        header: columns.actions,
+                        type: 'actions'
+                    }
+                ];
+
+                console.log('COLUMNAS TRADUCIDAS', this.columns);
+
+            });
+
+    }
+
+    loadErrorsMessages(): void {
+        
+        this.translate
+                .get('errorMessages')
+                .subscribe(messages => {
+
+                    this.errorMessagesTraducidos = messages;
+
+                    console.log(
+                        'ERROR_MESSAGES',
+                        this.errorMessagesTraducidos
+                    );
+
+                });
+
 
     }
 
