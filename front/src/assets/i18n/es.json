@@ -169,5 +169,11 @@
 
         "invalidCredentials": "Usuario o contraseña inválidos",
         "loginSuccess": "Login exitoso"
+    },
+    "menu": {
+        "financeArea": "Área de Finanzas",
+        "pendingPayments": "Pagos Pendientes de Clasificación",
+        "sentPayments": "Pagos Enviados",
+        "paymentErrors": "Errores de Pagos"
     }
 }

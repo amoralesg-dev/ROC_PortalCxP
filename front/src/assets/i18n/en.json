@@ -137,5 +137,11 @@
 
         "invalidCredentials": "Invalid username or password",
         "loginSuccess": "Login successful"
+    },
+    "menu": {
+        "financeArea": "Finance Area",
+        "pendingPayments": "Pending Payments Classification",
+        "sentPayments": "Sent Payments",
+        "paymentErrors": "Payment Errors"
     }
 }
