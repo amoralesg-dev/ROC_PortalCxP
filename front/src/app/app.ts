@@ -10,7 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { AuthService } from './services/auth.service';
 import { environment } from '../environments/environment';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService,TranslatePipe  } from '@ngx-translate/core';
 
 import {
   AppToast,
@@ -32,7 +32,8 @@ import {
     MatListModule,
     AppToast,
     AppConfirmDialog,
-    AppLoader
+    AppLoader,
+    TranslatePipe 
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
