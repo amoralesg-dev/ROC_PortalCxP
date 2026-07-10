@@ -53,7 +53,7 @@ export interface ClasificarPagosRequest {
 export class PagoService {
   private baseUrl = environment.baseUrl;
 
-constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
   getCatalogosTipoPago(): Observable<TipoPagoDto[]> {
     return this.http.get<TipoPagoDto[]>(`${this.baseUrl}/catalogos/tipo-pago`);
   }
@@ -72,7 +72,7 @@ constructor(private http: HttpClient) {}
     if (rfcBeneficiario) {
       params = params.set('rfcBeneficiario', rfcBeneficiario);
     }
-    
+
 
     if (tipoPago && tipoPago !== 'Todos' && tipoPago !== '') {
       params = params.set('tipoPago', tipoPago);
@@ -89,33 +89,42 @@ constructor(private http: HttpClient) {}
     });
   }
   getPagosEnviadosFiltro(
-    codigoProveedor?: string,
-    rfcBeneficiario?: string,
-    tipoPago?: string,
-    estatus?: string,
+    search?: string,
     page: number = 0,
     size: number = 10,
+    sortField?: string,
+    sortOrder?: string
   ): Observable<Page<PagoDto>> {
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
-    if (codigoProveedor) {
-      params = params.set('codigoProveedor', codigoProveedor);
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (search) {
+      params = params.set('search', search);
     }
-    if (rfcBeneficiario) {
-      params = params.set('rfcBeneficiario', rfcBeneficiario);
+
+    if (sortField) {
+      params = params.set('sortField', sortField);
     }
-    if (tipoPago && tipoPago !== 'Todos' && tipoPago !== '') {
-      params = params.set('tipoPago', tipoPago);
+
+    if (sortOrder) {
+      params = params.set('sortOrder', sortOrder);
     }
-    if (estatus && estatus !== 'Todos' && estatus !== '') {
-      params = params.set('estatus', estatus);
-    }
+
     const authBu = sessionStorage.getItem('auth_bu');
+
     if (authBu) {
       params = params.set('bu', authBu);
     }
-    return this.http.get<Page<PagoDto>>(`${this.baseUrl}/pagos/enviados/filtro/paginado`, {
-      params,
-    });
+
+    return this.http.get<Page<PagoDto>>(
+      `${this.baseUrl}/pagos/enviados/filtro/paginado`,
+      {
+        params
+      }
+    );
+
   }
   clasificarPagos(request: ClasificarPagosRequest): Observable<string> {
     let params = new HttpParams();
@@ -153,38 +162,38 @@ constructor(private http: HttpClient) {}
     sortOrder?: string
   ): Observable<Page<PagoDto>> {
 
-      let params = new HttpParams()
-        .set('page', page.toString())
-        .set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
 
-      if (sortField) {
-          params = params.set('sortField', sortField);
-      }
-
-      if (sortOrder) {
-          params = params.set('sortOrder', sortOrder);
-      }
-      
-      if (search) {
-        params = params.set('search', search);
-      }
-
-      const authBu = sessionStorage.getItem('auth_bu');
-
-      if (authBu) {
-        params = params.set('bu', authBu);
-      }
-
-      return this.http.get<Page<PagoDto>>(
-        `${this.baseUrl}/pagos/errores/filtro/paginado`,
-        {
-          params,
-        }
-      );
+    if (sortField) {
+      params = params.set('sortField', sortField);
     }
 
+    if (sortOrder) {
+      params = params.set('sortOrder', sortOrder);
+    }
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authBu = sessionStorage.getItem('auth_bu');
+
+    if (authBu) {
+      params = params.set('bu', authBu);
+    }
+
+    return this.http.get<Page<PagoDto>>(
+      `${this.baseUrl}/pagos/errores/filtro/paginado`,
+      {
+        params,
+      }
+    );
+  }
+
   rechazarPago(id: number): Observable<string> {
-  return this.http.put(
+    return this.http.put(
       `${this.baseUrl}/pagos/rechazar/${id}`,
       {},
       {

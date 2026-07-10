@@ -146,7 +146,28 @@
         "sendError": "Ocurrió un error al enviar los pagos.",
 
         "validationError": "Error en la validación.",
+        "emptyTitle": "No existen pagos enviados",
+        "emptySubtitle": "No se encontraron pagos enviados con los filtros seleccionados",
 
         "close": "Cerrar"
+    },
+    "login": {
+        "title": "Bienvenido a Rassini",
+        "subtitle": "Inicia sesión para continuar",
+
+        "applicationName": "Portal de Cuentas por Pagar",
+
+        "usernameLabel": "Usuario",
+        "usernamePlaceholder": "Usuario",
+
+        "passwordLabel": "Contraseña",
+        "passwordPlaceholder": "Contraseña",
+
+        "loginButtonText": "Iniciar Sesión",
+
+        "loadingText": "Iniciando sesión...",
+
+        "invalidCredentials": "Usuario o contraseña inválidos",
+        "loginSuccess": "Login exitoso"
     }
 }

@@ -81,7 +81,10 @@ export class App {
       'en'
     ];
 
-    const language ='en';
+    const language =
+      supportedLanguages.includes(browserLang)
+        ? browserLang
+        : 'es';
 
     console.log(
       'Idioma navegador:',

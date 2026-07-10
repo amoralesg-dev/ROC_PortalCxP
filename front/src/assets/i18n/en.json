@@ -95,7 +95,7 @@
         "clear": "Clear",
         "folio": "FOLIO",
         "supplier": "SUPPLIER",
-        "rfc": "RFC",
+        "rfc": "TAX ID",
         "name": "NAME",
         "totalAmount": "TOTAL AMOUNT",
         "currency": "CURRENCY",
@@ -115,6 +115,27 @@
         "sendSuccess": "Payments sent successfully",
         "sendError": "An error occurred while sending payments.",
         "validationError": "Validation error.",
-        "close": "Close"
+        "close": "Close",
+        "emptyTitle": "No sent payments exist",
+        "emptySubtitle": "No sent payments were found with the selected filters"
+    },
+    "login": {
+        "title": "Welcome to Rassini",
+        "subtitle": "Sign in to continue",
+
+        "applicationName": "Accounts Payable Portal",
+
+        "usernameLabel": "Username",
+        "usernamePlaceholder": "Username",
+
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password",
+
+        "loginButtonText": "Sign In",
+
+        "loadingText": "Signing in...",
+
+        "invalidCredentials": "Invalid username or password",
+        "loginSuccess": "Login successful"
     }
 }

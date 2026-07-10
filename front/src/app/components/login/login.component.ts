@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
 import { EnvironmentBadgeService } from '../../services/environment-badge.service';
+import { TranslatePipe,TranslateService  } from '@ngx-translate/core';
 
 
 import {
@@ -45,7 +46,8 @@ interface LoginData {
   standalone: true,
   imports: [
     RassiniLogin,
-    AppToast
+    AppToast,
+    TranslatePipe
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -71,7 +73,8 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly toast: Toast,
-    private readonly environmentBadgeService: EnvironmentBadgeService
+    private readonly environmentBadgeService: EnvironmentBadgeService,
+    private readonly translate: TranslateService
   ) {}
 
   ngAfterViewInit(): void {
@@ -98,7 +101,10 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
         .trim()
         .toLowerCase();
 
-      if (!buttonText.includes('iniciar sesión')) {
+      if (
+        !buttonText.includes('iniciar sesión') &&
+        !buttonText.includes('sign in')
+) {
         return;
       }
 
@@ -136,15 +142,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    if (!loginData.username) {
-      this.toast.warn('El usuario es requerido');
-      return;
-    }
 
-    if (!loginData.password) {
-      this.toast.warn('La contraseña es requerida');
-      return;
-    }
 
     this.loginInProgress = true;
 
@@ -153,7 +151,11 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
       password: loginData.password
     }).subscribe({
       next: () => {
-        this.toast.success('Login exitoso');
+        this.toast.success(
+            this.translate.instant(
+                'login.loginSuccess'
+            )
+        );
 
         this.router.navigate([
           '/pagos-pendientes'
@@ -189,21 +191,34 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   }
 
   private getErrorMessage(error: any): string {
-    const backendMessage = error?.error?.message;
 
-    if (backendMessage) {
-      return backendMessage;
-    }
+      const backendMessage =
+          error?.error?.message;
 
-    if (error?.status === 400) {
-      return 'Credenciales inválidas';
-    }
+      if (backendMessage) {
+          return backendMessage;
+      }
 
-    if (error?.status === 0) {
-      return 'No se pudo conectar con el servidor';
-    }
+      if (error?.status === 400) {
 
-    return 'Error al iniciar sesión';
+          return this.translate.instant(
+              'login.invalidCredentials'
+          );
+
+      }
+
+      if (error?.status === 0) {
+
+          return this.translate.instant(
+              'login.serverUnavailable'
+          );
+
+      }
+
+      return this.translate.instant(
+          'login.loginError'
+      );
+
   }
 
 }
