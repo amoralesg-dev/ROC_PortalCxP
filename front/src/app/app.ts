@@ -1,4 +1,3 @@
-
 import { Component, signal } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,8 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+
 import { AuthService } from './services/auth.service';
 import { environment } from '../environments/environment';
+
+import { TranslateService } from '@ngx-translate/core';
+
 import {
   AppToast,
   AppConfirmDialog,
@@ -18,21 +21,34 @@ import {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, MatToolbarModule, MatIconModule, MatButtonModule, MatSidenavModule, MatListModule, AppToast, AppConfirmDialog,AppLoader],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatListModule,
+    AppToast,
+    AppConfirmDialog,
+    AppLoader
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
+
   protected readonly title = signal('Rassini - Pagos');
-  
-  
-  
-  
-  readonly environmentName = environment.environmentName.toUpperCase();
 
-  readonly isProduction = environment.production;
+  readonly environmentName =
+    environment.environmentName.toUpperCase();
 
-  readonly environmentClass = this.getEnvironmentClass();
+  readonly isProduction =
+    environment.production;
+
+  readonly environmentClass =
+    this.getEnvironmentClass();
 
   private getEnvironmentClass(): string {
 
@@ -48,15 +64,54 @@ export class App {
 
   }
 
+  constructor(
+    public authService: AuthService,
+    private readonly translate: TranslateService
+  ) {
 
-
-
-
-  constructor(public authService: AuthService) {
     console.log('APP ROOT');
+
+    const browserLang =
+      navigator.language
+        .split('-')[0]
+        .toLowerCase();
+
+    const supportedLanguages = [
+      'es',
+      'en'
+    ];
+
+    const language =
+      supportedLanguages.includes(browserLang)
+        ? browserLang
+        : 'es';
+
+    console.log(
+      'Idioma navegador:',
+      navigator.language
+    );
+
+    console.log(
+      'Idioma seleccionado:',
+      language
+    );
+
+    this.translate.use(language).subscribe(() => {
+
+        console.log(
+            'Idioma cargado:',
+            language
+        );
+
+    });
+    this.translate.setFallbackLang('es');
+
   }
 
-  logout() {
+  logout(): void {
+
     this.authService.logout();
+
   }
+
 }

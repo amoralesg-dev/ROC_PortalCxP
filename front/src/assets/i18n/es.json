@@ -1,0 +1,173 @@
+{
+
+  "common": {
+    "search": "Buscar..."
+  },
+  "errorpage": {
+    "title": "Errores de Pago",
+    "subtitle": "Consulta y administración de registros",
+
+    "rejectSelected": "Rechazar Seleccionados",
+
+    "emptyTitle": "No existen errores",
+    "emptySubtitle": "No se encontraron registros con los filtros seleccionados",
+
+    "errorDetailTitle": "Detalle de errores",
+    "noErrorsRegistered": "No existen errores registrados.",
+
+    "confirmRejectTitle": "Rechazar Registro",
+    "confirmRejectMessage": "¿Deseas rechazar este registro?",
+
+    "confirmRejectMultipleTitle": "Rechazar Registros",
+    "confirmRejectMultipleMessage": "¿Deseas rechazar {{count}} registro(s)?",
+
+    "reject": "Rechazar",
+    "cancel": "Cancelar",
+
+    "successReject": "Registro rechazado correctamente",
+    "successRejectMultiple": "Registros rechazados correctamente",
+
+    "errorReject": "Error al rechazar registro",
+    "errorRejectMultiple": "Error al rechazar registros",
+
+    "errorLoading": "Error al cargar errores",
+
+    "noErrorsTooltip": "Sin errores",
+
+    "tableColumns": {
+      "folio": "Folio",
+      "provider": "Proveedor",
+      "rfc": "RFC",
+      "name": "Nombre",
+      "amount": "Monto",
+      "currency": "Moneda",
+      "reference": "Referencia",
+      "file": "Archivo",
+      "errors": "Errores",
+      "actions": "Acciones"
+    }
+  },
+
+  "errorMessages": {
+        "ERR001": "Empresa es obligatoria",
+        "ERR002": "Cuenta ordenante es obligatoria",
+        "ERR003": "Moneda ordenante es obligatoria",
+        "ERR004": "Referencia es obligatoria",
+        "ERR005": "Fecha envío es obligatoria",
+        "ERR006": "Fecha valor es obligatoria",
+        "ERR007": "Monto es obligatorio",
+        "ERR008": "Moneda es obligatoria",
+        "ERR009": "Nombre beneficiario es obligatorio",
+        "ERR010": "Cuenta beneficiario es obligatoria",
+        "ERR011": "Moneda beneficiario es obligatoria",
+        "ERR012": "Nombre archivo es obligatorio",
+
+        "ERR013": "Empresa excede longitud máxima de 10",
+        "ERR014": "Cuenta ordenante excede longitud máxima de 35",
+        "ERR015": "Moneda ordenante excede longitud máxima de 3",
+        "ERR016": "Referencia excede longitud máxima de 255",
+        "ERR017": "Información adicional excede longitud máxima de 2000",
+        "ERR018": "Fecha envío excede longitud máxima de 10",
+        "ERR019": "Fecha valor excede longitud máxima de 10",
+        "ERR020": "Moneda excede longitud máxima de 3",
+        "ERR021": "Código proveedor excede longitud máxima de 10",
+        "ERR022": "Nombre beneficiario excede longitud máxima de 35",
+        "ERR023": "RFC beneficiario excede longitud máxima de 35",
+        "ERR024": "Cuenta beneficiario excede longitud máxima de 35",
+        "ERR025": "Moneda beneficiario excede longitud máxima de 3",
+        "ERR026": "Nombre archivo excede longitud máxima de 35",
+
+        "ERR027": "No es posible validar supplier porque Empresa viene vacía",
+        "ERR028": "No es posible validar supplier porque Cuenta Beneficiario viene vacía",
+        "ERR029": "Cuenta Beneficiario debe tener al menos 8 caracteres",
+        "ERR030": "La cuenta beneficiaria del proveedor no existe en Integrity",
+        "ERR031": "Existe más de un supplier para Empresa y Cuenta Beneficiario usando últimos 8 caracteres",
+
+        "ERR032": "Supplier Name es obligatorio",
+        "ERR033": "Street Name es obligatorio",
+        "ERR034": "Street Number es obligatorio",
+        "ERR035": "Zip Code es obligatorio",
+        "ERR036": "City Code es obligatorio",
+        "ERR037": "State Code es obligatorio",
+        "ERR038": "Country Code es obligatorio",
+        "ERR039": "Beneficiary Bank Name es obligatorio",
+        "ERR040": "Bank Country es obligatorio",
+        "ERR041": "Routing Code ABA o SWIFT es obligatorio",
+        "ERR042": "Routing Code intermediario es obligatorio cuando existe cuenta intermediaria",
+        "ERR043": "País intermediario es obligatorio cuando existe cuenta intermediaria",
+
+        "ERR044": "Registro duplicado en archivo o base de datos",
+        "ERR045": "No existe supplier para el código proveedor",
+
+        "ERR998": "Archivo contiene errores en otros registros"
+    },
+    "sentpage": {
+        "title": "Histórico de Pagos Enviados",
+        "subtitle": "Consulta de pagos procesados y enviados",
+
+        "filters": "Filtros",
+
+        "supplierCode": "Código Proveedor",
+        "beneficiaryRfc": "RFC Beneficiario",
+
+        "supplierPlaceholder": "Ej. PRV01",
+        "rfcPlaceholder": "Ej. ABC123456T1",
+
+        "search": "Buscar",
+        "clear": "Limpiar",
+
+        "folio": "FOLIO",
+        "supplier": "PROVEEDOR",
+        "rfc": "RFC",
+        "name": "NOMBRE",
+        "totalAmount": "MONTO TOTAL",
+        "currency": "MONEDA",
+        "description": "DESCRIPCIÓN",
+        "file": "ARCHIVO",
+        "sendFile": "ARCHIVO DE ENVÍO",
+        "paymentType": "TIPO DE PAGO",
+        "status": "ESTATUS",
+
+        "classify": "Clasificar",
+
+        "emptyMessage": "No se encontraron pagos pendientes bajo esta categoría.",
+
+        "selectPage": "Seleccionar página",
+
+        "all": "Todos",
+
+        "catalogError": "Error al cargar catálogos",
+        "loadError": "Error al cargar pagos enviados",
+
+        "saveSuccess": "Clasificación guardada con éxito",
+        "saveError": "Ocurrió un error al clasificar los pagos.",
+
+        "sendSuccess": "Envío de pagos exitoso",
+        "sendError": "Ocurrió un error al enviar los pagos.",
+
+        "validationError": "Error en la validación.",
+        "emptyTitle": "No existen pagos enviados",
+        "emptySubtitle": "No se encontraron pagos enviados con los filtros seleccionados",
+
+        "close": "Cerrar"
+    },
+    "login": {
+        "title": "Bienvenido a Rassini",
+        "subtitle": "Inicia sesión para continuar",
+
+        "applicationName": "Portal de Cuentas por Pagar",
+
+        "usernameLabel": "Usuario",
+        "usernamePlaceholder": "Usuario",
+
+        "passwordLabel": "Contraseña",
+        "passwordPlaceholder": "Contraseña",
+
+        "loginButtonText": "Iniciar Sesión",
+
+        "loadingText": "Iniciando sesión...",
+
+        "invalidCredentials": "Usuario o contraseña inválidos",
+        "loginSuccess": "Login exitoso"
+    }
+}

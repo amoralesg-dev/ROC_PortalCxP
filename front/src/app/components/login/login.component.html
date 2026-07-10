@@ -13,8 +13,23 @@
 
   </div>
 
-  <rui-login #ruiLoginHost
-    [applicationName]="'Portal de Cuentas por Pagar'">
+  <rui-login
+      #ruiLoginHost
+
+      [title]="'login.title' | translate"
+      [subtitle]="'login.subtitle' | translate"
+
+      [applicationName]="'login.applicationName' | translate"
+
+      [usernameLabel]="'login.usernameLabel' | translate"
+      [usernamePlaceholder]="'login.usernamePlaceholder' | translate"
+
+      [passwordLabel]="'login.passwordLabel' | translate"
+      [passwordPlaceholder]="'login.passwordPlaceholder' | translate"
+
+      [loginButtonText]="'login.loginButtonText' | translate"
+
+      [loadingText]="'login.loadingText' | translate">
   </rui-login>
 
 </div>
