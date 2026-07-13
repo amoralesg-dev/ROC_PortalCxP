@@ -1,0 +1,116 @@
+<app-page-header
+    [title]="'errorpage.title' | translate"
+    [subtitle]="'errorpage.subtitle' | translate"
+    icon="pi pi-exclamation-triangle">
+</app-page-header>
+
+<app-page-toolbar>
+    <p-button
+        [label]="'errorpage.rejectSelected' | translate"
+        icon="pi pi-times"
+        severity="danger"
+        [disabled]="!selectedRows.length"
+        (onClick)="rechazarSeleccionados()">
+    </p-button>
+</app-page-toolbar>
+
+<app-page-content>
+
+    <app-data-table
+        [columns]="columns"
+        [data]="errores"
+        [rows]="pageSize"
+        [lazy]="true"
+        [totalRecords]="totalElements"
+        [remoteFilter]="true"
+        [globalFilterFields]="[
+            'codigoProveedor',
+            'rfcBeneficiario',
+            'nombreBeneficiario',
+            'monto',
+            'moneda',
+            'referencia',
+            'archivo'
+        ]"
+        [searchPlaceholder]="'common.search' | translate"
+        [emptyTitle]="'errorpage.emptyTitle' | translate"
+        [emptySubtitle]="'errorpage.emptySubtitle' | translate"
+        (lazyLoadChange)="onLazyLoad($event)"
+        (rowsSelected)="onSelectionChange($event)"
+        (globalFilterChange)="onGlobalFilter($event)">
+
+        <ng-template #actions let-row>
+
+            <div
+                style="
+                    display:flex;
+                    flex-direction:row;
+                    gap:.5rem;
+                    align-items:center;
+                ">
+
+                <p-button
+                    icon="pi pi-eye"
+                    severity="primary"
+                    [rounded]="true"
+                    (onClick)="verErrores(row)"
+                    [pTooltip]="obtenerErroresTooltip(row)"
+                    tooltipPosition="left">
+                </p-button>
+
+                <p-button
+                    icon="pi pi-times"
+                    severity="danger"
+                    [rounded]="true"
+                    (onClick)="rechazarRegistro(row)">
+                </p-button>
+
+            </div>
+
+        </ng-template>
+
+    </app-data-table>
+
+</app-page-content>
+
+<app-app-dialog
+    [(visible)]="mostrarErroresDialog"
+    [title]="'errorpage.errorDetailTitle' | translate"
+    width="40rem">
+
+    @if (erroresDetalle.length) {
+
+        <ul>
+
+            @for (
+                error of erroresDetalle;
+                track error
+            ) {
+
+                <li>
+
+                    <strong>
+                        {{ error }}
+                    </strong>
+
+                    -
+
+                    {{ obtenerDescripcionError(error) }}
+
+                </li>
+
+            }
+
+        </ul>
+
+    } @else {
+
+        <p>
+
+            {{ 'errorpage.noErrorsRegistered' | translate }}
+
+        </p>
+
+    }
+
+</app-app-dialog>
