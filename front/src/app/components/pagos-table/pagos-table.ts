@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef,AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSelectModule, MatSelectChange } from '@angular/material/select';
@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PagoService, PagoDto, Page, TipoPagoDto, ClasificarPagosRequest, ClasificarPagoItem } from '../../services/pago.service';
+import { TranslatePipe,TranslateService} from '@ngx-translate/core';
 
 export interface Pago {
   id: number;
@@ -46,12 +47,13 @@ export interface Pago {
     MatSnackBarModule,
     FormsModule,
     MatTooltipModule,
-    MatMenuModule
+    MatMenuModule,
+    TranslatePipe
   ],
   templateUrl: './pagos-table.html',
   styleUrl: './pagos-table.scss',
 })
-export class PagosTable implements OnInit {
+export class PagosTable implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['select', 'id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'tipo', 'estatus'];
   tiposDePagoCatalogo: TipoPagoDto[] = [];
   selectedTipo: string | number = 'Todos';
@@ -72,21 +74,33 @@ export class PagosTable implements OnInit {
   pagosValidados: boolean = false;
 
   constructor(
-    private pagoService: PagoService,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private readonly pagoService: PagoService,
+    private readonly snackBar: MatSnackBar,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly translate: TranslateService
   ) {}
 
-  ngOnInit() {
-    this.cargarCatalogos();
-    this.cargarPagos();
-    this.validarPagosStatus();
-  }
+
+  ngAfterViewInit(): void {
+
+    setTimeout(() => {
+
+      this.cargarCatalogos();
+
+      this.cargarPagos();
+
+      this.validarPagosStatus();
+
+  });
+
+}
+  ngOnInit(): void {}
 
   cargarCatalogos() {
     this.pagoService.getCatalogosTipoPago().subscribe({
       next: (data) => {
         this.tiposDePagoCatalogo = data;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al cargar catálogos', error);
@@ -114,6 +128,7 @@ export class PagosTable implements OnInit {
         });
         this.totalElements = data.totalElements;
         this.aplicarFiltroTipo();
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al cargar pagos pendientes', error);
@@ -184,22 +199,27 @@ export class PagosTable implements OnInit {
     this.pagoService.clasificarPagos(request).subscribe({
       next: (response) => {
         console.log('Clasificación guardada con éxito:', response);
-        this.snackBar.open('Clasificación guardada con éxito', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(
+          this.translate.instant('pendingpage.saveSuccess'),
+          this.translate.instant('pendingpage.close'),
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          }
+        );
 
         this.selection.clear();
         this.selectedTipo = 'Todos';
         this.pagosValidados = false;
         this.validarPagosStatus();
         this.cargarPagos();
+        this.cdr.detectChanges();
 
       },
       error: (error) => {
         console.error('Error al clasificar los pagos:', error);
-        const errorMessage = error.error?.message || 'Ocurrió un error al clasificar los pagos.';
-        this.snackBar.open(errorMessage, 'Cerrar', {
+        const errorMessage = error.error?.message || this.translate.instant('pendingpage.saveError');
+        this.snackBar.open(errorMessage, this.translate.instant('pendingpage.close'), {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -213,21 +233,27 @@ export class PagosTable implements OnInit {
     this.pagoService.enviarPagos().subscribe({
       next: (response) => {
         console.log('Envío de pagos exitoso:', response);
-        this.snackBar.open('Envío de pagos exitoso', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(
+          this.translate.instant('pendingpage.sendSuccess'),
+          this.translate.instant('pendingpage.close'),
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          }
+        );
         this.selection.clear();
         this.pagosValidados = false;
         this.cargarPagos();
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al enviar los pagos:', error);
-        const errorMessage = error.error?.message || 'Ocurrió un error al enviar los pagos.';
-        this.snackBar.open(errorMessage, 'Cerrar', {
+        const errorMessage = error.error?.message || this.translate.instant('pendingpage.sendError');
+        this.snackBar.open(errorMessage, this.translate.instant('pendingpage.close'), {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
+        this.cdr.detectChanges();
       }
     });
   }
@@ -247,8 +273,8 @@ export class PagosTable implements OnInit {
       error: (error) => {
         console.error('Error al validar el estado de los pagos silenciosamente:', error);
         this.pagosValidados = false;
-        const errorMessage = error.error?.message || 'Error en la validación.';
-        this.snackBar.open(errorMessage, 'Cerrar', {
+        const errorMessage = error.error?.message || this.translate.instant('pendingpage.validationError');
+        this.snackBar.open(errorMessage, this.translate.instant('pendingpage.close'), {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
