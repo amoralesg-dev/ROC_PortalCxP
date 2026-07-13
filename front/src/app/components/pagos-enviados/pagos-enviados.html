@@ -1,150 +1,36 @@
-<mat-card class="pagos-card">
-  <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: flex; align-items: center;">
-      <mat-icon style="font-size: 32px; width: 32px; height: 32px; color: var(--rassini-secondary)">history</mat-icon>
-      <div style="margin-left: 12px;">
-        <mat-card-title>Histórico de Pagos Enviados</mat-card-title>
-        <mat-card-subtitle>Consulta de pagos procesados y enviados</mat-card-subtitle>
-      </div>
-    </div>
+<app-page-header
+    [title]="'sentpage.title' | translate"
+    [subtitle]="'sentpage.subtitle' | translate"
+    icon="pi pi-history">
+</app-page-header>
 
-    <div style="display: flex; gap: 12px; margin-right: 16px;">
-    </div>
-  </mat-card-header>
+<app-page-content>
 
-  <mat-card-content>
-    <div class="filters-container">
-      <span class="filters-label">
-        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">filter_list</mat-icon>
-        Filtros
-      </span>
+    <app-data-table
+      [columns]="columns"
+      [data]="pagos"
+      [rows]="pageSize"
+      [lazy]="true"
+      [remoteFilter]="true"
+      [totalRecords]="totalElements"
+      [searchPlaceholder]="'common.search' | translate"
+      [emptyTitle]="'sentpage.emptyTitle' | translate"
+      [emptySubtitle]="'sentpage.emptySubtitle' | translate"
+      [globalFilterFields]="[
+          'codigoProveedor',
+          'rfcBeneficiario',
+          'nombreBeneficiario',
+          'monto',
+          'moneda',
+          'referencia',
+          'nombreArchivo',
+          'nombreArchivoEnvio',
+          'tipoPago',
+          'estatus'
+      ]"
+    (globalFilterChange)="onGlobalFilter($event)"
+    (lazyLoadChange)="onLazyLoad($event)">
+>
+  </app-data-table>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 200px;">
-        <mat-label>Código Proveedor</mat-label>
-        <input matInput [(ngModel)]="codigoProveedorFiltro" (keyup.enter)="buscarPorFiltros()" placeholder="Ej. PRV01">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 200px;">
-        <mat-label>RFC Beneficiario</mat-label>
-        <input matInput [(ngModel)]="rfcBeneficiarioFiltro" (keyup.enter)="buscarPorFiltros()" placeholder="Ej. ABC123456T1">
-      </mat-form-field>
-
-      <button mat-stroked-button color="primary" (click)="buscarPorFiltros()" style="border-radius: 20px; height: 40px; margin-right: 12px;">
-        <mat-icon>search</mat-icon>
-        Buscar
-      </button>
-
-      <button mat-stroked-button color="warn" (click)="limpiarFiltros()" style="border-radius: 20px; height: 40px; margin-right: 16px;">
-        <mat-icon>clear</mat-icon>
-        Limpiar
-      </button>
-    </div>
-
-    <div class="table-wrapper">
-      <table mat-table [dataSource]="dataSource" class="pagos-table">
-
-
-      <!-- ID Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> FOLIO </th>
-        <td mat-cell *matCellDef="let element"> <strong>{{element.id}}</strong> </td>
-      </ng-container>
-
-      <!-- Proveedor Column -->
-      <ng-container matColumnDef="proveedor">
-        <th mat-header-cell *matHeaderCellDef> PROVEEDOR </th>
-        <td mat-cell *matCellDef="let element"> {{element.proveedor}} </td>
-      </ng-container>
-
-      <!-- Nombre Column -->
-      <ng-container matColumnDef="rfc">
-        <th mat-header-cell *matHeaderCellDef> RFC </th>
-        <td mat-cell *matCellDef="let element"> {{element.rfc}} </td>
-      </ng-container>
-
-      <!-- Nombre Column -->
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef> NOMBRE </th>
-        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
-      </ng-container>
-
-      <!-- Monto Column -->
-      <ng-container matColumnDef="monto">
-        <th mat-header-cell *matHeaderCellDef style="text-align: right;"> MONTO TOTAL </th>
-        <td mat-cell *matCellDef="let element" style="text-align: right; font-weight: 600; color: var(--rassini-primary)">
-          {{element.monto | currency}}
-        </td>
-      </ng-container>
-
-      <!-- Moneda Column -->
-      <ng-container matColumnDef="moneda">
-        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> MONEDA </th>
-        <td mat-cell *matCellDef="let element" style="text-align: center;"> {{element.moneda}} </td>
-      </ng-container>
-
-      <!-- Descripcion Column -->
-      <ng-container matColumnDef="descripcion">
-        <th mat-header-cell *matHeaderCellDef> DESCRIPCIÓN </th>
-        <td mat-cell *matCellDef="let element"> {{element.descripcion}} </td>
-      </ng-container>
-
-       <!-- Descripcion Column -->
-      <ng-container matColumnDef="archivo">
-        <th mat-header-cell *matHeaderCellDef> ARCHIVO </th>
-        <td mat-cell *matCellDef="let element"> {{element.archivo}} </td>
-      </ng-container>
-
-      <!-- Archivo Envio Column -->
-      <ng-container matColumnDef="archivo_envio">
-        <th mat-header-cell *matHeaderCellDef> ARCHIVO DE ENVÍO </th>
-        <td mat-cell *matCellDef="let element"> {{element.archivo_envio}} </td>
-      </ng-container>
-
-      <!-- Tipo Column -->
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef> TIPO DE PAGO </th>
-        <td mat-cell *matCellDef="let element">
-          <span *ngIf="element.tipo" class="tipo-badge">{{element.tipo}}</span>
-          <mat-form-field *ngIf="!element.tipo" appearance="outline" subscriptSizing="dynamic" style="width: 140px; font-size: 12px; margin: 4px 0;">
-            <mat-label>Clasificar</mat-label>
-            <mat-select [(value)]="element.tipo">
-              <mat-option *ngFor="let t of tiposDePagoCatalogo" [value]="t.dealType">{{t.descripcion}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </td>
-      </ng-container>
-      <!-- Estatus Column -->
-      <ng-container matColumnDef="estatus">
-        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> ESTATUS </th>
-        <td mat-cell *matCellDef="let element" style="text-align: center;">
-          <span class="status-badge">
-            <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle; margin-right: 2px;">pending</mat-icon>
-            {{element.estatus | uppercase}}
-          </span>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-      <!-- Match no records logic -->
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell empty-table" colspan="11">
-          <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #cbd0d6; margin-bottom: 8px;">inbox</mat-icon>
-          <br>
-          No se encontraron pagos pendientes bajo esta categoría.
-        </td>
-      </tr>
-    </table>
-    </div>
-
-    <!-- Paginator Component -->
-    <mat-paginator [length]="totalElements"
-                   [pageSize]="pageSize"
-                   [pageIndex]="pageIndex"
-                   [pageSizeOptions]="[5, 10, 25, 50, 100]"
-                   (page)="onPageChange($event)"
-                   aria-label="Seleccionar página">
-    </mat-paginator>
-  </mat-card-content>
-</mat-card>
+</app-page-content>

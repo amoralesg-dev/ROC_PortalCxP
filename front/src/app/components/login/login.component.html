@@ -1,37 +1,35 @@
+<app-app-toast>
+</app-app-toast>
 
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>
-        <img src="img/RASSINI_Logo_color.png" alt="Rassini Logo" class="login-logo" onerror="this.src='img/RASSINI_Logo_blanco.png'"/>
-      </mat-card-title>
-      <mat-card-subtitle>
-        Portal Cuentas por Pagar
-      </mat-card-subtitle>
-    </mat-card-header>
+<div class="login-page-wrapper">
 
-    <mat-card-content>
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+  <div class="login-header-info">
 
-      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Usuario</mat-label>
-          <input matInput type="text" [(ngModel)]="username" name="username" required>
-          <mat-icon matPrefix>person</mat-icon>
-        </mat-form-field>
+    
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
-          <input matInput type="password" [(ngModel)]="password" name="password" required>
-          <mat-icon matPrefix>lock</mat-icon>
-        </mat-form-field>
-        
-        <button mat-flat-button color="primary" type="submit" class="full-width submit-btn" [disabled]="!loginForm.form.valid">
-          Ingresar
-        </button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+    <span class="environment-badge {{ environmentClass }}">
+      {{ environmentName }}
+    </span>
+
+  </div>
+
+  <rui-login
+      #ruiLoginHost
+
+      [title]="'login.title' | translate"
+      [subtitle]="'login.subtitle' | translate"
+
+      [applicationName]="'login.applicationName' | translate"
+
+      [usernameLabel]="'login.usernameLabel' | translate"
+      [usernamePlaceholder]="'login.usernamePlaceholder' | translate"
+
+      [passwordLabel]="'login.passwordLabel' | translate"
+      [passwordPlaceholder]="'login.passwordPlaceholder' | translate"
+
+      [loginButtonText]="'login.loginButtonText' | translate"
+
+      [loadingText]="'login.loadingText' | translate">
+  </rui-login>
+
 </div>
