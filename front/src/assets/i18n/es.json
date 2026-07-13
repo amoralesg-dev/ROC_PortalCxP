@@ -175,5 +175,60 @@
         "pendingPayments": "Pagos Pendientes de Clasificación",
         "sentPayments": "Pagos Enviados",
         "paymentErrors": "Errores de Pagos"
-    }
+    },
+    "pendingpage": {
+        "title": "Pagos Pendientes de Clasificación",
+        "subtitle": "Gestión de pagos pendientes",
+
+        "save": "Guardar",
+        "sendPayment": "Enviar pago",
+
+        "filters": "Filtros",
+
+        "supplierCode": "Código Proveedor",
+        "beneficiaryRfc": "RFC Beneficiario",
+
+        "supplierPlaceholder": "Ej. PRV01",
+        "rfcPlaceholder": "Ej. ABC123456T1",
+
+        "paymentType": "Tipo de Pago",
+        "status": "Estatus",
+
+        "search": "Buscar",
+        "clear": "Limpiar",
+
+        "paymentTypeLabel": "Tipo de pago",
+        "paymentTypeCatalog": "Catálogo de Tipo de Pago",
+
+        "all": "Todos",
+        "pending": "Pendiente",
+
+        "folio": "FOLIO",
+        "provider": "PROVEEDOR",
+        "rfc": "RFC",
+        "name": "NOMBRE",
+        "totalAmount": "MONTO TOTAL",
+        "currency": "MONEDA",
+        "description": "DESCRIPCIÓN",
+        "file": "ARCHIVO",
+        "paymentTypeColumn": "TIPO DE PAGO",
+        "statusColumn": "ESTATUS",
+
+        "emptyMessage": "No se encontraron pagos pendientes bajo esta categoría.",
+
+        "selectPage": "Seleccionar página",
+
+        "saveSuccess": "Clasificación guardada con éxito",
+        "saveError": "Ocurrió un error al clasificar los pagos.",
+
+        "sendSuccess": "Envío de pagos exitoso",
+        "sendError": "Ocurrió un error al enviar los pagos.",
+
+        "validationError": "Error en la validación.",
+
+        "catalogError": "Error al cargar catálogos",
+        "loadError": "Error al cargar pagos pendientes",
+
+        "close": "Cerrar"
+        }
 }

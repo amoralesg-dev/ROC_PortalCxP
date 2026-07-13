@@ -1,207 +1,522 @@
 <mat-card class="pagos-card">
+
   <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
+
     <div style="display: flex; align-items: center;">
-      <mat-icon style="font-size: 32px; width: 32px; height: 32px; color: var(--rassini-secondary)">account_balance_wallet</mat-icon>
+
+      <mat-icon
+        style="
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+          color: var(--rassini-secondary)">
+
+        account_balance_wallet
+
+      </mat-icon>
+
       <div style="margin-left: 12px;">
-        <mat-card-title>Pagos Pendientes de Clasificación</mat-card-title>
-        <mat-card-subtitle>Gestión de pagos pendientes</mat-card-subtitle>
+
+        <mat-card-title>
+          {{ 'pendingpage.title' | translate }}
+        </mat-card-title>
+
+        <mat-card-subtitle>
+          {{ 'pendingpage.subtitle' | translate }}
+        </mat-card-subtitle>
+
       </div>
+
     </div>
 
     <div style="display: flex; gap: 12px; margin-right: 16px;">
-      <button mat-stroked-button color="primary" (click)="guardar()" [disabled]="isGuardarDisabled()" style="border-radius: 20px;">
+
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="guardar()"
+        [disabled]="isGuardarDisabled()"
+        style="border-radius: 20px;">
+
         <mat-icon>save</mat-icon>
-        Guardar
+
+        {{ 'pendingpage.save' | translate }}
+
       </button>
-      <button *ngIf="pagosValidados" mat-flat-button color="primary" (click)="enviarPagos()" [disabled]="isEnviarDisabled()" style="border-radius: 20px;">
+
+      <button
+        *ngIf="pagosValidados"
+        mat-flat-button
+        color="primary"
+        (click)="enviarPagos()"
+        [disabled]="isEnviarDisabled()"
+        style="border-radius: 20px;">
+
         <mat-icon>send</mat-icon>
-        Enviar pago
+
+        {{ 'pendingpage.sendPayment' | translate }}
+
       </button>
+
     </div>
+
   </mat-card-header>
 
   <mat-card-content>
+
     <div class="filters-container">
+
       <span class="filters-label">
-        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">filter_list</mat-icon>
-        Filtros
+
+        <mat-icon
+          style="
+          vertical-align: middle;
+          margin-right: 4px;
+          font-size: 18px;
+          width: 18px;
+          height: 18px;">
+
+          filter_list
+
+        </mat-icon>
+
+        {{ 'pendingpage.filters' | translate }}
+
       </span>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 200px;">
-        <mat-label>Código Proveedor</mat-label>
-        <input matInput [(ngModel)]="codigoProveedorFiltro" (keyup.enter)="buscarPorFiltros()" placeholder="Ej. PRV01">
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+        style="margin-right: 12px; width: 200px;">
+
+        <mat-label>
+          {{ 'pendingpage.supplierCode' | translate }}
+        </mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="codigoProveedorFiltro"
+          (keyup.enter)="buscarPorFiltros()"
+          [placeholder]="'pendingpage.supplierPlaceholder' | translate">
+
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 200px;">
-        <mat-label>RFC Beneficiario</mat-label>
-        <input matInput [(ngModel)]="rfcBeneficiarioFiltro" (keyup.enter)="buscarPorFiltros()" placeholder="Ej. ABC123456T1">
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+        style="margin-right: 12px; width: 200px;">
+
+        <mat-label>
+          {{ 'pendingpage.beneficiaryRfc' | translate }}
+        </mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="rfcBeneficiarioFiltro"
+          (keyup.enter)="buscarPorFiltros()"
+          [placeholder]="'pendingpage.rfcPlaceholder' | translate">
+
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 150px;">
-        <mat-label>Tipo de Pago</mat-label>
-        <mat-select [(ngModel)]="tipoPagoFiltro" (selectionChange)="buscarPorFiltros()">
-          <mat-option value="Todos">Todos</mat-option>
-          <mat-option *ngFor="let t of tiposDePagoCatalogo" [value]="t.dealType">{{t.descripcion}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+        style="margin-right: 12px; width: 150px;">
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="margin-right: 12px; width: 150px;">
-        <mat-label>Estatus</mat-label>
-        <mat-select [(ngModel)]="estatusFiltro" (selectionChange)="buscarPorFiltros()">
-          <mat-option value="Todos">Todos</mat-option>
-          <mat-option value="Pendiente">Pendiente</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-label>
+          {{ 'pendingpage.paymentType' | translate }}
+        </mat-label>
 
-      <button mat-stroked-button color="primary" (click)="buscarPorFiltros()" style="border-radius: 20px; height: 40px; margin-right: 12px;">
-        <mat-icon>search</mat-icon>
-        Buscar
-      </button>
+        <mat-select
+          [(ngModel)]="tipoPagoFiltro"
+          (selectionChange)="buscarPorFiltros()">
 
-      <button mat-stroked-button color="warn" (click)="limpiarFiltros()" style="border-radius: 20px; height: 40px; margin-right: 16px;">
-        <mat-icon>clear</mat-icon>
-        Limpiar
-      </button>
-
-      <span class="filters-label" style="margin-left: 16px;">
-        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">category</mat-icon>
-        Tipo de pago
-      </span>
-      <mat-form-field appearance="outline" class="tipo-pago-select" subscriptSizing="dynamic">
-        <mat-label>Catálogo de Tipo de Pago</mat-label>
-        <mat-select [value]="selectedTipo" (selectionChange)="onTipoChange($event)">
-          <mat-option *ngFor="let tipo of tiposDePagoCatalogo" [value]="tipo.dealType">
-            {{ tipo.descripcion }}
+          <mat-option value="Todos">
+            {{ 'pendingpage.all' | translate }}
           </mat-option>
+
+          <mat-option
+            *ngFor="let t of tiposDePagoCatalogo"
+            [value]="t.dealType">
+
+            {{ t.descripcion }}
+
+          </mat-option>
+
         </mat-select>
+
       </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+        style="margin-right: 12px; width: 150px;">
+
+        <mat-label>
+          {{ 'pendingpage.status' | translate }}
+        </mat-label>
+
+        <mat-select
+          [(ngModel)]="estatusFiltro"
+          (selectionChange)="buscarPorFiltros()">
+
+          <mat-option value="Todos">
+            {{ 'pendingpage.all' | translate }}
+          </mat-option>
+
+          <mat-option value="Pendiente">
+            {{ 'pendingpage.pending' | translate }}
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="buscarPorFiltros()"
+        style="
+            border-radius: 20px;
+            height: 40px;
+            margin-right: 12px;">
+
+        <mat-icon>search</mat-icon>
+
+        {{ 'pendingpage.search' | translate }}
+
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="limpiarFiltros()"
+        style="
+            border-radius: 20px;
+            height: 40px;
+            margin-right: 16px;">
+
+        <mat-icon>clear</mat-icon>
+
+        {{ 'pendingpage.clear' | translate }}
+
+      </button>
+
+      <span
+        class="filters-label"
+        style="margin-left: 16px;">
+
+        <mat-icon
+          style="
+            vertical-align: middle;
+            margin-right: 4px;
+            font-size: 18px;
+            width: 18px;
+            height: 18px;">
+
+          category
+
+        </mat-icon>
+
+        {{ 'pendingpage.paymentTypeLabel' | translate }}
+
+      </span>
+
+      <mat-form-field
+        appearance="outline"
+        class="tipo-pago-select"
+        subscriptSizing="dynamic">
+
+        <mat-label>
+          {{ 'pendingpage.paymentTypeCatalog' | translate }}
+        </mat-label>
+
+        <mat-select
+          [value]="selectedTipo"
+          (selectionChange)="onTipoChange($event)">
+
+          <mat-option
+            *ngFor="let tipo of tiposDePagoCatalogo"
+            [value]="tipo.dealType">
+
+            {{ tipo.descripcion }}
+
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
     </div>
 
     <div class="table-wrapper">
-      <table mat-table [dataSource]="dataSource" class="pagos-table">
 
-        <!-- Checkbox Column -->
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="pagos-table">
+
         <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef style="width: 48px;">
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
 
-      <!-- ID Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> FOLIO </th>
-        <td mat-cell *matCellDef="let element"> <strong>{{element.id}}</strong> </td>
-      </ng-container>
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            style="width:48px;">
 
-      <!-- Proveedor Column -->
-      <ng-container matColumnDef="proveedor">
-        <th mat-header-cell *matHeaderCellDef> PROVEEDOR </th>
-        <td mat-cell *matCellDef="let element"> {{element.proveedor}} </td>
-      </ng-container>
+            <mat-checkbox
+              (change)="$event ? masterToggle() : null"
+              [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()">
 
-      <!-- Nombre Column -->
-      <ng-container matColumnDef="rfc">
-        <th mat-header-cell *matHeaderCellDef> RFC </th>
-        <td mat-cell *matCellDef="let element"> {{element.rfc}} </td>
-      </ng-container>
+            </mat-checkbox>
 
-      <!-- Nombre Column -->
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef> NOMBRE </th>
-        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
-      </ng-container>
+          </th>
 
-      <!-- Monto Column -->
-      <ng-container matColumnDef="monto">
-        <th mat-header-cell *matHeaderCellDef style="text-align: right;"> MONTO TOTAL </th>
-        <td mat-cell *matCellDef="let element" style="text-align: right; font-weight: 600; color: var(--rassini-primary)">
-          {{element.monto | currency}}
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let row">
 
-      <!-- Moneda Column -->
-      <ng-container matColumnDef="moneda">
-        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> MONEDA </th>
-        <td mat-cell *matCellDef="let element" style="text-align: center;"> {{element.moneda}} </td>
-      </ng-container>
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="$event ? selection.toggle(row) : null"
+              [checked]="selection.isSelected(row)">
 
-      <!-- Descripcion Column -->
-      <ng-container matColumnDef="descripcion">
-        <th mat-header-cell *matHeaderCellDef> DESCRIPCIÓN </th>
-        <td mat-cell *matCellDef="let element"> {{element.descripcion}} </td>
-      </ng-container>
+            </mat-checkbox>
 
-       <!-- Descripcion Column -->
-      <ng-container matColumnDef="archivo">
-        <th mat-header-cell *matHeaderCellDef> ARCHIVO </th>
-        <td mat-cell *matCellDef="let element"> {{element.archivo}} </td>
-      </ng-container>
+          </td>
 
-      <!-- Tipo Column -->
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef> TIPO DE PAGO </th>
-        <td mat-cell *matCellDef="let element">
-          <span *ngIf="element.tipo" class="tipo-badge">{{element.tipo}}</span>
-        </td>
-      </ng-container>
-      <!-- Estatus Column -->
-      <ng-container matColumnDef="estatus">
-        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
-          ESTATUS
-        </th>
+        </ng-container>
 
-        <td mat-cell *matCellDef="let element" style="text-align: center;">
-          <span
-            class="status-badge"
-            [ngClass]="{
-              'status-badge-pend': element.estatus === 'Pendiente'
-            }">
+        <ng-container matColumnDef="id">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.folio' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            <strong>{{element.id}}</strong>
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="proveedor">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.provider' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{element.proveedor}}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="rfc">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.rfc' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{element.rfc}}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.name' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{element.nombre}}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="monto">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            style="text-align:right;">
+
+            {{ 'pendingpage.totalAmount' | translate }}
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+            style="
+              text-align:right;
+              font-weight:600;
+              color:var(--rassini-primary)">
+
+            {{ element.monto | currency }}
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="moneda">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            style="text-align:center;">
+
+            {{ 'pendingpage.currency' | translate }}
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+            style="text-align:center;">
+
+            {{ element.moneda }}
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="descripcion">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.description' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{element.descripcion}}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="archivo">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.file' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{element.archivo}}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="tipo">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.paymentTypeColumn' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+
+            <span
+              *ngIf="element.tipo"
+              class="tipo-badge">
+
+              {{element.tipo}}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="estatus">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            style="text-align:center;">
+
+            {{ 'pendingpage.statusColumn' | translate }}
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+            style="text-align:center;">
+
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'status-badge-pend':
+                element.estatus === 'Pendiente'
+              }">
+
+              <mat-icon
+                style="
+                  font-size:14px;
+                  width:14px;
+                  height:14px;
+                  vertical-align:middle;
+                  margin-right:2px;">
+
+                pending
+
+              </mat-icon>
+
+              {{ element.estatus | uppercase }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns">
+        </tr>
+
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns;">
+        </tr>
+
+        <tr class="mat-row" *matNoDataRow>
+
+          <td
+            class="mat-cell empty-table"
+            colspan="11">
 
             <mat-icon
-              style="font-size: 14px;
-                    width: 14px;
-                    height: 14px;
-                    vertical-align: middle;
-                    margin-right: 2px;">
-              pending
+              style="
+                font-size:48px;
+                width:48px;
+                height:48px;
+                color:#cbd0d6;
+                margin-bottom:8px;">
+
+              inbox
+
             </mat-icon>
 
-            {{ element.estatus | uppercase }}
+            <br>
 
-          </span>
-        </td>
-      </ng-container>
+            {{ 'pendingpage.emptyMessage' | translate }}
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </td>
 
-      <!-- Match no records logic -->
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell empty-table" colspan="11">
-          <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #cbd0d6; margin-bottom: 8px;">inbox</mat-icon>
-          <br>
-          No se encontraron pagos pendientes bajo esta categoría.
-        </td>
-      </tr>
-    </table>
+        </tr>
+
+      </table>
+
     </div>
 
-    <!-- Paginator Component -->
-    <mat-paginator [length]="totalElements"
-                   [pageSize]="pageSize"
-                   [pageIndex]="pageIndex"
-                   [pageSizeOptions]="[5, 10, 25, 50, 100]"
-                   (page)="onPageChange($event)"
-                   aria-label="Seleccionar página">
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5,10,25,50,100]"
+      (page)="onPageChange($event)"
+      [attr.aria-label]="
+        ('pendingpage.selectPage' | translate)">
     </mat-paginator>
+
   </mat-card-content>
+
 </mat-card>

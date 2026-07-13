@@ -23,16 +23,16 @@
         "errorLoading": "Error loading errors",
         "noErrorsTooltip": "No errors",
         "tableColumns": {
-            "folio": "Folio",
-            "provider": "Supplier",
+            "folio": "ID",
+            "provider": "SUPPLIER",
             "rfc": "Tax ID",
-            "name": "Name",
-            "amount": "Amount",
-            "currency": "Currency",
-            "reference": "Reference",
-            "file": "File",
-            "errors": "Errors",
-            "actions": "Actions"
+            "name": "NAME",
+            "amount": "AMOUNT",
+            "currency": "CURRENCY",
+            "reference": "REFERENCE",
+            "file": "FILE",
+            "errors": "ERRORS",
+            "actions": "ACTIONS"
         }
     },
     "errorMessages": {
@@ -93,7 +93,7 @@
         "rfcPlaceholder": "Ex. ABC123456T1",
         "search": "Search",
         "clear": "Clear",
-        "folio": "FOLIO",
+        "folio": "ID",
         "supplier": "SUPPLIER",
         "rfc": "TAX ID",
         "name": "NAME",
@@ -143,5 +143,60 @@
         "pendingPayments": "Pending Payments Classification",
         "sentPayments": "Sent Payments",
         "paymentErrors": "Payment Errors"
-    }
+    },
+    "pendingpage": {
+        "title": "Pending Payments Classification",
+        "subtitle": "Pending payments management",
+
+        "save": "Save",
+        "sendPayment": "Send Payment",
+
+        "filters": "Filters",
+
+        "supplierCode": "Supplier Code",
+        "beneficiaryRfc": "Beneficiary Tax ID",
+
+        "supplierPlaceholder": "Ex. PRV01",
+        "rfcPlaceholder": "Ex. ABC123456T1",
+
+        "paymentType": "Payment Type",
+        "status": "Status",
+
+        "search": "Search",
+        "clear": "Clear",
+
+        "paymentTypeLabel": "Payment Type",
+        "paymentTypeCatalog": "Payment Type Catalog",
+
+        "all": "All",
+        "pending": "Pending",
+
+        "folio": "ID",
+        "provider": "SUPPLIER",
+        "rfc": "TAX ID",
+        "name": "NAME",
+        "totalAmount": "TOTAL AMOUNT",
+        "currency": "CURRENCY",
+        "description": "DESCRIPTION",
+        "file": "FILE",
+        "paymentTypeColumn": "PAYMENT TYPE",
+        "statusColumn": "STATUS",
+
+        "emptyMessage": "No pending payments were found under this category.",
+
+        "selectPage": "Select page",
+
+        "saveSuccess": "Classification saved successfully",
+        "saveError": "An error occurred while classifying payments.",
+
+        "sendSuccess": "Payments sent successfully",
+        "sendError": "An error occurred while sending payments.",
+
+        "validationError": "Validation error.",
+
+        "catalogError": "Error loading catalogs",
+        "loadError": "Error loading pending payments",
+
+        "close": "Close"
+        }
 }
