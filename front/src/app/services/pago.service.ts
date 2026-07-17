@@ -43,6 +43,10 @@ export interface TipoPagoDto {
   corpo: boolean;
   bu: string | null;
 }
+export interface ValidacionEnvioDTO {
+  permitido: boolean;
+  errores: string[];
+}
 export interface ClasificarPagoItem {
   id: number;
   dealType: string;
@@ -138,13 +142,17 @@ export class PagoService {
       responseType: 'text',
     });
   }
-  validarPagos(): Observable<string> {
+  validarPagos(): Observable<ValidacionEnvioDTO> {
     let params = new HttpParams();
     const authBu = sessionStorage.getItem('auth_bu');
     if (authBu) {
       params = params.set('bu', authBu);
     }
-    return this.http.post(`${this.baseUrl}/pagos/validar`, {}, { params, responseType: 'text' });
+    return this.http.post<ValidacionEnvioDTO>(
+        `${this.baseUrl}/pagos/validar`,
+        {},
+        { params }
+      );
   }
   enviarPagos(): Observable<string> {
     let params = new HttpParams();
