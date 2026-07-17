@@ -258,30 +258,42 @@ export class PagosTable implements OnInit, AfterViewInit {
     });
   }
 
-  validarPagosStatus() {
-    this.pagoService.validarPagos().subscribe({
-      next: (response) => {
-        const valor = response ? response.trim() : '';
+validarPagosStatus() {
+  console.log('VALIDANDO PAGOS');
+  this.pagoService.validarPagos().subscribe({
+    next: (response) => {
+      console.log('RESPUESTA VALIDACION', response);
 
-        if (valor === '1') {
-          this.pagosValidados = true;
-        } else {
-          this.pagosValidados = false;
-        }
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al validar el estado de los pagos silenciosamente:', error);
-        this.pagosValidados = false;
-        const errorMessage = error.error?.message || this.translate.instant('pendingpage.validationError');
-        this.snackBar.open(errorMessage, this.translate.instant('pendingpage.close'), {
+      this.pagosValidados = response.permitido;
+
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('ERROR VALIDACION', error);
+      console.error(
+        'Error al validar el estado de los pagos silenciosamente:',
+        error
+      );
+
+      this.pagosValidados = false;
+
+      const errorMessage =
+        error.error?.message ||
+        this.translate.instant('pendingpage.validationError');
+
+      this.snackBar.open(
+        errorMessage,
+        this.translate.instant('pendingpage.close'),
+        {
           duration: 5000,
           panelClass: ['error-snackbar']
-        });
-        this.cdr.detectChanges();
-      }
-    });
-  }
+        }
+      );
+
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   onTipoChange(event: MatSelectChange) {
     this.selectedTipo = event.value;
