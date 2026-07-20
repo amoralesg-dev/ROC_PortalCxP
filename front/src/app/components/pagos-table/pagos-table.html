@@ -34,6 +34,18 @@
       <button
         mat-stroked-button
         color="primary"
+        (click)="guardarReferenciasManuales()"
+        style="border-radius: 20px;">
+
+        <mat-icon>save_as</mat-icon>
+
+        {{ 'pendingpage.saveReferences' | translate }}
+
+      </button>
+
+      <button
+        mat-stroked-button
+        color="primary"
         (click)="guardar()"
         [disabled]="isGuardarDisabled()"
         style="border-radius: 20px;">
@@ -419,6 +431,44 @@
               {{element.tipo}}
 
             </span>
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="referencia">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.reference' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+
+            <input
+              matInput
+              [(ngModel)]="element.referenciaManual"
+              [placeholder]="'pendingpage.referencePlaceholder' | translate">
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="accionesReferencia">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'pendingpage.actions' | translate }}
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="guardarReferencia(element)">
+
+              <mat-icon>save</mat-icon>
+
+            </button>
 
           </td>
 

@@ -23,6 +23,7 @@ export interface PagoDto {
   tipoPago: string;
   mensaje?: string;
   estatus?: string;
+  referenciaManual?: string;
 
 }
 export interface Page<T> {
@@ -220,6 +221,24 @@ export class PagoService {
     );
 
   }
+
+  actualizarReferenciaManual(
+    id: number,
+    referenciaManual: string
+  ): Observable<string> {
+
+    return this.http.put(
+      `${this.baseUrl}/pagos/${id}/referencia-manual`,
+      {
+        referenciaManual
+      },
+      {
+        responseType: 'text'
+      }
+    );
+  }
+
+
 
 
 

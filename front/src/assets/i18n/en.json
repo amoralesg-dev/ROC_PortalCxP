@@ -168,6 +168,8 @@
         "paymentTypeLabel": "Payment Type",
         "paymentTypeCatalog": "Payment Type Catalog",
 
+        
+
         "all": "All",
         "pending": "Pending",
 
@@ -181,6 +183,10 @@
         "file": "FILE",
         "paymentTypeColumn": "PAYMENT TYPE",
         "statusColumn": "STATUS",
+        "reference": "REFERENCE",
+        "actions": "ACTIONS",
+
+        "referencePlaceholder": "Enter reference",
 
         "emptyMessage": "No pending payments were found under this category.",
 
@@ -196,6 +202,10 @@
 
         "catalogError": "Error loading catalogs",
         "loadError": "Error loading pending payments",
+
+        "referenceManualSaveSuccess": "Manual reference saved successfully",
+        "referenceManualSaveError": "Error saving manual reference",
+        "referenceManualNoChanges": "No changes were detected in the manual reference",
 
         "close": "Close"
         }
