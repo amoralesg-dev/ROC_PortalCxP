@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { ActualizarReferenciasManualDTO } from '../components/pagos-table/pagos-table';
 
 
 export interface PagoDto {
@@ -23,6 +24,7 @@ export interface PagoDto {
   tipoPago: string;
   mensaje?: string;
   estatus?: string;
+  referenciaManual?: string;
 
 }
 export interface Page<T> {
@@ -220,6 +222,38 @@ export class PagoService {
     );
 
   }
+
+  actualizarReferenciaManual(
+    id: number,
+    referenciaManual: string
+  ): Observable<string> {
+
+    return this.http.put(
+      `${this.baseUrl}/pagos/${id}/referencia-manual`,
+      {
+        referenciaManual
+      },
+      {
+        responseType: 'text'
+      }
+    );
+  }
+
+actualizarReferenciasManuales(
+    request: ActualizarReferenciasManualDTO
+  ): Observable<string> {
+
+    return this.http.put(
+      `${this.baseUrl}/pagos/referencias-manuales`,
+      request,
+      {
+        responseType: 'text'
+      }
+    );
+  }
+
+
+
 
 
 

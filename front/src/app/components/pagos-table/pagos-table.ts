@@ -28,6 +28,18 @@ export interface Pago {
   archivo: string;
   estatus: string;
   tipo: string;
+  referenciaManual: string;
+  referenciaManualOriginal: string;
+
+}
+
+export interface ReferenciaManualItemDTO {
+  id: number;
+  referenciaManual: string;
+}
+
+export interface ActualizarReferenciasManualDTO {
+  items: ReferenciaManualItemDTO[];
 }
 
 @Component({
@@ -54,7 +66,21 @@ export interface Pago {
   styleUrl: './pagos-table.scss',
 })
 export class PagosTable implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['select', 'id', 'proveedor', 'rfc', 'nombre', 'monto', 'moneda', 'descripcion', 'archivo', 'tipo', 'estatus'];
+  displayedColumns: string[] = 
+  [ 'select', 
+    'id', 
+    'proveedor', 
+    'rfc', 
+    'nombre', 
+    'monto', 
+    'moneda', 
+    'descripcion', 
+    'archivo', 
+    'tipo',
+    'referencia',
+    'accionesReferencia',
+    'estatus'
+  ];
   tiposDePagoCatalogo: TipoPagoDto[] = [];
   selectedTipo: string | number = 'Todos';
 
@@ -123,7 +149,10 @@ export class PagosTable implements OnInit, AfterViewInit {
             descripcion: item.referencia || '',
             archivo: item.nombreArchivo || '',
             estatus: item.estatus || '',
-            tipo: item.tipoPago || ''
+            tipo: item.tipoPago || '',
+            referenciaManual: item.referenciaManual || '',
+            referenciaManualOriginal: item.referenciaManual || ''
+
           };
         });
         this.totalElements = data.totalElements;
@@ -309,6 +338,159 @@ validarPagosStatus() {
     });
     this.selection.clear();
     this.selectedTipo = 'Todos';
+  }
+
+  guardarReferencia(pago: Pago): void {
+
+    if (
+      (pago.referenciaManual || '') ===
+      (pago.referenciaManualOriginal || '')
+    ) {
+
+      this.snackBar.open(
+        this.translate.instant('pendingpage.referenceManualNoChanges'),
+        this.translate.instant('pendingpage.close'),
+        {
+          duration: 3000
+        }
+      );
+
+      return;
+    }
+    this.pagoService
+      .actualizarReferenciaManual(
+        pago.id,
+        pago.referenciaManual
+      )
+      .subscribe({
+        next: (response) => {
+
+          pago.referenciaManualOriginal =
+          pago.referenciaManual;
+
+          this.snackBar.open(
+            this.translate.instant('pendingpage.referenceManualSaveSuccess'),
+            this.translate.instant('pendingpage.close'),
+            {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            }
+          );
+
+        },
+        error: (error) => {
+
+          console.error(
+            'Error al guardar referencia manual',
+            error
+          );
+
+          const errorMessage =
+            error.error ||
+            this.translate.instant(
+              'pendingpage.referenceManualSaveError'
+            );
+
+          this.snackBar.open(
+            errorMessage,
+            this.translate.instant('pendingpage.close'),
+            {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            }
+          );
+
+        }
+      });
+
+  }
+
+  guardarReferenciasManuales(): void {
+
+    const items = this.dataSource.data
+      .filter(
+        pago =>
+          (pago.referenciaManual || '') !==
+          (pago.referenciaManualOriginal || '')
+      )
+      .map(pago => ({
+        id: pago.id,
+        referenciaManual: pago.referenciaManual
+      }));
+
+    if (items.length === 0) {
+
+      this.snackBar.open(
+        this.translate.instant(
+          'pendingpage.referenceManualNoChanges'
+        ),
+        this.translate.instant('pendingpage.close'),
+        {
+          duration: 3000
+        }
+      );
+
+      return;
+    }
+
+    const request: ActualizarReferenciasManualDTO = {
+      items
+    };
+
+    this.pagoService
+      .actualizarReferenciasManuales(request)
+      .subscribe({
+        next: () => {
+
+          this.dataSource.data.forEach(pago => {
+
+            const actualizado = items.find(
+              item => item.id === pago.id
+            );
+
+            if (actualizado) {
+              pago.referenciaManualOriginal =
+                pago.referenciaManual;
+            }
+
+          });
+
+          this.snackBar.open(
+            this.translate.instant(
+              'pendingpage.manualReferencesSaveSuccess'
+            ),
+            this.translate.instant('pendingpage.close'),
+            {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            }
+          );
+
+        },
+        error: (error) => {
+
+          console.error(
+            'Error al guardar referencias manuales',
+            error
+          );
+
+          const errorMessage =
+            error.error ||
+            this.translate.instant(
+              'pendingpage.manualReferencesSaveError'
+            );
+
+          this.snackBar.open(
+            errorMessage,
+            this.translate.instant('pendingpage.close'),
+            {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            }
+          );
+
+        }
+      });
   }
 
   

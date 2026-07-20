@@ -200,6 +200,8 @@
         "paymentTypeLabel": "Tipo de pago",
         "paymentTypeCatalog": "Catálogo de Tipo de Pago",
 
+        
+
         "all": "Todos",
         "pending": "Pendiente",
 
@@ -213,6 +215,10 @@
         "file": "ARCHIVO",
         "paymentTypeColumn": "TIPO DE PAGO",
         "statusColumn": "ESTATUS",
+        "reference": "REFERENCIA",
+        "actions": "ACCIONES",
+
+        "referencePlaceholder": "Captura referencia",
 
         "emptyMessage": "No se encontraron pagos pendientes bajo esta categoría.",
 
@@ -228,6 +234,15 @@
 
         "catalogError": "Error al cargar catálogos",
         "loadError": "Error al cargar pagos pendientes",
+
+        
+        "referenceManualSaveSuccess": "Referencia manual guardada correctamente",
+        "referenceManualSaveError": "Error al guardar la referencia manual",
+        "manualReferencesSaveSuccess": "Referencias manuales guardadas correctamente",
+        "manualReferencesSaveError": "Error al guardar las referencias manuales",
+        "referenceManualNoChanges": "No se detectaron cambios en la referencia manual",
+        "saveManualReferences": "Guardar referencias",
+
 
         "close": "Cerrar"
         }
