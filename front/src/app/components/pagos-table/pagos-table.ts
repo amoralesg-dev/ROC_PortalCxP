@@ -33,6 +33,15 @@ export interface Pago {
 
 }
 
+export interface ReferenciaManualItemDTO {
+  id: number;
+  referenciaManual: string;
+}
+
+export interface ActualizarReferenciasManualDTO {
+  items: ReferenciaManualItemDTO[];
+}
+
 @Component({
   selector: 'app-pagos-table',
   standalone: true,
@@ -394,6 +403,94 @@ validarPagosStatus() {
         }
       });
 
+  }
+
+  guardarReferenciasManuales(): void {
+
+    const items = this.dataSource.data
+      .filter(
+        pago =>
+          (pago.referenciaManual || '') !==
+          (pago.referenciaManualOriginal || '')
+      )
+      .map(pago => ({
+        id: pago.id,
+        referenciaManual: pago.referenciaManual
+      }));
+
+    if (items.length === 0) {
+
+      this.snackBar.open(
+        this.translate.instant(
+          'pendingpage.referenceManualNoChanges'
+        ),
+        this.translate.instant('pendingpage.close'),
+        {
+          duration: 3000
+        }
+      );
+
+      return;
+    }
+
+    const request: ActualizarReferenciasManualDTO = {
+      items
+    };
+
+    this.pagoService
+      .actualizarReferenciasManuales(request)
+      .subscribe({
+        next: () => {
+
+          this.dataSource.data.forEach(pago => {
+
+            const actualizado = items.find(
+              item => item.id === pago.id
+            );
+
+            if (actualizado) {
+              pago.referenciaManualOriginal =
+                pago.referenciaManual;
+            }
+
+          });
+
+          this.snackBar.open(
+            this.translate.instant(
+              'pendingpage.manualReferencesSaveSuccess'
+            ),
+            this.translate.instant('pendingpage.close'),
+            {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            }
+          );
+
+        },
+        error: (error) => {
+
+          console.error(
+            'Error al guardar referencias manuales',
+            error
+          );
+
+          const errorMessage =
+            error.error ||
+            this.translate.instant(
+              'pendingpage.manualReferencesSaveError'
+            );
+
+          this.snackBar.open(
+            errorMessage,
+            this.translate.instant('pendingpage.close'),
+            {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            }
+          );
+
+        }
+      });
   }
 
   

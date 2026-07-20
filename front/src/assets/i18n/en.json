@@ -205,7 +205,10 @@
 
         "referenceManualSaveSuccess": "Manual reference saved successfully",
         "referenceManualSaveError": "Error saving manual reference",
+        "manualReferencesSaveSuccess": "Manual references saved successfully",
+        "manualReferencesSaveError": "Error saving manual references",
         "referenceManualNoChanges": "No changes were detected in the manual reference",
+        "saveManualReferences": "Save References",
 
         "close": "Close"
         }

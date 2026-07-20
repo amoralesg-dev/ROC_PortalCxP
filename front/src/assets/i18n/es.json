@@ -238,7 +238,10 @@
         
         "referenceManualSaveSuccess": "Referencia manual guardada correctamente",
         "referenceManualSaveError": "Error al guardar la referencia manual",
+        "manualReferencesSaveSuccess": "Referencias manuales guardadas correctamente",
+        "manualReferencesSaveError": "Error al guardar las referencias manuales",
         "referenceManualNoChanges": "No se detectaron cambios en la referencia manual",
+        "saveManualReferences": "Guardar referencias",
 
 
         "close": "Cerrar"
