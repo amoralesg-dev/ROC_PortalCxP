@@ -1,0 +1,156 @@
+<app-page-header
+    [title]="'analyticspage.title' | translate"
+    [subtitle]="'analyticspage.subtitle' | translate"
+    icon="pi pi-sitemap">
+</app-page-header>
+
+
+
+<app-page-content>
+
+
+    <div class="analytics-kpis">
+
+        <div class="kpi-card">
+            <div class="kpi-label">
+                {{ 'analyticspage.files' | translate }}
+            </div>
+
+            <div class="kpi-value">
+                {{ totalArchivos }}
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">
+                {{ 'analyticspage.payments' | translate }}
+            </div>
+
+            <div class="kpi-value">
+                {{ totalPagos }}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="analytics-kpis-currency">
+
+        <div class="kpi-card">
+            <div class="kpi-label">
+                MXN
+            </div>
+
+            <div class="kpi-value">
+                {{ totalMXN | currency }}
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">
+                USD
+            </div>
+
+            <div class="kpi-value">
+                {{ totalUSD | currency }}
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">
+                EUR
+            </div>
+
+            <div class="kpi-value">
+                {{ totalEUR | currency }}
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">
+                JPY
+            </div>
+
+            <div class="kpi-value">
+                {{ totalJPY | currency }}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="analytics-container">
+
+        <input
+            type="text"
+            pInputText
+            [(ngModel)]="filtroArchivo"
+            (input)="aplicarFiltro()"
+            [placeholder]="'analyticspage.searchFile' | translate" />
+
+
+
+        <p-treetable
+            [value]="treeNodes"
+            [scrollable]="true"
+            [tableStyle]="{ 'min-width': '60rem' }">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>
+                        {{ 'analyticspage.level' | translate }}
+                        </th>
+
+                        <th>
+                        {{ 'analyticspage.concept' | translate }}
+                        </th>
+
+                        <th style="text-align:right">
+                        {{ 'analyticspage.quantity' | translate }}
+                        </th>
+
+                        <th style="text-align:right">
+                        {{ 'analyticspage.amount' | translate }}
+                        </th>
+                    </tr>
+            </ng-template>
+
+            <ng-template
+                pTemplate="body"
+                let-rowNode
+                let-rowData="rowData">
+
+                <tr [ttRow]="rowNode">
+
+                    
+                    <td>
+                        {{ rowData.nivel | translate }}
+                    </td>
+
+
+                    <td>
+
+                        <p-treetable-toggler
+                            [rowNode]="rowNode">
+                        </p-treetable-toggler>
+
+                        {{ rowData.nombre }}
+
+                    </td>
+
+                    <td style="text-align: right;">
+                        {{ rowData.cantidadPagos }}
+                    </td>
+
+                    <td style="text-align: right;">
+                        {{ rowData.montoTotal | currency }}
+                    </td>
+
+                </tr>
+
+            </ng-template>
+
+        </p-treetable>
+
+
+    </div>
+
+</app-page-content>

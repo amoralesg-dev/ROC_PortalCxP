@@ -1,0 +1,52 @@
+.analytics-kpis {
+    display: grid;
+    grid-template-columns: repeat(2, 280px);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.analytics-kpis-currency {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    padding: 1rem;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.kpi-card {
+    padding: 1rem;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    min-height: 95px;
+}
+
+.kpi-label {
+    font-size: .9rem;
+    color: #6b7280;
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #f97316;
+}
+
+/* Monedas */
+
+.analytics-kpis-currency .kpi-card {
+    border: none;
+    padding: 0.5rem;
+    min-height: auto;
+    box-shadow: none;
+}
+
+.analytics-kpis-currency .kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
