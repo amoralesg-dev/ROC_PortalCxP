@@ -142,7 +142,8 @@
         "financeArea": "Finance Area",
         "pendingPayments": "Pending Payments Classification",
         "sentPayments": "Sent Payments",
-        "paymentErrors": "Payment Errors"
+        "paymentErrors": "Payment Errors",
+        "pendingAnalytics": "Analytics"
     },
     "pendingpage": {
         "title": "Pending Payments Classification",
@@ -211,5 +212,25 @@
         "saveManualReferences": "Save References",
 
         "close": "Close"
-        }
+    },
+    "analyticspage": {
+        "title": "Pending Analytics",
+        "subtitle": "Analytical summary of pending payments",
+
+        "level": "Level",
+        "concept": "Concept",
+        "quantity": "Quantity",
+        "amount": "Amount",
+
+        "file": "File",
+        "company": "Company",
+        "paymentType": "Payment Type",
+        "currency": "Currency",
+
+        "files": "Files",
+        "payments": "Payments",
+        "totalAmount": "Total Amount",
+        "searchFile": "Search file..."
+    }
+
 }

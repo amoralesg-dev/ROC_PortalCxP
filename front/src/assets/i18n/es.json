@@ -174,7 +174,8 @@
         "financeArea": "Área de Finanzas",
         "pendingPayments": "Pagos Pendientes de Clasificación",
         "sentPayments": "Pagos Enviados",
-        "paymentErrors": "Errores de Pagos"
+        "paymentErrors": "Errores de Pagos",
+        "pendingAnalytics": "Analítica"
     },
     "pendingpage": {
         "title": "Pagos Pendientes de Clasificación",
@@ -245,5 +246,25 @@
 
 
         "close": "Cerrar"
-        }
+      },
+      
+    "analyticspage": {
+        "title": "Analítica de Pendientes",
+        "subtitle": "Resumen analítico de pagos pendientes",
+
+        "level": "Nivel",
+        "concept": "Concepto",
+        "quantity": "Cantidad",
+        "amount": "Monto",
+
+        "file": "Archivo",
+        "company": "Empresa",
+        "paymentType": "Tipo Pago",
+        "currency": "Moneda",
+
+        "files": "Archivos",
+        "payments": "Pagos",
+        "totalAmount": "Monto Total",
+        "searchFile": "Buscar archivo..."
+      }
 }
