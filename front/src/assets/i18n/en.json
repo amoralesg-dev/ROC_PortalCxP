@@ -14,6 +14,7 @@
         "confirmRejectMessage": "Do you want to reject this record?",
         "confirmRejectMultipleTitle": "Reject Records",
         "confirmRejectMultipleMessage": "Do you want to reject {{count}} record(s)?",
+        "importantMessage": "Important: You have to adjust your payment selection in QAD in order to keep in line with the bank.",
         "reject": "Reject",
         "cancel": "Cancel",
         "successReject": "Record rejected successfully",
@@ -22,6 +23,10 @@
         "errorRejectMultiple": "Error rejecting records",
         "errorLoading": "Error loading errors",
         "noErrorsTooltip": "No errors",
+        "totalRecords": "Total Records",
+        "totalFiles": "Files",
+        "totalErrorStatus": "Errors",
+
         "tableColumns": {
             "folio": "ID",
             "provider": "SUPPLIER",
