@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ActualizarReferenciasManualDTO } from '../components/pagos-table/pagos-table';
+import { AnaliticaPendientesArchivoDTO } from '../models/nalitica-pendientes.model';
 
 
 export interface PagoDto {
@@ -252,7 +253,25 @@ actualizarReferenciasManuales(
     );
   }
 
+obtenerAnaliticaPendientes(): Observable<AnaliticaPendientesArchivoDTO[]> {
 
+    let params = new HttpParams();
+
+    const authBu = sessionStorage.getItem('auth_bu');
+
+    if (authBu) {
+      params = params.set('bu', authBu);
+    }
+
+    return this.http.get<
+      AnaliticaPendientesArchivoDTO[]
+    >(
+      `${this.baseUrl}/pagos/analitica-pendientes`,
+      {
+        params
+      }
+    );
+  }
 
 
 
