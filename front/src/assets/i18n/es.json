@@ -20,6 +20,7 @@
 
     "confirmRejectMultipleTitle": "Rechazar Registros",
     "confirmRejectMultipleMessage": "¿Deseas rechazar {{count}} registro(s)?",
+    "importantMessage": "Importante: Debe ajustar su selección de pagos en QAD para mantenerla alineada con el banco.",
 
     "reject": "Rechazar",
     "cancel": "Cancelar",
@@ -33,6 +34,10 @@
     "errorLoading": "Error al cargar errores",
 
     "noErrorsTooltip": "Sin errores",
+
+    "totalRecords": "Total Registros",
+    "totalFiles": "Archivos",
+    "totalErrorStatus": "Errores",
 
     "tableColumns": {
       "folio": "Folio",
@@ -174,7 +179,8 @@
         "financeArea": "Área de Finanzas",
         "pendingPayments": "Pagos Pendientes de Clasificación",
         "sentPayments": "Pagos Enviados",
-        "paymentErrors": "Errores de Pagos"
+        "paymentErrors": "Errores de Pagos",
+        "pendingAnalytics": "Analítica"
     },
     "pendingpage": {
         "title": "Pagos Pendientes de Clasificación",
@@ -245,5 +251,25 @@
 
 
         "close": "Cerrar"
-        }
+      },
+      
+    "analyticspage": {
+        "title": "Analítica de Pendientes",
+        "subtitle": "Resumen analítico de pagos pendientes",
+
+        "level": "Nivel",
+        "concept": "Concepto",
+        "quantity": "Cantidad",
+        "amount": "Monto",
+
+        "file": "Archivo",
+        "company": "Empresa",
+        "paymentType": "Tipo Pago",
+        "currency": "Moneda",
+
+        "files": "Archivos",
+        "payments": "Pagos",
+        "totalAmount": "Monto Total",
+        "searchFile": "Buscar archivo..."
+      }
 }

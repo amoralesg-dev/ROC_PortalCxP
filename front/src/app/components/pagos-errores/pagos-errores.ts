@@ -50,6 +50,13 @@ export class PagosErroresComponent {
     totalElements = 0;
     sortField = '';
     sortOrder = 1;
+
+
+    //reports
+    totalRegistros = 0;
+    totalArchivos = 0;
+    totalEstatusError = 0;
+    totalErrores = 0;
     
 
     
@@ -123,9 +130,10 @@ export class PagosErroresComponent {
                 'errorpage.confirmRejectTitle'
             ),
 
-            message: this.translate.instant(
-                'errorpage.confirmRejectMessage'
-            ),
+            message:
+                this.translate.instant('errorpage.confirmRejectMessage') +
+                '<br><br><strong>' +
+                this.translate.instant('errorpage.importantMessage')+'</strong>',
 
             acceptLabel: this.translate.instant(
                 'errorpage.reject'
@@ -197,12 +205,15 @@ export class PagosErroresComponent {
                 'errorpage.confirmRejectMultipleTitle'
             ),
 
-            message: this.translate.instant(
-                'errorpage.confirmRejectMultipleMessage',
-                {
-                    count: ids.length
-                }
-            ),
+            message:
+                this.translate.instant(
+                    'errorpage.confirmRejectMultipleMessage',
+                    {
+                        count: ids.length
+                    }
+                ) +
+                '<br><br><strong>' +
+                this.translate.instant('errorpage.importantMessage')+'</strong>',
 
             acceptLabel: this.translate.instant(
                 'errorpage.reject'
@@ -291,6 +302,27 @@ export class PagosErroresComponent {
                             : ''
 
                     }));
+                    this.totalRegistros = data.totalElements;
+
+                    this.totalArchivos = new Set(
+                        data.content.map(item => item.nombreArchivo)
+                    ).size;
+
+                    this.totalEstatusError = data.totalElements;
+
+                    this.totalErrores = data.content.reduce(
+                        (total, item) =>
+                            total +
+                            (
+                                item.mensaje
+                                    ? item.mensaje
+                                        .split('|')
+                                        .filter(e => e.trim().length > 0)
+                                        .length
+                                    : 0
+                            ),
+                        0
+                    );
 
                     this.cdr.detectChanges();
 

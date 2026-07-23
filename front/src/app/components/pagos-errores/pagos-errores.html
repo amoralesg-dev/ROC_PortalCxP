@@ -4,6 +4,9 @@
     icon="pi pi-exclamation-triangle">
 </app-page-header>
 
+
+
+
 <app-page-toolbar>
     <p-button
         [label]="'errorpage.rejectSelected' | translate"
@@ -15,6 +18,41 @@
 </app-page-toolbar>
 
 <app-page-content>
+
+
+
+    <div class="error-kpis">
+        <div class="error-kpi-card">
+            <span class="error-kpi-label">
+                {{ 'errorpage.totalRecords' | translate }}
+            </span>
+
+            <span class="error-kpi-value">
+                {{ totalRegistros }}
+            </span>
+        </div>
+
+        <div class="error-kpi-card">
+            <span class="error-kpi-label">
+                {{ 'errorpage.totalFiles' | translate }}
+            </span>
+
+            <span class="error-kpi-value">
+                {{ totalArchivos }}
+            </span>
+        </div>
+
+        <div class="error-kpi-card">
+            <span class="error-kpi-label">
+                {{ 'errorpage.totalErrorStatus' | translate }}
+            </span>
+
+            <span class="error-kpi-value">
+                {{ totalErrores }}
+            </span>
+        </div>
+    </div>
+
 
     <app-data-table
         [columns]="columns"
