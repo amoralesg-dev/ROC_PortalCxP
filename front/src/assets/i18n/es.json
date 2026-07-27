@@ -211,7 +211,18 @@
         "paymentTypeCatalog": "Catálogo de Tipo de Pago",
         "paymentTypeNotSelected": "No seleccionado",
 
-        
+        "confirmRejectTitle": "Confirmar rechazo",
+        "confirmRejectMessage": "¿Deseas rechazar este pago?",
+        "confirmRejectMultipleTitle": "Confirmar rechazo masivo",
+        "confirmRejectMultipleMessage": "¿Deseas rechazar {{count}} pagos seleccionados?",
+        "importantMessage": "Esta acción no se puede deshacer.",
+        "reject": "Rechazar",
+        "rejectSelected": "Rechazar seleccionados",
+        "cancel": "Cancelar",
+        "successReject": "Pago rechazado correctamente.",
+        "errorReject": "No fue posible rechazar el pago.",
+        "successRejectMultiple": "Pagos rechazados correctamente.",
+        "errorRejectMultiple": "No fue posible rechazar los pagos seleccionados.",
 
         "all": "Todos",
         "pending": "Pendiente",

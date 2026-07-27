@@ -11,6 +11,7 @@ import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TablePageEvent } from 'primeng/table';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { DecimalPipe } from '@angular/common';
 
 import {
   TranslatePipe,
@@ -38,7 +39,8 @@ import {
     AppDialog,
     ButtonModule,
     TooltipModule,
-    TranslatePipe
+    TranslatePipe,
+    DecimalPipe
   ],
   templateUrl: './pagos-errores.html',
   styleUrl: './pagos-errores.scss'
@@ -57,7 +59,8 @@ export class PagosErroresComponent {
     totalArchivos = 0;
     totalEstatusError = 0;
     totalErrores = 0;
-    
+    totalesPorMoneda: Record<string, number> = {};
+    monedas: string[] = [];
 
     
     ngOnInit(): void {
@@ -335,6 +338,19 @@ export class PagosErroresComponent {
                             ),
                         0
                     );
+                    this.totalesPorMoneda = {};
+
+                    data.content.forEach(item => {
+
+                        const moneda = item.moneda || 'N/A';
+
+                        this.totalesPorMoneda[moneda] =
+                            (this.totalesPorMoneda[moneda] || 0) +
+                            Number(item.monto || 0);
+
+                    });
+
+                    this.monedas = Object.keys(this.totalesPorMoneda);
 
                     this.cdr.detectChanges();
 
@@ -456,7 +472,9 @@ export class PagosErroresComponent {
                     {
                         field: 'nombreBeneficiario',
                         header: columns.name,
-                        sortable: true
+                        sortable: true,
+                        truncateLength:8,
+                        tooltip:true
                     },
                     {
                         field: 'monto',
@@ -471,12 +489,16 @@ export class PagosErroresComponent {
                     {
                         field: 'referencia',
                         header: columns.reference,
-                        sortable: true
+                        sortable: true,
+                        truncateLength:8,
+                        tooltip:true
                     },
                     {
                         field: 'nombreArchivo',
                         header: columns.file,
-                        sortable: true
+                        sortable: true,
+                        truncateLength:6,
+                        tooltip:true
                     },
                     {
                         field: 'errores',

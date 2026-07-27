@@ -39,6 +39,7 @@ import {
     ClasificarPagosRequest,
     ClasificarPagoItem
 } from '../../services/pago.service';
+import { ConfirmationService } from 'primeng/api';
 
 export interface PagoPendienteRow {
     id: number;
@@ -112,7 +113,8 @@ export class PagosPendientesComponent implements OnInit {
         private readonly pagoService: PagoService,
         private readonly cdr: ChangeDetectorRef,
         private readonly toast: Toast,
-        private readonly translate: TranslateService
+        private readonly translate: TranslateService,
+        private readonly confirmationService: ConfirmationService
     ) {}
 
     ngOnInit(): void {
@@ -179,7 +181,7 @@ export class PagosPendientesComponent implements OnInit {
                         sortable: true,
                         width: '120px',
                         styleClass: 'truncate-column',
-                        truncateLength:10,
+                        truncateLength:8,
                         tooltip:true
                     },
                     {
@@ -188,7 +190,7 @@ export class PagosPendientesComponent implements OnInit {
                             ?? this.translate.instant('pendingpage.file'),
                         sortable: true,
                         width: '120px',
-                        truncateLength:7,
+                        truncateLength:6,
                         tooltip:true
                     },
                     {
@@ -204,7 +206,7 @@ export class PagosPendientesComponent implements OnInit {
                             ?? this.translate.instant('pendingpage.reference'),
                         editable: true,
                         sortable: false,
-                        width: '120px'
+                        width: '110px'
                     },
                     {
                         field: 'actions',
@@ -623,5 +625,129 @@ export class PagosPendientesComponent implements OnInit {
                     this.toast.error(errorMessage);
                 }
             });
+    }
+
+    rechazarRegistro(row: PagoPendienteRow): void {
+        this.confirmationService.confirm({
+            header: this.translate.instant(
+                'pendingpage.confirmRejectTitle'
+            ),
+            message:
+                this.translate.instant(
+                    'pendingpage.confirmRejectMessage'
+                ),
+            acceptLabel: this.translate.instant(
+                'pendingpage.reject'
+            ),
+            rejectLabel: this.translate.instant(
+                'pendingpage.cancel'
+            ),
+            acceptButtonProps: {
+                severity: 'danger'
+            },
+            rejectButtonProps: {
+                severity: 'secondary'
+            },
+            accept: () => {
+                this.pagoService
+                    .rechazarPago(row.id)
+                    .subscribe({
+                        next: () => {
+
+                            this.toast.success(
+                                this.translate.instant(
+                                    'pendingpage.successReject'
+                                ),
+                                this.translate.instant(
+                                    'common.success'
+                                )
+                            );
+
+                            this.cargarPagos();
+                        },
+                        error: () => {
+
+                            this.toast.error(
+                                this.translate.instant(
+                                    'pendingpage.errorReject'
+                                ),
+                                this.translate.instant(
+                                    'common.error'
+                                )
+                            );
+
+                        }
+                    });
+            }
+        });
+    }
+
+    rechazarSeleccionados(): void {
+        const ids = this.selectedRows.map(
+            row => row.id
+        );
+
+        if (!ids.length) {
+            return;
+        }
+
+        this.confirmationService.confirm({
+            header: this.translate.instant(
+                'pendingpage.confirmRejectMultipleTitle'
+            ),
+            message:
+                this.translate.instant(
+                    'pendingpage.confirmRejectMultipleMessage',
+                    {
+                        count: ids.length
+                    }
+                ),
+            acceptLabel: this.translate.instant(
+                'pendingpage.reject'
+            ),
+            rejectLabel: this.translate.instant(
+                'pendingpage.cancel'
+            ),
+            acceptButtonProps: {
+                severity: 'danger'
+            },
+            rejectButtonProps: {
+                severity: 'secondary'
+            },
+            accept: () => {
+
+                this.pagoService
+                    .rechazarPagos(ids)
+                    .subscribe({
+                        next: () => {
+
+                            this.toast.success(
+                                this.translate.instant(
+                                    'pendingpage.successRejectMultiple'
+                                ),
+                                this.translate.instant(
+                                    'common.success'
+                                )
+                            );
+
+                            this.selectedRows = [];
+                            this.cargarPagos();
+                        },
+                        error: () => {
+
+                            this.toast.error(
+                                this.translate.instant(
+                                    'pendingpage.errorRejectMultiple'
+                                ),
+                                this.translate.instant(
+                                    'common.error'
+                                )
+                            );
+
+                        }
+                    });
+
+            }
+        });
     }
 }

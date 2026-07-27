@@ -22,11 +22,10 @@ export const authGuard = () => {
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'pagos-pendientes', component: PagosTable, canActivate: [authGuard] },
+  { path: 'pagos-pendientes', component: PagosPendientesComponent, canActivate: [authGuard] },
   { path: 'pagos-enviados', component: PagosEnviadosComponent, canActivate: [authGuard] },
   { path: '', redirectTo: '/pagos-pendientes', pathMatch: 'full' },
   { path: 'pagos-errores', component: PagosErroresComponent, canActivate: [authGuard] },
-  { path: 'pagos-pendientes-nuevo', component: PagosPendientesComponent, canActivate: [authGuard] },
   { path: 'pagos-analitica', component: PagosAnaliticaComponent, canActivate: [authGuard]},
   { path: '**', redirectTo: '/pagos-pendientes' }
 ];

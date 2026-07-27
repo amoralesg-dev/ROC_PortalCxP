@@ -9,6 +9,14 @@
     <div class="pending-toolbar">
 
         <p-button
+            [label]="'pendingpage.rejectSelected' | translate"
+            icon="pi pi-times"
+            severity="danger"
+            [disabled]="!selectedRows.length"
+            (onClick)="rechazarSeleccionados()">
+        </p-button>
+
+        <p-button
             [label]="'pendingpage.saveManualReferences' | translate"
             icon="pi pi-save"
             severity="secondary"
@@ -181,6 +189,14 @@
                     [rounded]="true"
                     (onClick)="guardarReferencia(row)"
                     [pTooltip]="'pendingpage.saveManualReferences' | translate"
+                    tooltipPosition="left">
+                </p-button>
+                <p-button
+                    icon="pi pi-times"
+                    severity="danger"
+                    [rounded]="true"
+                    (onClick)="rechazarRegistro(row)"
+                    [pTooltip]="'pendingpage.reject' | translate"
                     tooltipPosition="left">
                 </p-button>
 
