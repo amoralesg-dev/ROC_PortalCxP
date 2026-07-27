@@ -162,6 +162,9 @@ export class PagosErroresComponent {
                             this.toast.success(
                                 this.translate.instant(
                                     'errorpage.successReject'
+                                ),
+                                this.translate.instant(
+                                'common.success'
                                 )
                             );
 
@@ -174,6 +177,9 @@ export class PagosErroresComponent {
                             this.toast.error(
                                 this.translate.instant(
                                     'errorpage.errorReject'
+                                ),
+                                this.translate.instant(
+                                    'common.error'
                                 )
                             );
 
@@ -242,6 +248,9 @@ export class PagosErroresComponent {
                             this.toast.success(
                                 this.translate.instant(
                                     'errorpage.successRejectMultiple'
+                                ),
+                                this.translate.instant(
+                                'common.success'
                                 )
                             );
 
@@ -256,6 +265,9 @@ export class PagosErroresComponent {
                             this.toast.error(
                                 this.translate.instant(
                                     'errorpage.errorRejectMultiple'
+                                ),
+                                this.translate.instant(
+                                    'common.error'
                                 )
                             );
 

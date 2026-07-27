@@ -1,0 +1,209 @@
+<app-page-header
+    [title]="'pendingpage.title' | translate"
+    [subtitle]="'pendingpage.subtitle' | translate"
+    icon="pi pi-wallet">
+</app-page-header>
+
+<app-page-toolbar>
+
+    <div class="pending-toolbar">
+
+        <p-button
+            [label]="'pendingpage.saveManualReferences' | translate"
+            icon="pi pi-save"
+            severity="secondary"
+            (onClick)="guardarReferenciasManuales()">
+        </p-button>
+
+        <p-button
+            [label]="'pendingpage.save' | translate"
+            icon="pi pi-save"
+            severity="primary"
+            [disabled]="isGuardarDisabled()"
+            (onClick)="guardar()">
+        </p-button>
+
+        @if (pagosValidados) {
+            <p-button
+                [label]="'pendingpage.sendPayment' | translate"
+                icon="pi pi-send"
+                severity="success"
+                [disabled]="isEnviarDisabled()"
+                (onClick)="enviarPagos()">
+            </p-button>
+        }
+
+    </div>
+
+</app-page-toolbar>
+
+<app-page-content>
+
+    <div class="pending-filters">
+
+        <span class="pending-filter-title">
+            <i class="pi pi-filter"></i>
+            {{ 'pendingpage.filters' | translate }}
+        </span>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="codigoProveedorFiltro"
+            (keyup.enter)="buscarPorFiltros()"
+            [placeholder]="'pendingpage.supplierPlaceholder' | translate" />
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="rfcBeneficiarioFiltro"
+            (keyup.enter)="buscarPorFiltros()"
+            [placeholder]="'pendingpage.rfcPlaceholder' | translate" />
+
+        <p-select
+            [(ngModel)]="tipoPagoFiltro"
+            [options]="tiposDePagoCatalogo"
+            optionLabel="descripcion"
+            optionValue="dealType"
+            [showClear]="false"
+            [placeholder]="'pendingpage.paymentType' | translate"
+            (onChange)="buscarPorFiltros()">
+
+            <ng-template #header>
+                <div
+                    class="pending-select-option"
+                    (click)="tipoPagoFiltro = 'Todos'; buscarPorFiltros()">
+                    {{ 'pendingpage.all' | translate }}
+                </div>
+            </ng-template>
+
+        </p-select>
+
+        <p-select
+            [(ngModel)]="estatusFiltro"
+            [options]="[
+                {
+                    label: ('pendingpage.all' | translate),
+                    value: 'Todos'
+                },
+                {
+                    label: ('pendingpage.pending' | translate),
+                    value: 'Pendiente'
+                }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'pendingpage.status' | translate"
+            (onChange)="buscarPorFiltros()">
+        </p-select>
+
+        <p-button
+            [label]="'pendingpage.search' | translate"
+            icon="pi pi-search"
+            severity="primary"
+            (onClick)="buscarPorFiltros()">
+        </p-button>
+
+        <p-button
+            [label]="'pendingpage.clear' | translate"
+            icon="pi pi-times"
+            severity="secondary"
+            (onClick)="limpiarFiltros()">
+        </p-button>
+
+        <span class="pending-filter-title pending-type-label">
+            <i class="pi pi-tags"></i>
+            {{ 'pendingpage.paymentTypeLabel' | translate }}
+        </span>
+
+        <p-select
+            class="payment-type-catalog"
+            [(ngModel)]="selectedTipo"
+            [options]="tiposDePagoCatalogo"
+            optionLabel="descripcion"
+            optionValue="dealType"
+            [placeholder]="'pendingpage.paymentTypeCatalog' | translate"
+            (onChange)="onTipoChange($event.value)">
+        </p-select>
+
+    </div>
+
+    <app-data-table
+        [columns]="columns"
+        [data]="pagos"
+        [rows]="pageSize"
+        [lazy]="true"
+        [totalRecords]="totalElements"
+        [remoteFilter]="false"
+        [globalFilterFields]="[
+            'proveedor',
+            'rfc',
+            'nombre',
+            'monto',
+            'moneda',
+            'descripcion',
+            'archivo',
+            'tipo',
+            'estatus'
+        ]"
+        [showSearch]="false"
+        [searchPlaceholder]="'common.search' | translate"
+        [emptyTitle]="'pendingpage.emptyTitle' | translate"
+        [emptySubtitle]="'pendingpage.emptyMessage' | translate"
+        (lazyLoadChange)="onLazyLoad($event)"
+        (rowsSelected)="onSelectionChange($event)">
+
+        <ng-template #monto let-row>
+            <span class="pending-amount">
+                {{ row.monto | currency }}
+            </span>
+        </ng-template>
+
+        <ng-template #tipo let-row>
+            @if (row.tipo) {
+                <span class="tipo-badge">
+                    {{ row.tipo }}
+                </span>
+            }
+        </ng-template>
+
+        <ng-template #referenciaManual let-row>
+            TEST {{ row.id }}
+        </ng-template>
+
+        <ng-template #actions let-row>
+
+            <div class="pending-actions">
+
+                <p-button
+                    icon="pi pi-save"
+                    severity="primary"
+                    [rounded]="true"
+                    (onClick)="guardarReferencia(row)"
+                    [pTooltip]="'pendingpage.saveManualReferences' | translate"
+                    tooltipPosition="left">
+                </p-button>
+
+            </div>
+
+        </ng-template>
+
+        <ng-template #estatus let-row>
+
+            <span
+                class="status-badge"
+                [ngClass]="{
+                    'status-badge-pend': row.estatus === 'Pendiente'
+                }">
+
+                <i class="pi pi-clock"></i>
+
+                {{ row.estatus | uppercase }}
+
+            </span>
+
+        </ng-template>
+
+    </app-data-table>
+
+</app-page-content>

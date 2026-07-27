@@ -1,7 +1,11 @@
 {
 
   "common": {
-    "search": "Buscar..."
+    "search": "Buscar...",
+     "success": "Éxito",
+     "information": "Información",
+     "warning": "Advertencia",
+     "error": "Error"
   },
   "errorpage": {
     "title": "Errores de Pago",
@@ -205,6 +209,7 @@
 
         "paymentTypeLabel": "Tipo de pago",
         "paymentTypeCatalog": "Catálogo de Tipo de Pago",
+        "paymentTypeNotSelected": "No seleccionado",
 
         
 

@@ -1,6 +1,10 @@
 {
     "common": {
-        "search": "Search..."
+        "search": "Search...",
+        "success": "Success",
+        "information": "Information",
+        "warning": "Warning",
+        "error": "Error"
     },
     "errorpage": {
         "title": "Payment Errors",
@@ -173,6 +177,7 @@
 
         "paymentTypeLabel": "Payment Type",
         "paymentTypeCatalog": "Payment Type Catalog",
+        "paymentTypeNotSelected": "Not selected",
 
         
 
