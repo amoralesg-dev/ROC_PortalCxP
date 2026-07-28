@@ -51,7 +51,25 @@
                 {{ totalErrores }}
             </span>
         </div>
+
+        @for (moneda of monedas; track moneda) {
+
+            <div class="error-kpi-card">
+
+                <span class="error-kpi-label">
+                    {{ moneda }}
+                </span>
+
+                <span class="error-kpi-value">
+                    {{ totalesPorMoneda[moneda] | number:'1.2-2'  }}
+                </span>
+
+            </div>
+
+        }
     </div>
+    
+
 
 
     <app-data-table

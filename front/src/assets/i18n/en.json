@@ -1,6 +1,10 @@
 {
     "common": {
-        "search": "Search..."
+        "search": "Search...",
+        "success": "Success",
+        "information": "Information",
+        "warning": "Warning",
+        "error": "Error"
     },
     "errorpage": {
         "title": "Payment Errors",
@@ -173,8 +177,20 @@
 
         "paymentTypeLabel": "Payment Type",
         "paymentTypeCatalog": "Payment Type Catalog",
+        "paymentTypeNotSelected": "Not selected",
 
-        
+        "confirmRejectTitle": "Confirm rejection",
+        "confirmRejectMessage": "Do you want to reject this payment?",
+        "confirmRejectMultipleTitle": "Confirm bulk rejection",
+        "confirmRejectMultipleMessage": "Do you want to reject {{count}} selected payments?",
+        "importantMessage": "This action cannot be undone.",
+        "reject": "Reject",
+        "rejectSelected": "Reject selected",
+        "cancel": "Cancel",
+        "successReject": "Payment rejected successfully.",
+        "errorReject": "Unable to reject the payment.",
+        "successRejectMultiple": "Payments rejected successfully.",
+        "errorRejectMultiple": "Unable to reject the selected payments.",
 
         "all": "All",
         "pending": "Pending",
