@@ -32,16 +32,7 @@
             </span>
         </div>
 
-        <div class="error-kpi-card">
-            <span class="error-kpi-label">
-                {{ 'errorpage.totalFiles' | translate }}
-            </span>
-
-            <span class="error-kpi-value">
-                {{ totalArchivos }}
-            </span>
-        </div>
-
+        
         <div class="error-kpi-card">
             <span class="error-kpi-label">
                 {{ 'errorpage.totalErrorStatus' | translate }}
@@ -92,6 +83,7 @@
         [emptyTitle]="'errorpage.emptyTitle' | translate"
         [emptySubtitle]="'errorpage.emptySubtitle' | translate"
         (lazyLoadChange)="onLazyLoad($event)"
+        [selectedRows]="selectedRows"
         (rowsSelected)="onSelectionChange($event)"
         (globalFilterChange)="onGlobalFilter($event)">
 

@@ -1,7 +1,8 @@
 import {
     Component,
     ChangeDetectorRef,
-    OnInit
+    OnInit,
+    ViewChild
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -108,6 +109,9 @@ export class PagosPendientesComponent implements OnInit {
     sortOrder = 1;
 
     pagosValidados = false;
+
+
+
 
     constructor(
         private readonly pagoService: PagoService,
@@ -296,6 +300,7 @@ export class PagosPendientesComponent implements OnInit {
                     );
                 }
             });
+            
     }
 
     buscarPorFiltros(): void {
@@ -417,6 +422,7 @@ export class PagosPendientesComponent implements OnInit {
                     this.toast.error(errorMessage);
                 }
             });
+        this.selectedRows = [];
     }
 
     enviarPagos(): void {
@@ -447,6 +453,8 @@ export class PagosPendientesComponent implements OnInit {
                         'Error al enviar los pagos:',
                         error
                     );
+
+                    this.selectedRows = [];
 
                     const errorMessage =
                         error.error?.message ||
@@ -575,6 +583,7 @@ export class PagosPendientesComponent implements OnInit {
                     'common.information'
                 )
             );
+            
 
             return;
         }
@@ -608,6 +617,7 @@ export class PagosPendientesComponent implements OnInit {
                         'common.success'
                         )
                     );
+                    this.selectedRows = [];
                 },
                 error: (error) => {
 
@@ -732,6 +742,7 @@ export class PagosPendientesComponent implements OnInit {
 
                             this.selectedRows = [];
                             this.cargarPagos();
+                            this.cdr.detectChanges();
                         },
                         error: () => {
 
