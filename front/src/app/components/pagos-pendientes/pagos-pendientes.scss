@@ -1,0 +1,106 @@
+.pending-toolbar {
+    display: flex;
+    flex-direction: row;
+    gap: .75rem;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.pending-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.pending-filter-title {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-weight: 600;
+    color: var(--rassini-secondary);
+    white-space: nowrap;
+}
+
+.pending-type-label {
+    margin-left: .5rem;
+}
+
+.pending-select-option {
+    padding: .75rem 1rem;
+    cursor: pointer;
+}
+
+.pending-select-option:hover {
+    background-color: #f3f4f6;
+}
+
+.pending-amount {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    color: var(--rassini-primary);
+}
+
+.manual-reference-input {
+    width: 100%;
+    max-width: 120px;
+}
+
+.pending-actions {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    align-items: center;
+}
+
+.tipo-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    background: #e8f0fe;
+    color: var(--rassini-primary);
+    font-weight: 600;
+    font-size: .8rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .78rem;
+}
+
+.status-badge-pend {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.col-id {
+    width: 4%;
+}
+
+.col-supplier {
+    width: 8%;
+}
+
+.col-taxid {
+    width: 10%;
+}
+
+.col-name {
+    width: 12%;
+}
+
+.col-description {
+    width: 20%;
+}
+.payment-type-catalog {
+    width: 150px;
+}
