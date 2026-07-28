@@ -159,6 +159,7 @@
         [emptyTitle]="'pendingpage.emptyTitle' | translate"
         [emptySubtitle]="'pendingpage.emptyMessage' | translate"
         (lazyLoadChange)="onLazyLoad($event)"
+        [selectedRows]="selectedRows"
         (rowsSelected)="onSelectionChange($event)">
 
         <ng-template #monto let-row>
