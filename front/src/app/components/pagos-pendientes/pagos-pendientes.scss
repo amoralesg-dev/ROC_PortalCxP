@@ -104,3 +104,22 @@
 .payment-type-catalog {
     width: 150px;
 }
+
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.35rem 0.5rem !important;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    padding: 0.35rem 0.5rem !important;
+}
+
+:host ::ng-deep .p-button.p-button-icon-only.p-button-rounded {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+}
+
+:host ::ng-deep .p-checkbox {
+    width: 1rem !important;
+    height: 1rem !important;
+}
