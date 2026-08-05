@@ -90,6 +90,7 @@
         "ERR043": "Intermediary country is required when an intermediary account exists",
         "ERR044": "Duplicate record found in file or database",
         "ERR045": "No supplier exists for the supplier code",
+        "ERR046": "No mapping exists for the business unit",
         "ERR998": "File contains errors in other records"
     },
     "sentpage": {
