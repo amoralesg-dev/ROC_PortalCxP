@@ -107,6 +107,7 @@
 
         "ERR044": "Registro duplicado en archivo o base de datos",
         "ERR045": "No existe supplier para el código proveedor",
+        "ERR046": "No existe mapeo para  la  bussines unit",
 
         "ERR998": "Archivo contiene errores en otros registros"
     },
