@@ -6,6 +6,26 @@
 
 <app-page-content>
 
+    <div class="filtros-fecha">
+
+        <p-datepicker
+            [(ngModel)]="fechaInicio"
+            [placeholder]="'sentpage.startDate' | translate">
+        </p-datepicker>
+
+        <p-datepicker
+            [(ngModel)]="fechaFin"
+            [placeholder]="'sentpage.endDate' | translate">
+        </p-datepicker>
+
+        <p-button [label]="'sentpage.searchDate' | translate"
+            icon="pi pi-search"
+            (onClick)="onDateRangeChange()">
+        </p-button>
+
+    </div>
+
+
     <app-data-table
       [columns]="columns"
       [data]="pagos"
@@ -30,7 +50,6 @@
       ]"
     (globalFilterChange)="onGlobalFilter($event)"
     (lazyLoadChange)="onLazyLoad($event)">
->
   </app-data-table>
 
 </app-page-content>
