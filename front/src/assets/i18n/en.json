@@ -114,6 +114,8 @@
         "sendFile": "SEND FILE",
         "paymentType": "PAYMENT TYPE",
         "status": "STATUS",
+        "startDate": "Start date",
+        "endDate": "End date",
         "classify": "Classify",
         "emptyMessage": "No pending payments were found under this category.",
         "selectPage": "Select page",

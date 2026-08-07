@@ -98,6 +98,8 @@ export class PagoService {
   }
   getPagosEnviadosFiltro(
     search?: string,
+    fechaInicio?: string,
+    fechaFin?: string,
     page: number = 0,
     size: number = 10,
     sortField?: string,
@@ -110,6 +112,14 @@ export class PagoService {
 
     if (search) {
       params = params.set('search', search);
+    }
+
+    if (fechaInicio) {
+      params = params.set('fechaInicio', fechaInicio);
+    }
+
+    if (fechaFin) {
+      params = params.set('fechaFin', fechaFin);
     }
 
     if (sortField) {

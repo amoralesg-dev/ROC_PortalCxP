@@ -138,6 +138,8 @@
         "paymentType": "TIPO DE PAGO",
         "status": "ESTATUS",
 
+        "startDate": "Fecha inicio",
+        "endDate": "Fecha fin",
         "classify": "Clasificar",
 
         "emptyMessage": "No se encontraron pagos pendientes bajo esta categoría.",
