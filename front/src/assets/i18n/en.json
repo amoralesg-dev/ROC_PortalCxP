@@ -116,6 +116,7 @@
         "status": "STATUS",
         "startDate": "Start date",
         "endDate": "End date",
+        "searchDate": "Filter by date",
         "classify": "Classify",
         "emptyMessage": "No pending payments were found under this category.",
         "selectPage": "Select page",
