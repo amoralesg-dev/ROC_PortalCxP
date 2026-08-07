@@ -3,6 +3,10 @@ import {
   OnInit
 } from '@angular/core';
 
+import { DatePickerModule } from 'primeng/datepicker';
+import { ButtonModule } from 'primeng/button';
+import { FormsModule } from '@angular/forms';
+
 import { CommonModule } from '@angular/common';
 
 import {
@@ -34,9 +38,12 @@ import { ChangeDetectorRef } from '@angular/core';
   standalone: true,
   imports: [
     CommonModule,
+    DatePickerModule,
+    FormsModule,
     PageHeaderComponent,
     PageContentComponent,
     DataTable,
+    ButtonModule,
     TranslatePipe
   ],
   templateUrl: './pagos-enviados.html',
@@ -55,6 +62,10 @@ export class PagosEnviadosComponent implements OnInit {
   totalElements = 0;
 
   search = '';
+
+  fechaInicio: Date | null = null;
+
+  fechaFin: Date | null = null;
 
   sortField = '';
 
@@ -158,6 +169,9 @@ export class PagosEnviadosComponent implements OnInit {
 
   cargarPagos(): void {
 
+    console.log('fechaInicio', this.fechaInicio);
+    console.log('fechaFin', this.fechaFin);
+
     const backendSortField =
         this.sortField
             ? this.sortFieldMap[this.sortField] ?? this.sortField
@@ -180,9 +194,11 @@ export class PagosEnviadosComponent implements OnInit {
         sortDirection
     );
 
-    this.pagoService
+      this.pagoService
         .getPagosEnviadosFiltro(
             this.search,
+            this.formatDate(this.fechaInicio),
+            this.formatDate(this.fechaFin),     
             this.pageIndex,
             this.pageSize,
             backendSortField,
@@ -244,5 +260,37 @@ export class PagosEnviadosComponent implements OnInit {
     this.cargarPagos();
 
   }
+
+  onDateRangeChange(): void {
+
+    console.log('CLICK BUSCAR');
+    this.pageIndex = 0;
+
+    this.cargarPagos();
+  }
+
+  private formatDate(
+  date: Date | null
+  ): string {
+
+    if (!date) {
+      return '';
+    }
+
+    const yyyy = date.getFullYear();
+
+    const mm = String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
+
+    const dd = String(
+      date.getDate()
+    ).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+
+
 
 }
