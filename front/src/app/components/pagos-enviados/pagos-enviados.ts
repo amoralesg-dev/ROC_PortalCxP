@@ -6,6 +6,7 @@ import {
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import { PrimeNG } from 'primeng/config';
 
 import { CommonModule } from '@angular/common';
 
@@ -67,6 +68,7 @@ export class PagosEnviadosComponent implements OnInit {
 
   fechaFin: Date | null = null;
 
+
   sortField = '';
 
   sortOrder = 1;
@@ -88,10 +90,20 @@ export class PagosEnviadosComponent implements OnInit {
   constructor(
     private readonly pagoService: PagoService,
     private readonly translate: TranslateService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly primeng: PrimeNG
   ) {}
 
   ngOnInit(): void {
+
+
+    this.configurarPrimeNg();
+
+    this.translate.onLangChange.subscribe(event => {
+
+    this.configurarPrimeNg(event.lang);
+
+    });
 
     this.inicializarColumnas();
 
@@ -290,7 +302,160 @@ export class PagosEnviadosComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  private configurarPrimeNg(lang?: string): void {
 
+    const currentLang =
+      lang ||
+      this.translate.getCurrentLang() ||
+      'es';
+
+    console.log('PrimeNG idioma:', currentLang);
+
+    if (currentLang === 'es') {
+
+      this.primeng.setTranslation({
+
+        clear: 'Limpiar',
+        apply: 'Aplicar',
+        today: 'Hoy',
+        weekHeader: 'Sem',
+
+        dayNames: [
+          'domingo',
+          'lunes',
+          'martes',
+          'miércoles',
+          'jueves',
+          'viernes',
+          'sábado'
+        ],
+
+        dayNamesShort: [
+          'dom',
+          'lun',
+          'mar',
+          'mié',
+          'jue',
+          'vie',
+          'sáb'
+        ],
+
+        dayNamesMin: [
+          'D',
+          'L',
+          'M',
+          'X',
+          'J',
+          'V',
+          'S'
+        ],
+
+        monthNames: [
+          'Enero',
+          'Febrero',
+          'Marzo',
+          'Abril',
+          'Mayo',
+          'Junio',
+          'Julio',
+          'Agosto',
+          'Septiembre',
+          'Octubre',
+          'Noviembre',
+          'Diciembre'
+        ],
+
+        monthNamesShort: [
+          'Ene',
+          'Feb',
+          'Mar',
+          'Abr',
+          'May',
+          'Jun',
+          'Jul',
+          'Ago',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dic'
+        ]
+
+      });
+
+    } else {
+
+      this.primeng.setTranslation({
+
+        clear: 'Clear',
+        apply: 'Apply',
+        today: 'Today',
+        weekHeader: 'Wk',
+
+        dayNames: [
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday'
+        ],
+
+        dayNamesShort: [
+          'Sun',
+          'Mon',
+          'Tue',
+          'Wed',
+          'Thu',
+          'Fri',
+          'Sat'
+        ],
+
+        dayNamesMin: [
+          'S',
+          'M',
+          'T',
+          'W',
+          'T',
+          'F',
+          'S'
+        ],
+
+        monthNames: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December'
+        ],
+
+        monthNamesShort: [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec'
+        ]
+
+      });
+
+    }
+
+  }
 
 
 }
