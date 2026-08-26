@@ -79,6 +79,23 @@
 
     <div class="analytics-container">
 
+        <p-select
+            *ngIf="busDisponibles.length > 1"
+            [(ngModel)]="buFiltro"
+            [options]="busDisponibles"
+            optionLabel="descripcion"
+            optionValue="codigo"
+            [placeholder]="'analyticspage.company' | translate"
+            (onChange)="onBuChange()"
+            style="min-width: 120px; max-width: 160px; margin-right: 10px;">
+            <ng-template #selectedItem let-selectedOption>
+              {{ selectedOption.codigo === 'ALL' ? ('analyticspage.all' | translate) : selectedOption.descripcion }}
+            </ng-template>
+            <ng-template #option let-option>
+              {{ option.codigo === 'ALL' ? ('analyticspage.all' | translate) : option.descripcion }}
+            </ng-template>
+        </p-select>
+
         <input
             type="text"
             pInputText

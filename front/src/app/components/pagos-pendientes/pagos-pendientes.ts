@@ -2,7 +2,9 @@ import {
     Component,
     ChangeDetectorRef,
     OnInit,
-    ViewChild
+    ViewChild,
+    DestroyRef,
+    inject
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -40,6 +42,8 @@ import {
     ClasificarPagosRequest,
     ClasificarPagoItem
 } from '../../services/pago.service';
+import { AuthService, BuDto } from '../../services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConfirmationService } from 'primeng/api';
 
 export interface PagoPendienteRow {
@@ -55,6 +59,8 @@ export interface PagoPendienteRow {
     tipo: string;
     referenciaManual: string;
     referenciaManualOriginal: string;
+    bu?: string;
+    fechaEnvio?: string;
 }
 
 export interface ReferenciaManualItemDTO {
@@ -100,6 +106,11 @@ export class PagosPendientesComponent implements OnInit {
     rfcBeneficiarioFiltro = '';
     tipoPagoFiltro = 'Todos';
     estatusFiltro = 'Todos';
+    monedaFiltro = '';
+    montoFiltro = '';
+    proveedorFiltro = '';
+    buFiltro = '';
+    busDisponibles: BuDto[] = [];
 
     pageIndex = 0;
     pageSize = 10;
@@ -110,8 +121,8 @@ export class PagosPendientesComponent implements OnInit {
 
     pagosValidados = false;
 
-
-
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly authService = inject(AuthService);
 
     constructor(
         private readonly pagoService: PagoService,
@@ -124,8 +135,24 @@ export class PagosPendientesComponent implements OnInit {
     ngOnInit(): void {
         this.inicializarColumnas();
         this.cargarCatalogos();
-        this.cargarPagos();
-        this.validarPagosStatus();
+        
+        const usuario = sessionStorage.getItem('auth_usuario') || '';
+        if (usuario) {
+            this.authService.getUserBus(usuario).subscribe(bus => {
+                this.busDisponibles = bus;
+                if (bus.length === 1) {
+                    this.buFiltro = bus[0].codigo;
+                } else if (bus.length > 0) {
+                    const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
+                    this.buFiltro = primerEspecifica.codigo;
+                }
+                this.pageIndex = 0;
+                this.selectedRows = [];
+                this.pagosValidados = false;
+                this.cargarPagos();
+                this.validarPagosStatus();
+            });
+        }
     }
 
     private inicializarColumnas(): void {
@@ -140,6 +167,20 @@ export class PagosPendientesComponent implements OnInit {
                             ?? this.translate.instant('pendingpage.folio'),
                         sortable: true,
                         width: '80px'
+                    },
+                    {
+                        field: 'bu',
+                        header: columns?.bu
+                            ?? 'BU',
+                        sortable: true,
+                        width: '85px'
+                    },
+                    {
+                        field: 'fechaEnvio',
+                        header: columns?.sentDate
+                            ?? 'FECHA ENVÍO',
+                        sortable: true,
+                        width: '120px'
                     },
                     {
                         field: 'proveedor',
@@ -267,7 +308,11 @@ export class PagosPendientesComponent implements OnInit {
                 this.tipoPagoFiltro,
                 this.estatusFiltro,
                 this.pageIndex,
-                this.pageSize
+                this.pageSize,
+                this.monedaFiltro,
+                this.montoFiltro,
+                this.proveedorFiltro,
+                this.buFiltro
             )
             .subscribe({
                 next: (data: Page<PagoDto>) => {
@@ -286,7 +331,9 @@ export class PagosPendientesComponent implements OnInit {
                         estatus: item.estatus || '',
                         tipo: item.tipoPago || '',
                         referenciaManual: item.referenciaManual || '',
-                        referenciaManualOriginal: item.referenciaManual || ''
+                        referenciaManualOriginal: item.referenciaManual || '',
+                        bu: (item as any).bu || '',
+                        fechaEnvio: item.fechaEnvio || ''
                     }));
 
                     this.selectedRows = [];
@@ -318,6 +365,9 @@ export class PagosPendientesComponent implements OnInit {
         this.tipoPagoFiltro = 'Todos';
         this.estatusFiltro = 'Todos';
         this.selectedTipo = 'Todos';
+        this.monedaFiltro = '';
+        this.montoFiltro = '';
+        this.proveedorFiltro = '';
         this.pageIndex = 0;
         this.selectedRows = [];
         this.cargarPagos();
@@ -386,7 +436,7 @@ export class PagosPendientesComponent implements OnInit {
         };
 
         this.pagoService
-            .clasificarPagos(request)
+            .clasificarPagos(request, this.buFiltro)
             .subscribe({
                 next: () => {
 
@@ -428,7 +478,7 @@ export class PagosPendientesComponent implements OnInit {
     enviarPagos(): void {
 
         this.pagoService
-            .enviarPagos()
+            .enviarPagos(this.buFiltro)
             .subscribe({
                 next: () => {
 
@@ -472,7 +522,7 @@ export class PagosPendientesComponent implements OnInit {
     validarPagosStatus(): void {
 
         this.pagoService
-            .validarPagos()
+            .validarPagos(this.buFiltro)
             .subscribe({
                 next: (response) => {
 

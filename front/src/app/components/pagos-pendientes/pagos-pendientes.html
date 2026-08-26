@@ -54,12 +54,29 @@
             {{ 'pendingpage.filters' | translate }}
         </span>
 
+        <p-select
+            *ngIf="busDisponibles.length > 1"
+            [(ngModel)]="buFiltro"
+            [options]="busDisponibles"
+            optionLabel="descripcion"
+            optionValue="codigo"
+            [placeholder]="'pendingpage.bu' | translate"
+            (onChange)="buscarPorFiltros()"
+            style="min-width: 120px; max-width: 160px;">
+            <ng-template #selectedItem let-selectedOption>
+              {{ selectedOption.codigo === 'ALL' ? ('pendingpage.all' | translate) : selectedOption.descripcion }}
+            </ng-template>
+            <ng-template #option let-option>
+              {{ option.codigo === 'ALL' ? ('pendingpage.all' | translate) : option.descripcion }}
+            </ng-template>
+        </p-select>
+
         <input
             pInputText
             type="text"
-            [(ngModel)]="codigoProveedorFiltro"
+            [(ngModel)]="proveedorFiltro"
             (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'pendingpage.supplierPlaceholder' | translate" />
+            [placeholder]="'pendingpage.providerPlaceholder' | translate" />
 
         <input
             pInputText
@@ -67,6 +84,26 @@
             [(ngModel)]="rfcBeneficiarioFiltro"
             (keyup.enter)="buscarPorFiltros()"
             [placeholder]="'pendingpage.rfcPlaceholder' | translate" />
+
+        <p-select
+            [(ngModel)]="monedaFiltro"
+            [options]="[
+                { label: ('pendingpage.all' | translate), value: '' },
+                { label: 'MXN', value: 'MXN' },
+                { label: 'USD', value: 'USD' }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'pendingpage.currency' | translate"
+            (onChange)="buscarPorFiltros()">
+        </p-select>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="montoFiltro"
+            (keyup.enter)="buscarPorFiltros()"
+            [placeholder]="'pendingpage.amountPlaceholder' | translate" />
 
         <p-select
             [(ngModel)]="tipoPagoFiltro"

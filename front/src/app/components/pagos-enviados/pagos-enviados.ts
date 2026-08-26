@@ -1,10 +1,13 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  DestroyRef,
+  inject
 } from '@angular/core';
 
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { PrimeNG } from 'primeng/config';
 
@@ -13,8 +16,11 @@ import { CommonModule } from '@angular/common';
 import {
   PagoService,
   PagoDto,
-  Page
+  Page,
+  TipoPagoDto
 } from '../../services/pago.service';
+import { AuthService } from '../../services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import {
   TranslatePipe,
@@ -34,6 +40,9 @@ import {
 
 import { ChangeDetectorRef } from '@angular/core';
 
+import { SelectModule } from 'primeng/select';
+import { BuDto } from '../../services/auth.service';
+
 @Component({
   selector: 'app-pagos-enviados',
   standalone: true,
@@ -45,6 +54,8 @@ import { ChangeDetectorRef } from '@angular/core';
     PageContentComponent,
     DataTable,
     ButtonModule,
+    SelectModule,
+    InputTextModule,
     TranslatePipe
   ],
   templateUrl: './pagos-enviados.html',
@@ -68,10 +79,23 @@ export class PagosEnviadosComponent implements OnInit {
 
   fechaFin: Date | null = null;
 
-
   sortField = '';
 
   sortOrder = 1;
+
+  monedaFiltro = '';
+  montoFiltro = '';
+  buFiltro = '';
+  busDisponibles: BuDto[] = [];
+  proveedorFiltro = '';
+  rfcBeneficiarioFiltro = '';
+  tipoPagoFiltro = '';
+  tiposDePagoCatalogo: TipoPagoDto[] = [];
+
+  totalPagosCount = 0;
+  sumasPorMoneda: { moneda: string; total: number }[] = [];
+
+
 
   private readonly sortFieldMap: Record<string, string> = {
     id: 'id',
@@ -87,6 +111,9 @@ export class PagosEnviadosComponent implements OnInit {
     estatus: 'estatus'
   };
 
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+
   constructor(
     private readonly pagoService: PagoService,
     private readonly translate: TranslateService,
@@ -95,7 +122,6 @@ export class PagosEnviadosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
 
     this.configurarPrimeNg();
 
@@ -106,8 +132,22 @@ export class PagosEnviadosComponent implements OnInit {
     });
 
     this.inicializarColumnas();
+    this.cargarCatalogos();
 
-    this.cargarPagos();
+    const usuario = sessionStorage.getItem('auth_usuario') || '';
+    if (usuario) {
+      this.authService.getUserBus(usuario).subscribe(bus => {
+        this.busDisponibles = bus;
+        if (bus.length === 1) {
+          this.buFiltro = bus[0].codigo;
+        } else if (bus.length > 0) {
+          const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
+          this.buFiltro = primerEspecifica.codigo;
+        }
+        this.pageIndex = 0;
+        this.cargarPagos();
+      });
+    }
 
   }
 
@@ -121,6 +161,16 @@ export class PagosEnviadosComponent implements OnInit {
           {
             field: 'id',
             header: columns.folio,
+            sortable: true
+          },
+          {
+            field: 'bu',
+            header: columns.bu || 'BU',
+            sortable: true
+          },
+          {
+            field: 'fechaEnvio',
+            header: columns.sentDate || 'FECHA ENVÍO',
             sortable: true
           },
           {
@@ -206,25 +256,35 @@ export class PagosEnviadosComponent implements OnInit {
         sortDirection
     );
 
+      const finalBu = (this.buFiltro && this.buFiltro !== 'ALL') ? this.buFiltro : (sessionStorage.getItem('auth_bu') || '');
       this.pagoService
         .getPagosEnviadosFiltro(
-            this.search,
+            '', // codigoProveedor
+            this.rfcBeneficiarioFiltro,
+            this.tipoPagoFiltro,
+            this.monedaFiltro,
+            this.montoFiltro,
+            this.proveedorFiltro,
             this.formatDate(this.fechaInicio),
-            this.formatDate(this.fechaFin),     
+            this.formatDate(this.fechaFin),
             this.pageIndex,
             this.pageSize,
             backendSortField,
-            sortDirection
+            sortDirection,
+            finalBu
         )
         .subscribe({
 
-            next: (data: Page<PagoDto>) => {
+            next: (data) => {
 
                 this.totalElements =
-                    data.totalElements;
+                    data.page.totalElements;
 
                 this.pagos =
-                    [...data.content];
+                    [...data.page.content];
+
+                this.totalPagosCount = data.totalPagos;
+                this.sumasPorMoneda = data.sumas;
 
                 this.cdr.detectChanges();
 
@@ -273,11 +333,30 @@ export class PagosEnviadosComponent implements OnInit {
 
   }
 
-  onDateRangeChange(): void {
-
-    console.log('CLICK BUSCAR');
+  buscarPorFiltros(): void {
     this.pageIndex = 0;
+    this.cargarPagos();
+  }
 
+  limpiarFiltros(): void {
+    this.proveedorFiltro = '';
+    this.rfcBeneficiarioFiltro = '';
+    this.tipoPagoFiltro = '';
+    this.monedaFiltro = '';
+    this.montoFiltro = '';
+    this.fechaInicio = null;
+    this.fechaFin = null;
+
+    if (this.busDisponibles.length === 1) {
+      this.buFiltro = this.busDisponibles[0].codigo;
+    } else if (this.busDisponibles.length > 0) {
+      const primerEspecifica = this.busDisponibles.find(b => b.codigo !== 'ALL') || this.busDisponibles[0];
+      this.buFiltro = primerEspecifica.codigo;
+    } else {
+      this.buFiltro = '';
+    }
+
+    this.pageIndex = 0;
     this.cargarPagos();
   }
 
@@ -457,5 +536,12 @@ export class PagosEnviadosComponent implements OnInit {
 
   }
 
-
+  cargarCatalogos(): void {
+    this.pagoService.getCatalogosTipoPago().subscribe((tipos: TipoPagoDto[]) => {
+      this.tiposDePagoCatalogo = [
+        { id: 0, dealType: '', descripcion: this.translate.instant('sentpage.all'), corpo: false, bu: null },
+        ...tipos
+      ];
+    });
+  }
 }

@@ -6,7 +6,70 @@
 
 <app-page-content>
 
-    <div class="filtros-fecha">
+    <div class="filtros-fecha" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+
+        <span class="pending-filter-title" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057;">
+            <i class="pi pi-filter"></i>
+            {{ 'sentpage.filters' | translate }}
+        </span>
+
+        <p-select
+            *ngIf="busDisponibles.length > 1"
+            [(ngModel)]="buFiltro"
+            [options]="busDisponibles"
+            optionLabel="descripcion"
+            optionValue="codigo"
+            [placeholder]="'sentpage.bu' | translate"
+            style="min-width: 120px; max-width: 160px;">
+            <ng-template #selectedItem let-selectedOption>
+              {{ selectedOption.codigo === 'ALL' ? ('sentpage.all' | translate) : selectedOption.descripcion }}
+            </ng-template>
+            <ng-template #option let-option>
+              {{ option.codigo === 'ALL' ? ('sentpage.all' | translate) : option.descripcion }}
+            </ng-template>
+        </p-select>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="proveedorFiltro"
+            (keyup.enter)="buscarPorFiltros()"
+            [placeholder]="'sentpage.providerPlaceholder' | translate" />
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="rfcBeneficiarioFiltro"
+            (keyup.enter)="buscarPorFiltros()"
+            [placeholder]="'sentpage.rfcPlaceholder' | translate" />
+
+        <p-select
+            [(ngModel)]="monedaFiltro"
+            [options]="[
+                { label: ('sentpage.all' | translate), value: '' },
+                { label: 'MXN', value: 'MXN' },
+                { label: 'USD', value: 'USD' }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'sentpage.currencyLabel' | translate">
+        </p-select>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="montoFiltro"
+            (keyup.enter)="buscarPorFiltros()"
+            [placeholder]="'sentpage.amountLabel' | translate"
+            style="width: 120px;" />
+
+        <p-select
+            [(ngModel)]="tipoPagoFiltro"
+            [options]="tiposDePagoCatalogo"
+            optionLabel="descripcion"
+            optionValue="dealType"
+            [placeholder]="'sentpage.paymentType' | translate">
+        </p-select>
 
         <p-datepicker
             [(ngModel)]="fechaInicio"
@@ -18,11 +81,30 @@
             [placeholder]="'sentpage.endDate' | translate">
         </p-datepicker>
 
-        <p-button [label]="'sentpage.searchDate' | translate"
+        <p-button [label]="'sentpage.search' | translate"
             icon="pi pi-search"
-            (onClick)="onDateRangeChange()">
+            severity="primary"
+            (onClick)="buscarPorFiltros()">
         </p-button>
 
+        <p-button [label]="'sentpage.clear' | translate"
+            icon="pi pi-times"
+            severity="secondary"
+            (onClick)="limpiarFiltros()">
+        </p-button>
+
+    </div>
+
+    <!-- Resumen de Totales y Sumatorias -->
+    <div class="resumen-container" *ngIf="pagos.length > 0" style="display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap;">
+        <div class="resumen-card" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 18px; min-width: 140px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
+            <span style="font-size: 11px; color: #495057; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">{{ 'sentpage.totalPaymentsCount' | translate }}</span>
+            <span style="font-size: 20px; font-weight: 700; color: #212529; margin-top: 4px;">{{ totalPagosCount }}</span>
+        </div>
+        <div class="resumen-card" *ngFor="let suma of sumasPorMoneda" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 18px; min-width: 160px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
+            <span style="font-size: 11px; color: #495057; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">{{ 'sentpage.totalSum' | translate }} ({{ suma.moneda }})</span>
+            <span style="font-size: 20px; font-weight: 700; color: #28a745; margin-top: 4px;">{{ suma.total | number:'1.2-2' }} {{ suma.moneda }}</span>
+        </div>
     </div>
 
 

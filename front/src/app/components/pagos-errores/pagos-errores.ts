@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import {
   PagoService,
   PagoDto,
-  Page
+  Page,
+  TipoPagoDto
 } from '../../services/pago.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { ERROR_MESSAGES } from '../../constants/error-messages';
@@ -11,7 +12,11 @@ import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TablePageEvent } from 'primeng/table';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { SelectModule } from 'primeng/select';
+import { AuthService, BuDto } from '../../services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import {
   TranslatePipe,
@@ -32,6 +37,9 @@ import {
   selector: 'app-pagos-errores',
   standalone: true,
   imports: [
+    CommonModule,
+    FormsModule,
+    SelectModule,
     PageHeaderComponent,
     PageToolbarComponent,
     PageContentComponent,
@@ -53,6 +61,14 @@ export class PagosErroresComponent {
     sortField = '';
     sortOrder = 1;
 
+    buFiltro = '';
+    busDisponibles: BuDto[] = [];
+    proveedorFiltro = '';
+    rfcBeneficiarioFiltro = '';
+    tipoPagoFiltro = '';
+    monedaFiltro = '';
+    montoFiltro = '';
+    tiposDePagoCatalogo: TipoPagoDto[] = [];
 
     //reports
     totalRegistros = 0;
@@ -63,16 +79,58 @@ export class PagosErroresComponent {
     monedas: string[] = [];
 
     
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly authService = inject(AuthService);
+
     ngOnInit(): void {
 
-        
-
         this.inicializarColumnas();
-
+        this.cargarCatalogos();
         this.loadErrorsMessages();
 
-        this.cargarErrores();
+        const usuario = sessionStorage.getItem('auth_usuario') || '';
+        if (usuario) {
+            this.authService.getUserBus(usuario).subscribe(bus => {
+                this.busDisponibles = bus;
+                if (bus.length === 1) {
+                    this.buFiltro = bus[0].codigo;
+                } else if (bus.length > 0) {
+                    const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
+                    this.buFiltro = primerEspecifica.codigo;
+                }
+                this.pageIndex = 0;
+                this.selectedRows = [];
+                this.cargarErrores();
+            });
+        }
 
+    }
+
+    buscarPorFiltros(): void {
+        this.pageIndex = 0;
+        this.selectedRows = [];
+        this.cargarErrores();
+    }
+
+    limpiarFiltros(): void {
+        this.proveedorFiltro = '';
+        this.rfcBeneficiarioFiltro = '';
+        this.tipoPagoFiltro = '';
+        this.monedaFiltro = '';
+        this.montoFiltro = '';
+
+        if (this.busDisponibles.length === 1) {
+            this.buFiltro = this.busDisponibles[0].codigo;
+        } else if (this.busDisponibles.length > 0) {
+            const primerEspecifica = this.busDisponibles.find(b => b.codigo !== 'ALL') || this.busDisponibles[0];
+            this.buFiltro = primerEspecifica.codigo;
+        } else {
+            this.buFiltro = '';
+        }
+
+        this.pageIndex = 0;
+        this.selectedRows = [];
+        this.cargarErrores();
     }
 
 
@@ -286,19 +344,26 @@ export class PagosErroresComponent {
 
     cargarErrores(): void {
 
+        const finalBu = (this.buFiltro && this.buFiltro !== 'ALL') ? this.buFiltro : (sessionStorage.getItem('auth_bu') || '');
         this.pagoService
             .getPagosErroresFiltro(
-                this.search,
+                '', // codigoProveedor
+                this.rfcBeneficiarioFiltro,
+                this.tipoPagoFiltro,
+                this.monedaFiltro,
+                this.montoFiltro,
+                this.proveedorFiltro,
                 this.pageIndex,
                 this.pageSize,
                 this.sortField,
-                this.sortOrder === 1 ? 'ASC' : 'DESC'
+                this.sortOrder === 1 ? 'ASC' : 'DESC',
+                finalBu
             ).subscribe({
 
                 next: (data: Page<PagoDto>) => {
                     this.totalElements = data.totalElements;
 
-                    this.errores = data.content.map(item => ({
+                    this.errores = data.content.map((item: PagoDto) => ({
 
                         ...item,
 
@@ -320,19 +385,19 @@ export class PagosErroresComponent {
                     this.totalRegistros = data.totalElements;
 
                     this.totalArchivos = new Set(
-                        data.content.map(item => item.nombreArchivo)
+                        data.content.map((item: PagoDto) => item.nombreArchivo)
                     ).size;
 
                     this.totalEstatusError = data.totalElements;
 
                     this.totalErrores = data.content.reduce(
-                        (total, item) =>
+                        (total: number, item: PagoDto) =>
                             total +
                             (
                                 item.mensaje
                                     ? item.mensaje
                                         .split('|')
-                                        .filter(e => e.trim().length > 0)
+                                        .filter((e: string) => e.trim().length > 0)
                                         .length
                                     : 0
                             ),
@@ -340,7 +405,7 @@ export class PagosErroresComponent {
                     );
                     this.totalesPorMoneda = {};
 
-                    data.content.forEach(item => {
+                    data.content.forEach((item: PagoDto) => {
 
                         const moneda = item.moneda || 'N/A';
 
@@ -356,7 +421,7 @@ export class PagosErroresComponent {
 
                 },
 
-                error: (error) => {
+                error: (error: any) => {
 
                     console.error(
                         this.translate.instant(
@@ -460,6 +525,16 @@ export class PagosErroresComponent {
                         sortable: true
                     },
                     {
+                        field: 'bu',
+                        header: columns.bu || 'BU',
+                        sortable: true
+                    },
+                    {
+                        field: 'fechaEnvio',
+                        header: columns.sentDate || 'FECHA ENVÍO',
+                        sortable: true
+                    },
+                    {
                         field: 'codigoProveedor',
                         header: columns.provider,
                         sortable: true
@@ -536,4 +611,12 @@ export class PagosErroresComponent {
 
     }
 
+    cargarCatalogos(): void {
+        this.pagoService.getCatalogosTipoPago().subscribe((tipos: TipoPagoDto[]) => {
+            this.tiposDePagoCatalogo = [
+                { id: 0, dealType: '', descripcion: this.translate.instant('errorpage.all'), corpo: false, bu: null },
+                ...tipos
+            ];
+        });
+    }
 }

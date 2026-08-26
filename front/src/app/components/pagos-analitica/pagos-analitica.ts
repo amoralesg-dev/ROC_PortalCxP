@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import {
@@ -8,27 +8,32 @@ import {
 } from 'rassini-ui';
 import { AnaliticaPendientesArchivoDTO } from '../../models/nalitica-pendientes.model';
 import { PagoService } from '../../services/pago.service';
-import { CurrencyPipe } from '@angular/common';
 import { TreeNode } from 'primeng/api';
 import { TreeTableModule } from 'primeng/treetable';
 import { FormsModule } from '@angular/forms';
+import { SelectModule } from 'primeng/select';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { AuthService, BuDto } from '../../services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-pagos-analitica',
   standalone: true,
   imports: [
+    CommonModule,
     PageHeaderComponent,
     PageToolbarComponent,
     PageContentComponent,
     TranslatePipe,
     TreeTableModule,
     CurrencyPipe,
-    FormsModule
+    FormsModule,
+    SelectModule
   ],
   templateUrl: './pagos-analitica.html',
   styleUrl: './pagos-analitica.scss',
 })
-export class PagosAnaliticaComponent {
+export class PagosAnaliticaComponent implements OnInit {
 
 
   analitica: AnaliticaPendientesArchivoDTO[] = [];
@@ -48,6 +53,12 @@ export class PagosAnaliticaComponent {
   totalEUR = 0;
   totalJPY = 0;
 
+  buFiltro = '';
+  busDisponibles: BuDto[] = [];
+
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+
   constructor(
     private readonly pagoService: PagoService,
     private readonly cdr: ChangeDetectorRef
@@ -55,10 +66,23 @@ export class PagosAnaliticaComponent {
   }
 
   ngOnInit(): void {
+    const usuario = sessionStorage.getItem('auth_usuario') || '';
+    if (usuario) {
+      this.authService.getUserBus(usuario).subscribe(bus => {
+        this.busDisponibles = bus;
+        if (bus.length === 1) {
+          this.buFiltro = bus[0].codigo;
+        } else if (bus.length > 0) {
+          const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
+          this.buFiltro = primerEspecifica.codigo;
+        }
+        this.cargarAnalitica();
+      });
+    }
+  }
 
+  onBuChange(): void {
     this.cargarAnalitica();
-
-
   }
 
   cargarAnalitica(): void {
@@ -66,7 +90,7 @@ export class PagosAnaliticaComponent {
     this.loading = true;
 
     this.pagoService
-      .obtenerAnaliticaPendientes()
+      .obtenerAnaliticaPendientes(this.buFiltro)
       .subscribe({
 
         next: data => {
