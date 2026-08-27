@@ -47,26 +47,69 @@
 
 <app-page-content>
 
-    <div class="pending-filters">
+    <div class="pending-filters" style="display: flex; gap: 8px; align-items: center; flex-wrap: nowrap;">
 
         <span class="pending-filter-title">
             <i class="pi pi-filter"></i>
             {{ 'pendingpage.filters' | translate }}
         </span>
 
+        <p-select
+            *ngIf="busDisponibles.length > 1"
+            [(ngModel)]="buFiltro"
+            [options]="busDisponibles"
+            optionLabel="descripcion"
+            optionValue="codigo"
+            [placeholder]="'pendingpage.bu' | translate"
+
+            style="min-width: 120px; max-width: 160px;"
+            appendTo="body">
+            <ng-template #selectedItem let-selectedOption>
+              {{ 'common.bu' | translate }}: {{ selectedOption.codigo === 'ALL' ? ('pendingpage.all' | translate) : selectedOption.descripcion }}
+            </ng-template>
+            <ng-template #option let-option>
+              {{ option.codigo === 'ALL' ? ('pendingpage.all' | translate) : option.descripcion }}
+            </ng-template>
+        </p-select>
+
         <input
             pInputText
             type="text"
-            [(ngModel)]="codigoProveedorFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'pendingpage.supplierPlaceholder' | translate" />
+            [(ngModel)]="proveedorFiltro"
+
+            [placeholder]="('common.supplier' | translate) + '...'"
+            style="width: 100px;" />
 
         <input
             pInputText
             type="text"
             [(ngModel)]="rfcBeneficiarioFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'pendingpage.rfcPlaceholder' | translate" />
+
+            [placeholder]="('common.rfc' | translate) + '...'"
+            style="width: 100px;" />
+
+        <p-select
+            [(ngModel)]="monedaFiltro"
+            [options]="[
+                { label: ('pendingpage.all' | translate), value: '' },
+                { label: 'MXN', value: 'MXN' },
+                { label: 'USD', value: 'USD' }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'pendingpage.currency' | translate"
+
+            style="min-width: 90px; max-width: 110px;"
+            appendTo="body">
+        </p-select>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="montoFiltro"
+
+            [placeholder]="('common.amount' | translate) + '...'"
+            style="width: 80px;" />
 
         <p-select
             [(ngModel)]="tipoPagoFiltro"
@@ -75,35 +118,21 @@
             optionValue="dealType"
             [showClear]="false"
             [placeholder]="'pendingpage.paymentType' | translate"
-            (onChange)="buscarPorFiltros()">
+
+            style="min-width: 120px; max-width: 140px;"
+            appendTo="body">
 
             <ng-template #header>
                 <div
                     class="pending-select-option"
-                    (click)="tipoPagoFiltro = 'Todos'; buscarPorFiltros()">
+                    (click)="tipoPagoFiltro = 'Todos';">
                     {{ 'pendingpage.all' | translate }}
                 </div>
             </ng-template>
 
         </p-select>
 
-        <p-select
-            [(ngModel)]="estatusFiltro"
-            [options]="[
-                {
-                    label: ('pendingpage.all' | translate),
-                    value: 'Todos'
-                },
-                {
-                    label: ('pendingpage.pending' | translate),
-                    value: 'Pendiente'
-                }
-            ]"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="'pendingpage.status' | translate"
-            (onChange)="buscarPorFiltros()">
-        </p-select>
+
 
         <p-button
             [label]="'pendingpage.search' | translate"
@@ -119,7 +148,10 @@
             (onClick)="limpiarFiltros()">
         </p-button>
 
-        <span class="pending-filter-title pending-type-label">
+    </div>
+
+    <div class="clasificacion-container" style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span class="pending-filter-title pending-type-label" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057;">
             <i class="pi pi-tags"></i>
             {{ 'pendingpage.paymentTypeLabel' | translate }}
         </span>
@@ -143,19 +175,7 @@
         [lazy]="true"
         [totalRecords]="totalElements"
         [remoteFilter]="false"
-        [globalFilterFields]="[
-            'proveedor',
-            'rfc',
-            'nombre',
-            'monto',
-            'moneda',
-            'descripcion',
-            'archivo',
-            'tipo',
-            'estatus'
-        ]"
         [showSearch]="false"
-        [searchPlaceholder]="'common.search' | translate"
         [emptyTitle]="'pendingpage.emptyTitle' | translate"
         [emptySubtitle]="'pendingpage.emptyMessage' | translate"
         (lazyLoadChange)="onLazyLoad($event)"

@@ -8,86 +8,109 @@
 
 <app-page-content>
 
+    <div class="analytics-filters" style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span class="pending-filter-title" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057;">
+            <i class="pi pi-filter"></i>
+            {{ 'analyticspage.filters' | translate }}
+        </span>
 
-    <div class="analytics-kpis">
-
-        <div class="kpi-card">
-            <div class="kpi-label">
-                {{ 'analyticspage.files' | translate }}
-            </div>
-
-            <div class="kpi-value">
-                {{ totalArchivos }}
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-label">
-                {{ 'analyticspage.payments' | translate }}
-            </div>
-
-            <div class="kpi-value">
-                {{ totalPagos }}
-            </div>
-        </div>
-
-    </div>
-
-    <div class="analytics-kpis-currency">
-
-        <div class="kpi-card">
-            <div class="kpi-label">
-                MXN
-            </div>
-
-            <div class="kpi-value">
-                {{ totalMXN | currency }}
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-label">
-                USD
-            </div>
-
-            <div class="kpi-value">
-                {{ totalUSD | currency }}
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-label">
-                EUR
-            </div>
-
-            <div class="kpi-value">
-                {{ totalEUR | currency }}
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-label">
-                JPY
-            </div>
-
-            <div class="kpi-value">
-                {{ totalJPY | currency }}
-            </div>
-        </div>
-
-    </div>
-
-    <div class="analytics-container">
+        <p-select
+            *ngIf="busDisponibles.length > 1"
+            [(ngModel)]="buFiltro"
+            [options]="busDisponibles"
+            optionLabel="descripcion"
+            optionValue="codigo"
+            [placeholder]="'analyticspage.company' | translate"
+            style="min-width: 120px; max-width: 160px;">
+            <ng-template #selectedItem let-selectedOption>
+              {{ 'common.bu' | translate }}: {{ selectedOption.codigo === 'ALL' ? ('analyticspage.all' | translate) : selectedOption.descripcion }}
+            </ng-template>
+            <ng-template #option let-option>
+              {{ option.codigo === 'ALL' ? ('analyticspage.all' | translate) : option.descripcion }}
+            </ng-template>
+        </p-select>
 
         <input
             type="text"
             pInputText
             [(ngModel)]="filtroArchivo"
-            (input)="aplicarFiltro()"
-            [placeholder]="'analyticspage.searchFile' | translate" />
 
+            [placeholder]="('analyticspage.searchFile' | translate) + '...'" />
 
+        <p-button [label]="'analyticspage.search' | translate"
+            icon="pi pi-search"
+            severity="primary"
+            (onClick)="buscarPorFiltros()">
+        </p-button>
 
+        <p-button [label]="'analyticspage.clear' | translate"
+            icon="pi pi-times"
+            severity="secondary"
+            (onClick)="limpiarFiltros()">
+        </p-button>
+    </div>
+
+    <div class="analytics-kpis-container" style="display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap;">
+        <div class="analytics-kpis" style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    {{ 'analyticspage.files' | translate }}
+                </div>
+                <div class="kpi-value">
+                    {{ totalArchivos }}
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    {{ 'analyticspage.payments' | translate }}
+                </div>
+                <div class="kpi-value">
+                    {{ totalPagos }}
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-kpis-currency" style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    MXN
+                </div>
+                <div class="kpi-value">
+                    {{ totalMXN | currency }}
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    USD
+                </div>
+                <div class="kpi-value">
+                    {{ totalUSD | currency }}
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    EUR
+                </div>
+                <div class="kpi-value">
+                    {{ totalEUR | currency }}
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    JPY
+                </div>
+                <div class="kpi-value">
+                    {{ totalJPY | currency }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="analytics-container">
         <p-treetable
             [value]="treeNodes"
             [scrollable]="true"

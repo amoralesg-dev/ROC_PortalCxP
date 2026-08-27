@@ -159,61 +159,6 @@
 
       </mat-form-field>
 
-      <mat-form-field
-        appearance="outline"
-        subscriptSizing="dynamic"
-        style="margin-right: 12px; width: 150px;">
-
-        <mat-label>
-          {{ 'pendingpage.status' | translate }}
-        </mat-label>
-
-        <mat-select
-          [(ngModel)]="estatusFiltro"
-          (selectionChange)="buscarPorFiltros()">
-
-          <mat-option value="Todos">
-            {{ 'pendingpage.all' | translate }}
-          </mat-option>
-
-          <mat-option value="Pendiente">
-            {{ 'pendingpage.pending' | translate }}
-          </mat-option>
-
-        </mat-select>
-
-      </mat-form-field>
-
-      <button
-        mat-stroked-button
-        color="primary"
-        (click)="buscarPorFiltros()"
-        style="
-            border-radius: 20px;
-            height: 40px;
-            margin-right: 12px;">
-
-        <mat-icon>search</mat-icon>
-
-        {{ 'pendingpage.search' | translate }}
-
-      </button>
-
-      <button
-        mat-stroked-button
-        color="warn"
-        (click)="limpiarFiltros()"
-        style="
-            border-radius: 20px;
-            height: 40px;
-            margin-right: 16px;">
-
-        <mat-icon>clear</mat-icon>
-
-        {{ 'pendingpage.clear' | translate }}
-
-      </button>
-
       <span
         class="filters-label"
         style="margin-left: 16px;">
@@ -258,6 +203,37 @@
         </mat-select>
 
       </mat-form-field>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="buscarPorFiltros()"
+        style="
+            border-radius: 20px;
+            height: 40px;
+            margin-left: 12px;
+            margin-right: 12px;">
+
+        <mat-icon>search</mat-icon>
+
+        {{ 'pendingpage.search' | translate }}
+
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="limpiarFiltros()"
+        style="
+            border-radius: 20px;
+            height: 40px;
+            margin-right: 16px;">
+
+        <mat-icon>clear</mat-icon>
+
+        {{ 'pendingpage.clear' | translate }}
+
+      </button>
 
     </div>
 

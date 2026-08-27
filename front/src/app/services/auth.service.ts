@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
@@ -20,12 +20,22 @@ export interface LoginResponse {
   activo: boolean;
 }
 
+export interface BuDto {
+  codigo: string;
+  descripcion: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private baseUrl = environment.baseUrl;
+
   constructor(private http: HttpClient, private router: Router) { }
+
+  getUserBus(usuario: string): Observable<BuDto[]> {
+    return this.http.get<BuDto[]>(`${this.baseUrl}/usuarios/${usuario}/bus`);
+  }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/usuarios/login`, credentials).pipe(
