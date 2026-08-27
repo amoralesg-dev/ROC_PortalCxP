@@ -12,9 +12,11 @@ import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TablePageEvent } from 'primeng/table';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { DatePickerModule } from 'primeng/datepicker';
 import { DecimalPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
 import { AuthService, BuDto } from '../../services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -40,6 +42,7 @@ import {
     CommonModule,
     FormsModule,
     SelectModule,
+    InputTextModule,
     PageHeaderComponent,
     PageToolbarComponent,
     PageContentComponent,
@@ -47,6 +50,7 @@ import {
     AppDialog,
     ButtonModule,
     TooltipModule,
+    DatePickerModule,
     TranslatePipe,
     DecimalPipe
   ],
@@ -75,6 +79,9 @@ export class PagosErroresComponent {
     totalArchivos = 0;
     totalEstatusError = 0;
     totalErrores = 0;
+    fechaInicio: Date | null = null;
+    fechaFin: Date | null = null;
+
     totalesPorMoneda: Record<string, number> = {};
     monedas: string[] = [];
 
@@ -92,11 +99,11 @@ export class PagosErroresComponent {
         if (usuario) {
             this.authService.getUserBus(usuario).subscribe(bus => {
                 this.busDisponibles = bus;
-                if (bus.length === 1) {
-                    this.buFiltro = bus[0].codigo;
+                const allBu = bus.find(b => b.codigo === 'ALL');
+                if (allBu) {
+                    this.buFiltro = 'ALL';
                 } else if (bus.length > 0) {
-                    const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
-                    this.buFiltro = primerEspecifica.codigo;
+                    this.buFiltro = bus[0].codigo;
                 }
                 this.pageIndex = 0;
                 this.selectedRows = [];
@@ -118,12 +125,14 @@ export class PagosErroresComponent {
         this.tipoPagoFiltro = '';
         this.monedaFiltro = '';
         this.montoFiltro = '';
+        this.fechaInicio = null;
+        this.fechaFin = null;
 
-        if (this.busDisponibles.length === 1) {
-            this.buFiltro = this.busDisponibles[0].codigo;
+        const allBu = this.busDisponibles.find(b => b.codigo === 'ALL');
+        if (allBu) {
+            this.buFiltro = 'ALL';
         } else if (this.busDisponibles.length > 0) {
-            const primerEspecifica = this.busDisponibles.find(b => b.codigo !== 'ALL') || this.busDisponibles[0];
-            this.buFiltro = primerEspecifica.codigo;
+            this.buFiltro = this.busDisponibles[0].codigo;
         } else {
             this.buFiltro = '';
         }
@@ -131,6 +140,14 @@ export class PagosErroresComponent {
         this.pageIndex = 0;
         this.selectedRows = [];
         this.cargarErrores();
+    }
+
+    private formatDate(date: Date | null): string {
+        if (!date) return '';
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
     }
 
 
@@ -353,6 +370,8 @@ export class PagosErroresComponent {
                 this.monedaFiltro,
                 this.montoFiltro,
                 this.proveedorFiltro,
+                this.formatDate(this.fechaInicio),
+                this.formatDate(this.fechaFin),
                 this.pageIndex,
                 this.pageSize,
                 this.sortField,
@@ -522,68 +541,84 @@ export class PagosErroresComponent {
                     {
                         field: 'id',
                         header: columns.folio,
-                        sortable: true
+                        sortable: true,
+                        width: '80px'
                     },
                     {
                         field: 'bu',
                         header: columns.bu || 'BU',
-                        sortable: true
+                        sortable: true,
+                        width: '85px'
                     },
                     {
                         field: 'fechaEnvio',
-                        header: columns.sentDate || 'FECHA ENVÍO',
-                        sortable: true
+                        header: columns.sentDate || 'FECHA ENVIO',
+                        sortable: true,
+                        width: '120px'
                     },
                     {
                         field: 'codigoProveedor',
                         header: columns.provider,
-                        sortable: true
+                        sortable: true,
+                        width: '100px'
                     },
                     {
                         field: 'rfcBeneficiario',
                         header: columns.rfc,
-                        sortable: true
+                        sortable: true,
+                        width: '120px'
                     },
                     {
                         field: 'nombreBeneficiario',
                         header: columns.name,
                         sortable: true,
-                        truncateLength:8,
-                        tooltip:true
+                        width: '120px',
+                        truncateLength: 10,
+                        tooltip: true
                     },
                     {
                         field: 'monto',
                         header: columns.amount,
-                        sortable: true
+                        sortable: true,
+                        width: '120px'
                     },
                     {
                         field: 'moneda',
                         header: columns.currency,
-                        sortable: true
+                        sortable: true,
+                        width: '90px'
                     },
                     {
                         field: 'referencia',
                         header: columns.reference,
                         sortable: true,
-                        truncateLength:8,
-                        tooltip:true
+                        width: '120px',
+                        styleClass: 'truncate-column',
+                        truncateLength: 8,
+                        tooltip: true
                     },
                     {
                         field: 'nombreArchivo',
                         header: columns.file,
                         sortable: true,
-                        truncateLength:6,
-                        tooltip:true
+                        width: '120px',
+                        truncateLength: 6,
+                        tooltip: true
                     },
                     {
                         field: 'errores',
                         header: columns.errors,
-                        sortable: false
+                        sortable: false,
+                        width: '200px',
+                        styleClass: 'truncate-column',
+                        truncateLength: 15,
+                        tooltip: true
                     },
                     {
                         field: 'actions',
                         header: columns.actions,
-                        type: 'actions'
+                        type: 'actions',
+                        width: '100px'
                     }
                 ];
 

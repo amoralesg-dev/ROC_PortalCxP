@@ -3,7 +3,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   PageHeaderComponent,
-  PageToolbarComponent,
   PageContentComponent
 } from 'rassini-ui';
 import { AnaliticaPendientesArchivoDTO } from '../../models/nalitica-pendientes.model';
@@ -12,6 +11,8 @@ import { TreeNode } from 'primeng/api';
 import { TreeTableModule } from 'primeng/treetable';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { AuthService, BuDto } from '../../services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,13 +23,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [
     CommonModule,
     PageHeaderComponent,
-    PageToolbarComponent,
     PageContentComponent,
     TranslatePipe,
     TreeTableModule,
     CurrencyPipe,
     FormsModule,
-    SelectModule
+    SelectModule,
+    ButtonModule,
+    InputTextModule
   ],
   templateUrl: './pagos-analitica.html',
   styleUrl: './pagos-analitica.scss',
@@ -70,92 +72,55 @@ export class PagosAnaliticaComponent implements OnInit {
     if (usuario) {
       this.authService.getUserBus(usuario).subscribe(bus => {
         this.busDisponibles = bus;
-        if (bus.length === 1) {
-          this.buFiltro = bus[0].codigo;
+        const allBu = bus.find(b => b.codigo === 'ALL');
+        if (allBu) {
+          this.buFiltro = 'ALL';
         } else if (bus.length > 0) {
-          const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
-          this.buFiltro = primerEspecifica.codigo;
+          this.buFiltro = bus[0].codigo;
         }
-        this.cargarAnalitica();
+        this.buscarPorFiltros();
       });
     }
   }
 
-  onBuChange(): void {
-    this.cargarAnalitica();
-  }
-
-  cargarAnalitica(): void {
-
+  buscarPorFiltros(): void {
     this.loading = true;
+    this.pagoService.obtenerAnaliticaPendientes(this.buFiltro).subscribe({
+      next: data => {
+        this.analiticaOriginal = data;
+        this.analitica = data;
+        
+        const filtro = this.filtroArchivo.toLowerCase().trim();
+        const datosFiltrados = !filtro
+            ? this.analiticaOriginal
+            : this.analiticaOriginal.filter(item => item.nombreArchivo.toLowerCase().includes(filtro));
 
-    this.pagoService
-      .obtenerAnaliticaPendientes(this.buFiltro)
-      .subscribe({
-
-        next: data => {
-
-          this.analiticaOriginal = data;
-
-          this.analitica = data;
-
-          this.calcularKpis(data);
-
-          this.totalArchivos = data.length;
-
-          this.totalPagos = data.reduce(
-            (sum, item) => sum + item.cantidadPagos,
-            0
-          );
-
-          this.construirTreeNodes(data);
-
-          this.loading = false;
-
-          this.cdr.detectChanges();
-
-        },
-
-        error: error => {
-
-          console.error(
-            'Error analitica',
-            error
-          );
-
-          this.loading = false;
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
-
+        this.calcularKpis(datosFiltrados);
+        this.construirTreeNodes(datosFiltrados);
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error('Error analitica', error);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
-  
 
-  aplicarFiltro(): void {
+  limpiarFiltros(): void {
+    this.filtroArchivo = '';
+    
+    const allBu = this.busDisponibles.find(b => b.codigo === 'ALL');
+    if (allBu) {
+      this.buFiltro = 'ALL';
+    } else if (this.busDisponibles.length > 0) {
+      this.buFiltro = this.busDisponibles[0].codigo;
+    } else {
+      this.buFiltro = '';
+    }
 
-    const filtro = this.filtroArchivo
-      .toLowerCase()
-      .trim();
-
-    const datosFiltrados =
-      !filtro
-        ? this.analiticaOriginal
-        : this.analiticaOriginal.filter(
-            item =>
-              item.nombreArchivo
-                .toLowerCase()
-                .includes(filtro)
-          );
-
-    this.calcularKpis(datosFiltrados);
-
-    this.construirTreeNodes(
-      datosFiltrados
-    );
-
+    this.buscarPorFiltros();
   }
   private construirTreeNodes(data: AnaliticaPendientesArchivoDTO[]): void {
 

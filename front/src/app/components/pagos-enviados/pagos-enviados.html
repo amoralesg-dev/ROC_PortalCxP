@@ -6,9 +6,9 @@
 
 <app-page-content>
 
-    <div class="filtros-fecha" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+    <div class="filtros-fecha" style="display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; margin-bottom: 15px;">
 
-        <span class="pending-filter-title" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057;">
+        <span class="pending-filter-title" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057; white-space: nowrap;">
             <i class="pi pi-filter"></i>
             {{ 'sentpage.filters' | translate }}
         </span>
@@ -20,9 +20,10 @@
             optionLabel="descripcion"
             optionValue="codigo"
             [placeholder]="'sentpage.bu' | translate"
-            style="min-width: 120px; max-width: 160px;">
+            style="min-width: 110px; max-width: 130px;"
+            appendTo="body">
             <ng-template #selectedItem let-selectedOption>
-              {{ selectedOption.codigo === 'ALL' ? ('sentpage.all' | translate) : selectedOption.descripcion }}
+              {{ 'common.bu' | translate }}: {{ selectedOption.codigo === 'ALL' ? ('sentpage.all' | translate) : selectedOption.descripcion }}
             </ng-template>
             <ng-template #option let-option>
               {{ option.codigo === 'ALL' ? ('sentpage.all' | translate) : option.descripcion }}
@@ -33,15 +34,17 @@
             pInputText
             type="text"
             [(ngModel)]="proveedorFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'sentpage.providerPlaceholder' | translate" />
+
+            [placeholder]="('common.supplier' | translate) + '...'"
+            style="width: 100px;" />
 
         <input
             pInputText
             type="text"
             [(ngModel)]="rfcBeneficiarioFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'sentpage.rfcPlaceholder' | translate" />
+
+            [placeholder]="('common.rfc' | translate) + '...'"
+            style="width: 100px;" />
 
         <p-select
             [(ngModel)]="monedaFiltro"
@@ -52,33 +55,41 @@
             ]"
             optionLabel="label"
             optionValue="value"
-            [placeholder]="'sentpage.currencyLabel' | translate">
+            [placeholder]="'sentpage.currencyLabel' | translate"
+            style="min-width: 90px; max-width: 100px;"
+            appendTo="body">
         </p-select>
 
         <input
             pInputText
             type="text"
             [(ngModel)]="montoFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'sentpage.amountLabel' | translate"
-            style="width: 120px;" />
+
+            [placeholder]="('common.amount' | translate) + '...'"
+            style="width: 80px;" />
 
         <p-select
             [(ngModel)]="tipoPagoFiltro"
             [options]="tiposDePagoCatalogo"
             optionLabel="descripcion"
             optionValue="dealType"
-            [placeholder]="'sentpage.paymentType' | translate">
+            [placeholder]="'sentpage.paymentType' | translate"
+            style="min-width: 110px; max-width: 120px;"
+            appendTo="body">
         </p-select>
 
         <p-datepicker
             [(ngModel)]="fechaInicio"
-            [placeholder]="'sentpage.startDate' | translate">
+            [placeholder]="('sentpage.startDate' | translate) + '...'"
+            [style]="{'width': '110px'}"
+            appendTo="body">
         </p-datepicker>
 
         <p-datepicker
             [(ngModel)]="fechaFin"
-            [placeholder]="'sentpage.endDate' | translate">
+            [placeholder]="('sentpage.endDate' | translate) + '...'"
+            [style]="{'width': '110px'}"
+            appendTo="body">
         </p-datepicker>
 
         <p-button [label]="'sentpage.search' | translate"
@@ -115,23 +126,12 @@
       [lazy]="true"
       [remoteFilter]="true"
       [totalRecords]="totalElements"
-      [searchPlaceholder]="'common.search' | translate"
+      [showSearch]="false"
+      [enableSelection]="false"
       [emptyTitle]="'sentpage.emptyTitle' | translate"
       [emptySubtitle]="'sentpage.emptySubtitle' | translate"
-      [globalFilterFields]="[
-          'codigoProveedor',
-          'rfcBeneficiario',
-          'nombreBeneficiario',
-          'monto',
-          'moneda',
-          'referencia',
-          'nombreArchivo',
-          'nombreArchivoEnvio',
-          'tipoPago',
-          'estatus'
-      ]"
-    (globalFilterChange)="onGlobalFilter($event)"
-    (lazyLoadChange)="onLazyLoad($event)">
+      (globalFilterChange)="onGlobalFilter($event)"
+      (lazyLoadChange)="onLazyLoad($event)">
   </app-data-table>
 
 </app-page-content>

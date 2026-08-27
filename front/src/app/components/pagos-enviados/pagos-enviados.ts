@@ -138,11 +138,11 @@ export class PagosEnviadosComponent implements OnInit {
     if (usuario) {
       this.authService.getUserBus(usuario).subscribe(bus => {
         this.busDisponibles = bus;
-        if (bus.length === 1) {
-          this.buFiltro = bus[0].codigo;
+        const allBu = bus.find(b => b.codigo === 'ALL');
+        if (allBu) {
+          this.buFiltro = 'ALL';
         } else if (bus.length > 0) {
-          const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
-          this.buFiltro = primerEspecifica.codigo;
+          this.buFiltro = bus[0].codigo;
         }
         this.pageIndex = 0;
         this.cargarPagos();
@@ -161,67 +161,89 @@ export class PagosEnviadosComponent implements OnInit {
           {
             field: 'id',
             header: columns.folio,
-            sortable: true
+            sortable: true,
+            width: '80px'
           },
           {
             field: 'bu',
             header: columns.bu || 'BU',
-            sortable: true
+            sortable: true,
+            width: '85px'
           },
           {
             field: 'fechaEnvio',
             header: columns.sentDate || 'FECHA ENVÍO',
-            sortable: true
+            sortable: true,
+            width: '120px'
           },
           {
             field: 'codigoProveedor',
             header: columns.supplier,
-            sortable: true
+            sortable: true,
+            width: '100px'
           },
           {
             field: 'rfcBeneficiario',
             header: columns.rfc,
-            sortable: true
+            sortable: true,
+            width: '120px'
           },
           {
             field: 'nombreBeneficiario',
             header: columns.name,
-            sortable: true
+            sortable: true,
+            width: '120px',
+            truncateLength: 10,
+            tooltip: true
           },
           {
             field: 'monto',
             header: columns.totalAmount,
-            sortable: true
+            sortable: true,
+            width: '120px'
           },
           {
             field: 'moneda',
             header: columns.currency,
-            sortable: true
+            sortable: true,
+            width: '90px'
           },
           {
             field: 'referencia',
             header: columns.description,
-            sortable: true
+            sortable: true,
+            width: '120px',
+            styleClass: 'truncate-column',
+            truncateLength: 8,
+            tooltip: true
           },
           {
             field: 'nombreArchivo',
             header: columns.file,
-            sortable: true
+            sortable: true,
+            width: '120px',
+            truncateLength: 6,
+            tooltip: true
           },
           {
             field: 'nombreArchivoEnvio',
             header: columns.sendFile,
-            sortable: true
+            sortable: true,
+            width: '120px',
+            truncateLength: 6,
+            tooltip: true
           },
           {
             field: 'tipoPago',
             header: columns.paymentType,
-            sortable: true
+            sortable: true,
+            width: '110px'
           },
           {
             field: 'estatus',
             header: columns.status,
-            sortable: true
+            sortable: true,
+            width: '120px'
           }
         ];
 
@@ -347,11 +369,11 @@ export class PagosEnviadosComponent implements OnInit {
     this.fechaInicio = null;
     this.fechaFin = null;
 
-    if (this.busDisponibles.length === 1) {
-      this.buFiltro = this.busDisponibles[0].codigo;
+    const allBu = this.busDisponibles.find(b => b.codigo === 'ALL');
+    if (allBu) {
+      this.buFiltro = 'ALL';
     } else if (this.busDisponibles.length > 0) {
-      const primerEspecifica = this.busDisponibles.find(b => b.codigo !== 'ALL') || this.busDisponibles[0];
-      this.buFiltro = primerEspecifica.codigo;
+      this.buFiltro = this.busDisponibles[0].codigo;
     } else {
       this.buFiltro = '';
     }

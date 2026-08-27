@@ -5,7 +5,13 @@
      "success": "Éxito",
      "information": "Información",
      "warning": "Advertencia",
-     "error": "Error"
+     "error": "Error",
+     "bu": "BU",
+     "currency": "Moneda",
+     "amount": "Monto",
+     "paymentType": "Tipo de Pago",
+     "supplier": "Proveedor",
+     "rfc": "RFC"
   },
   "errorpage": {
     "title": "Errores de Pago",
@@ -321,6 +327,9 @@
         "payments": "Pagos",
         "totalAmount": "Monto Total",
         "all": "Todas",
-        "searchFile": "Buscar archivo..."
+        "searchFile": "Buscar archivo...",
+        "filters": "Filtros",
+        "search": "Buscar",
+        "clear": "Limpiar"
       }
 }

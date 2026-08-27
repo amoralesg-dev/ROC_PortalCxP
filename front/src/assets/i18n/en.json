@@ -4,7 +4,13 @@
         "success": "Success",
         "information": "Information",
         "warning": "Warning",
-        "error": "Error"
+        "error": "Error",
+        "bu": "Business Unit",
+        "currency": "Currency",
+        "amount": "Amount",
+        "paymentType": "Payment Type",
+        "supplier": "Supplier",
+        "rfc": "RFC"
     },
     "errorpage": {
         "title": "Payment Errors",
@@ -286,7 +292,10 @@
         "payments": "Payments",
         "totalAmount": "Total Amount",
         "all": "All",
-        "searchFile": "Search file..."
+        "searchFile": "Search file...",
+        "filters": "Filters",
+        "search": "Search",
+        "clear": "Clear"
     }
 
 }

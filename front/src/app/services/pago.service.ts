@@ -69,7 +69,6 @@ export class PagoService {
     codigoProveedor?: string,
     rfcBeneficiario?: string,
     tipoPago?: string,
-    estatus?: string,
     page: number = 0,
     size: number = 10,
     moneda?: string,
@@ -86,9 +85,6 @@ export class PagoService {
     }
     if (tipoPago && tipoPago !== 'Todos' && tipoPago !== '') {
       params = params.set('tipoPago', tipoPago);
-    }
-    if (estatus && estatus !== 'Todos' && estatus !== '') {
-      params = params.set('estatus', estatus);
     }
     if (moneda) {
       params = params.set('moneda', moneda);
@@ -208,6 +204,8 @@ export class PagoService {
     moneda?: string,
     monto?: string,
     proveedor?: string,
+    fechaInicio?: string,
+    fechaFin?: string,
     page: number = 0,
     size: number = 10,
     sortField?: string,
@@ -236,6 +234,12 @@ export class PagoService {
     }
     if (proveedor) {
       params = params.set('proveedor', proveedor);
+    }
+    if (fechaInicio) {
+      params = params.set('fechaInicio', fechaInicio);
+    }
+    if (fechaFin) {
+      params = params.set('fechaFin', fechaFin);
     }
     if (sortField) {
       params = params.set('sortField', sortField);

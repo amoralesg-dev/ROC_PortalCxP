@@ -105,7 +105,6 @@ export class PagosPendientesComponent implements OnInit {
     codigoProveedorFiltro = '';
     rfcBeneficiarioFiltro = '';
     tipoPagoFiltro = 'Todos';
-    estatusFiltro = 'Todos';
     monedaFiltro = '';
     montoFiltro = '';
     proveedorFiltro = '';
@@ -140,11 +139,11 @@ export class PagosPendientesComponent implements OnInit {
         if (usuario) {
             this.authService.getUserBus(usuario).subscribe(bus => {
                 this.busDisponibles = bus;
-                if (bus.length === 1) {
-                    this.buFiltro = bus[0].codigo;
+                const allBu = bus.find(b => b.codigo === 'ALL');
+                if (allBu) {
+                    this.buFiltro = 'ALL';
                 } else if (bus.length > 0) {
-                    const primerEspecifica = bus.find(b => b.codigo !== 'ALL') || bus[0];
-                    this.buFiltro = primerEspecifica.codigo;
+                    this.buFiltro = bus[0].codigo;
                 }
                 this.pageIndex = 0;
                 this.selectedRows = [];
@@ -306,7 +305,6 @@ export class PagosPendientesComponent implements OnInit {
                 this.codigoProveedorFiltro,
                 this.rfcBeneficiarioFiltro,
                 this.tipoPagoFiltro,
-                this.estatusFiltro,
                 this.pageIndex,
                 this.pageSize,
                 this.monedaFiltro,
@@ -363,12 +361,21 @@ export class PagosPendientesComponent implements OnInit {
         this.codigoProveedorFiltro = '';
         this.rfcBeneficiarioFiltro = '';
         this.tipoPagoFiltro = 'Todos';
-        this.estatusFiltro = 'Todos';
         this.selectedTipo = 'Todos';
         this.monedaFiltro = '';
         this.montoFiltro = '';
         this.proveedorFiltro = '';
         this.pageIndex = 0;
+        
+        const allBu = this.busDisponibles.find(b => b.codigo === 'ALL');
+        if (allBu) {
+            this.buFiltro = 'ALL';
+        } else if (this.busDisponibles.length > 0) {
+            this.buFiltro = this.busDisponibles[0].codigo;
+        } else {
+            this.buFiltro = '';
+        }
+        
         this.selectedRows = [];
         this.cargarPagos();
     }

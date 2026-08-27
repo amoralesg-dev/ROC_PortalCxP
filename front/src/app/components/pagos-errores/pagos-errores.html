@@ -21,6 +21,106 @@
 
 
 
+    <div class="error-filters" style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;">
+
+        <span class="pending-filter-title" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057; white-space: nowrap;">
+            <i class="pi pi-filter"></i>
+            {{ 'errorpage.filters' | translate }}
+        </span>
+
+        <p-select
+            *ngIf="busDisponibles.length > 1"
+            [(ngModel)]="buFiltro"
+            [options]="busDisponibles"
+            optionLabel="descripcion"
+            optionValue="codigo"
+            [placeholder]="'errorpage.bu' | translate"
+            style="min-width: 120px; max-width: 160px;"
+            appendTo="body">
+            <ng-template #selectedItem let-selectedOption>
+              {{ 'common.bu' | translate }}: {{ selectedOption.codigo === 'ALL' ? ('errorpage.all' | translate) : selectedOption.descripcion }}
+            </ng-template>
+            <ng-template #option let-option>
+              {{ option.codigo === 'ALL' ? ('errorpage.all' | translate) : option.descripcion }}
+            </ng-template>
+        </p-select>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="proveedorFiltro"
+
+            [placeholder]="('common.supplier' | translate) + '...'"
+            style="width: 100px;" />
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="rfcBeneficiarioFiltro"
+
+            [placeholder]="('common.rfc' | translate) + '...'"
+            style="width: 100px;" />
+
+        <p-select
+            [(ngModel)]="monedaFiltro"
+            [options]="[
+                { label: ('errorpage.all' | translate), value: '' },
+                { label: 'MXN', value: 'MXN' },
+                { label: 'USD', value: 'USD' }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'errorpage.currencyLabel' | translate"
+            style="min-width: 90px; max-width: 110px;"
+            appendTo="body">
+        </p-select>
+
+        <input
+            pInputText
+            type="text"
+            [(ngModel)]="montoFiltro"
+
+            [placeholder]="('common.amount' | translate) + '...'"
+            style="width: 80px;" />
+
+        <p-select
+            [(ngModel)]="tipoPagoFiltro"
+            [options]="tiposDePagoCatalogo"
+            optionLabel="descripcion"
+            optionValue="dealType"
+            [placeholder]="'errorpage.paymentType' | translate"
+            style="min-width: 120px; max-width: 140px;"
+            appendTo="body">
+        </p-select>
+
+        <p-datepicker
+            [(ngModel)]="fechaInicio"
+            [placeholder]="('sentpage.startDate' | translate) + '...'"
+            [style]="{'width': '110px'}"
+            appendTo="body">
+        </p-datepicker>
+
+        <p-datepicker
+            [(ngModel)]="fechaFin"
+            [placeholder]="('sentpage.endDate' | translate) + '...'"
+            [style]="{'width': '110px'}"
+            appendTo="body">
+        </p-datepicker>
+
+        <p-button [label]="'errorpage.search' | translate"
+            icon="pi pi-search"
+            severity="primary"
+            (onClick)="buscarPorFiltros()">
+        </p-button>
+
+        <p-button [label]="'errorpage.clear' | translate"
+            icon="pi pi-times"
+            severity="secondary"
+            (onClick)="limpiarFiltros()">
+        </p-button>
+
+    </div>
+
     <div class="error-kpis">
         <div class="error-kpi-card">
             <span class="error-kpi-label">
@@ -59,88 +159,6 @@
 
         }
     </div>
-    
-
-
-
-    <div class="error-filters" style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-
-        <span class="pending-filter-title" style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #495057;">
-            <i class="pi pi-filter"></i>
-            {{ 'errorpage.filters' | translate }}
-        </span>
-
-        <p-select
-            *ngIf="busDisponibles.length > 1"
-            [(ngModel)]="buFiltro"
-            [options]="busDisponibles"
-            optionLabel="descripcion"
-            optionValue="codigo"
-            [placeholder]="'errorpage.bu' | translate"
-            style="min-width: 120px; max-width: 160px;">
-            <ng-template #selectedItem let-selectedOption>
-              {{ selectedOption.codigo === 'ALL' ? ('errorpage.all' | translate) : selectedOption.descripcion }}
-            </ng-template>
-            <ng-template #option let-option>
-              {{ option.codigo === 'ALL' ? ('errorpage.all' | translate) : option.descripcion }}
-            </ng-template>
-        </p-select>
-
-        <input
-            pInputText
-            type="text"
-            [(ngModel)]="proveedorFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'errorpage.providerPlaceholder' | translate" />
-
-        <input
-            pInputText
-            type="text"
-            [(ngModel)]="rfcBeneficiarioFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'errorpage.rfcPlaceholder' | translate" />
-
-        <p-select
-            [(ngModel)]="monedaFiltro"
-            [options]="[
-                { label: ('errorpage.all' | translate), value: '' },
-                { label: 'MXN', value: 'MXN' },
-                { label: 'USD', value: 'USD' }
-            ]"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="'errorpage.currencyLabel' | translate">
-        </p-select>
-
-        <input
-            pInputText
-            type="text"
-            [(ngModel)]="montoFiltro"
-            (keyup.enter)="buscarPorFiltros()"
-            [placeholder]="'errorpage.amountLabel' | translate"
-            style="width: 120px;" />
-
-        <p-select
-            [(ngModel)]="tipoPagoFiltro"
-            [options]="tiposDePagoCatalogo"
-            optionLabel="descripcion"
-            optionValue="dealType"
-            [placeholder]="'errorpage.paymentType' | translate">
-        </p-select>
-
-        <p-button [label]="'errorpage.search' | translate"
-            icon="pi pi-search"
-            severity="primary"
-            (onClick)="buscarPorFiltros()">
-        </p-button>
-
-        <p-button [label]="'errorpage.clear' | translate"
-            icon="pi pi-times"
-            severity="secondary"
-            (onClick)="limpiarFiltros()">
-        </p-button>
-
-    </div>
 
     <app-data-table
         [columns]="columns"
@@ -149,16 +167,7 @@
         [lazy]="true"
         [totalRecords]="totalElements"
         [remoteFilter]="true"
-        [globalFilterFields]="[
-            'codigoProveedor',
-            'rfcBeneficiario',
-            'nombreBeneficiario',
-            'monto',
-            'moneda',
-            'referencia',
-            'archivo'
-        ]"
-        [searchPlaceholder]="'common.search' | translate"
+        [showSearch]="false"
         [emptyTitle]="'errorpage.emptyTitle' | translate"
         [emptySubtitle]="'errorpage.emptySubtitle' | translate"
         (lazyLoadChange)="onLazyLoad($event)"
