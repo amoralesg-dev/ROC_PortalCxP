@@ -32,7 +32,7 @@
     "pdf-parse": "^2.4.5",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.9",
-    "rassini-ui": "file:rassini-ui-0.0.6.tgz",
+    "rassini-ui": "file:rassini-ui-0.0.7.tgz",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
