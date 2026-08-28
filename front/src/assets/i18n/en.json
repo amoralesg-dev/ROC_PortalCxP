@@ -4,7 +4,13 @@
         "success": "Success",
         "information": "Information",
         "warning": "Warning",
-        "error": "Error"
+        "error": "Error",
+        "bu": "Business Unit",
+        "currency": "Currency",
+        "amount": "Amount",
+        "paymentType": "Payment Type",
+        "supplier": "Supplier",
+        "rfc": "RFC"
     },
     "errorpage": {
         "title": "Payment Errors",
@@ -26,6 +32,17 @@
         "errorReject": "Error rejecting record",
         "errorRejectMultiple": "Error rejecting records",
         "errorLoading": "Error loading errors",
+        "bu": "BU",
+        "all": "All",
+        "filters": "Filters",
+        "providerPlaceholder": "Supplier...",
+        "rfcPlaceholder": "Tax ID...",
+        "currencyLabel": "Currency",
+        "amountLabel": "Amount",
+        "paymentType": "Payment Type",
+        "search": "Search",
+        "clear": "Clear",
+
         "noErrorsTooltip": "No errors",
         "totalRecords": "Total Records",
         "totalFiles": "Files",
@@ -33,6 +50,8 @@
 
         "tableColumns": {
             "folio": "ID",
+            "bu": "BU",
+            "sentDate": "Send Date",
             "provider": "SUPPLIER",
             "rfc": "Tax ID",
             "name": "NAME",
@@ -116,7 +135,18 @@
         "status": "STATUS",
         "startDate": "Start date",
         "endDate": "End date",
-        "searchDate": "Filter by date",
+        "searchDate": "Filter",
+        "bu": "BU",
+        "sentDate": "SEND DATE",
+        "currencyLabel": "Currency",
+        "amountLabel": "Amount",
+        "filters": "Filters",
+        "providerPlaceholder": "Supplier...",
+        "rfcPlaceholder": "Tax ID...",
+        "search": "Search",
+        "clear": "Clear",
+        "totalPaymentsCount": "Total Payments",
+        "totalSum": "Total Amount",
         "classify": "Classify",
         "emptyMessage": "No pending payments were found under this category.",
         "selectPage": "Select page",
@@ -156,7 +186,9 @@
         "pendingPayments": "Pending Payments Classification",
         "sentPayments": "Sent Payments",
         "paymentErrors": "Payment Errors",
-        "pendingAnalytics": "Analytics"
+        "pendingAnalytics": "Analytics",
+        "businessUnit": "Business Unit",
+        "all": "All"
     },
     "pendingpage": {
         "title": "Pending Payments Classification",
@@ -172,6 +204,8 @@
 
         "supplierPlaceholder": "Ex. PRV01",
         "rfcPlaceholder": "Ex. ABC123456T1",
+        "amountPlaceholder": "Ex. 15000",
+        "providerPlaceholder": "Ex. Name or code",
 
         "paymentType": "Payment Type",
         "status": "Status",
@@ -200,6 +234,8 @@
         "pending": "Pending",
 
         "folio": "ID",
+        "bu": "BU",
+        "sentDate": "SEND DATE",
         "provider": "SUPPLIER",
         "rfc": "TAX ID",
         "name": "NAME",
@@ -255,7 +291,11 @@
         "files": "Files",
         "payments": "Payments",
         "totalAmount": "Total Amount",
-        "searchFile": "Search file..."
+        "all": "All",
+        "searchFile": "Search file...",
+        "filters": "Filters",
+        "search": "Search",
+        "clear": "Clear"
     }
 
 }

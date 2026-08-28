@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -6,8 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { FormsModule } from '@angular/forms';
+import { SelectModule } from 'primeng/select';
 
-import { AuthService } from './services/auth.service';
+import { AuthService, BuDto } from './services/auth.service';
 import { environment } from '../environments/environment';
 
 import { TranslateService,TranslatePipe  } from '@ngx-translate/core';
@@ -33,12 +35,14 @@ import {
     AppToast,
     AppConfirmDialog,
     AppLoader,
-    TranslatePipe 
+    TranslatePipe,
+    FormsModule,
+    SelectModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
 
   protected readonly title = signal('Rassini - Pagos');
 
@@ -107,6 +111,9 @@ export class App {
     });
     this.translate.setFallbackLang('es');
 
+  }
+
+  ngOnInit() {
   }
 
   logout(): void {

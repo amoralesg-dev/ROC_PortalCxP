@@ -87,7 +87,6 @@ export class PagosTable implements OnInit, AfterViewInit {
   codigoProveedorFiltro: string = '';
   rfcBeneficiarioFiltro: string = '';
   tipoPagoFiltro: string = 'Todos';
-  estatusFiltro: string = 'Todos';
 
   totalElements: number = 0;
   pageSize: number = 10;
@@ -135,7 +134,7 @@ export class PagosTable implements OnInit, AfterViewInit {
   }
 
   cargarPagos() {
-    this.pagoService.getPagosPendientesFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.tipoPagoFiltro, this.estatusFiltro, this.pageIndex, this.pageSize).subscribe({
+    this.pagoService.getPagosPendientesFiltro(this.codigoProveedorFiltro, this.rfcBeneficiarioFiltro, this.tipoPagoFiltro, this.pageIndex, this.pageSize).subscribe({
       next: (data: Page<PagoDto>) => {
         this.originalData = data.content.map(item => {
          

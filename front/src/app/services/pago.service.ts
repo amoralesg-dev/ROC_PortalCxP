@@ -26,7 +26,7 @@ export interface PagoDto {
   mensaje?: string;
   estatus?: string;
   referenciaManual?: string;
-
+  bu?: string;
 }
 export interface Page<T> {
   content: T[];
@@ -69,9 +69,12 @@ export class PagoService {
     codigoProveedor?: string,
     rfcBeneficiario?: string,
     tipoPago?: string,
-    estatus?: string,
     page: number = 0,
     size: number = 10,
+    moneda?: string,
+    monto?: string,
+    proveedor?: string,
+    bu?: string
   ): Observable<Page<PagoDto>> {
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
     if (codigoProveedor) {
@@ -80,86 +83,104 @@ export class PagoService {
     if (rfcBeneficiario) {
       params = params.set('rfcBeneficiario', rfcBeneficiario);
     }
-
-
     if (tipoPago && tipoPago !== 'Todos' && tipoPago !== '') {
       params = params.set('tipoPago', tipoPago);
     }
-    if (estatus && estatus !== 'Todos' && estatus !== '') {
-      params = params.set('estatus', estatus);
+    if (moneda) {
+      params = params.set('moneda', moneda);
     }
-    const authBu = sessionStorage.getItem('auth_bu');
-    if (authBu) {
-      params = params.set('bu', authBu);
+    if (monto) {
+      params = params.set('monto', monto);
+    }
+    if (proveedor) {
+      params = params.set('proveedor', proveedor);
+    }
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
     return this.http.get<Page<PagoDto>>(`${this.baseUrl}/pagos/pendientes/filtro/paginado`, {
       params,
     });
   }
+
   getPagosEnviadosFiltro(
-    search?: string,
+    codigoProveedor?: string,
+    rfcBeneficiario?: string,
+    tipoPago?: string,
+    moneda?: string,
+    monto?: string,
+    proveedor?: string,
     fechaInicio?: string,
     fechaFin?: string,
     page: number = 0,
     size: number = 10,
     sortField?: string,
-    sortOrder?: string
-  ): Observable<Page<PagoDto>> {
+    sortOrder?: string,
+    bu?: string
+  ): Observable<{ page: Page<PagoDto>; totalPagos: number; sumas: { moneda: string; total: number }[] }> {
 
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    if (search) {
-      params = params.set('search', search);
+    if (codigoProveedor) {
+      params = params.set('codigoProveedor', codigoProveedor);
     }
-
+    if (rfcBeneficiario) {
+      params = params.set('rfcBeneficiario', rfcBeneficiario);
+    }
+    if (tipoPago && tipoPago !== 'Todos') {
+      params = params.set('tipoPago', tipoPago);
+    }
+    if (moneda) {
+      params = params.set('moneda', moneda);
+    }
+    if (monto) {
+      params = params.set('monto', monto);
+    }
+    if (proveedor) {
+      params = params.set('proveedor', proveedor);
+    }
     if (fechaInicio) {
       params = params.set('fechaInicio', fechaInicio);
     }
-
     if (fechaFin) {
       params = params.set('fechaFin', fechaFin);
     }
-
     if (sortField) {
       params = params.set('sortField', sortField);
     }
-
     if (sortOrder) {
       params = params.set('sortOrder', sortOrder);
     }
 
-    const authBu = sessionStorage.getItem('auth_bu');
-
-    if (authBu) {
-      params = params.set('bu', authBu);
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
 
-    return this.http.get<Page<PagoDto>>(
+    return this.http.get<{ page: Page<PagoDto>; totalPagos: number; sumas: { moneda: string; total: number }[] }>(
       `${this.baseUrl}/pagos/enviados/filtro/paginado`,
-      {
-        params
-      }
+      { params }
     );
-
   }
-  clasificarPagos(request: ClasificarPagosRequest): Observable<string> {
+  clasificarPagos(request: ClasificarPagosRequest, bu?: string): Observable<string> {
     let params = new HttpParams();
-    const authBu = sessionStorage.getItem('auth_bu');
-    if (authBu) {
-      params = params.set('bu', authBu);
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
     return this.http.put(`${this.baseUrl}/pagos/clasificacion`, request, {
       params,
       responseType: 'text',
     });
   }
-  validarPagos(): Observable<ValidacionEnvioDTO> {
+  validarPagos(bu?: string): Observable<ValidacionEnvioDTO> {
     let params = new HttpParams();
-    const authBu = sessionStorage.getItem('auth_bu');
-    if (authBu) {
-      params = params.set('bu', authBu);
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
     return this.http.post<ValidacionEnvioDTO>(
         `${this.baseUrl}/pagos/validar`,
@@ -167,50 +188,74 @@ export class PagoService {
         { params }
       );
   }
-  enviarPagos(): Observable<string> {
+  enviarPagos(bu?: string): Observable<string> {
     let params = new HttpParams();
-    const authBu = sessionStorage.getItem('auth_bu');
-    if (authBu) {
-      params = params.set('bu', authBu);
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
     return this.http.post(`${this.baseUrl}/pagos/enviar`, {}, { params, responseType: 'text' });
   }
 
   getPagosErroresFiltro(
-    search?: string,
+    codigoProveedor?: string,
+    rfcBeneficiario?: string,
+    tipoPago?: string,
+    moneda?: string,
+    monto?: string,
+    proveedor?: string,
+    fechaInicio?: string,
+    fechaFin?: string,
     page: number = 0,
     size: number = 10,
     sortField?: string,
-    sortOrder?: string
+    sortOrder?: string,
+    bu?: string
   ): Observable<Page<PagoDto>> {
 
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
+    if (codigoProveedor) {
+      params = params.set('codigoProveedor', codigoProveedor);
+    }
+    if (rfcBeneficiario) {
+      params = params.set('rfcBeneficiario', rfcBeneficiario);
+    }
+    if (tipoPago && tipoPago !== 'Todos') {
+      params = params.set('tipoPago', tipoPago);
+    }
+    if (moneda) {
+      params = params.set('moneda', moneda);
+    }
+    if (monto) {
+      params = params.set('monto', monto);
+    }
+    if (proveedor) {
+      params = params.set('proveedor', proveedor);
+    }
+    if (fechaInicio) {
+      params = params.set('fechaInicio', fechaInicio);
+    }
+    if (fechaFin) {
+      params = params.set('fechaFin', fechaFin);
+    }
     if (sortField) {
       params = params.set('sortField', sortField);
     }
-
     if (sortOrder) {
       params = params.set('sortOrder', sortOrder);
     }
 
-    if (search) {
-      params = params.set('search', search);
-    }
-
-    const authBu = sessionStorage.getItem('auth_bu');
-
-    if (authBu) {
-      params = params.set('bu', authBu);
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
 
     return this.http.get<Page<PagoDto>>(
       `${this.baseUrl}/pagos/errores/filtro/paginado`,
-      {
-        params,
-      }
+      { params }
     );
   }
 
@@ -263,14 +308,14 @@ actualizarReferenciasManuales(
     );
   }
 
-obtenerAnaliticaPendientes(): Observable<AnaliticaPendientesArchivoDTO[]> {
+  obtenerAnaliticaPendientes(bu?: string): Observable<AnaliticaPendientesArchivoDTO[]> {
 
     let params = new HttpParams();
 
-    const authBu = sessionStorage.getItem('auth_bu');
+    const finalBu = bu || sessionStorage.getItem('auth_bu');
 
-    if (authBu) {
-      params = params.set('bu', authBu);
+    if (finalBu) {
+      params = params.set('bu', finalBu);
     }
 
     return this.http.get<
