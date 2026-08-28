@@ -65,6 +65,21 @@ export class PagosErroresComponent {
     sortField = '';
     sortOrder = 1;
 
+    private readonly sortFieldMap: Record<string, string> = {
+        id: 'id',
+        bu: 'empresa',
+        fechaEnvio: 'fechaEnvio',
+        proveedor: 'codigoProveedor',
+        rfc: 'rfcBeneficiario',
+        nombre: 'nombreBeneficiario',
+        monto: 'monto',
+        moneda: 'moneda',
+        descripcion: 'referencia',
+        archivo: 'nombreArchivo',
+        tipo: 'tipoPago',
+        estatus: 'estatus'
+    };
+
     buFiltro = '';
     busDisponibles: BuDto[] = [];
     proveedorFiltro = '';
@@ -362,6 +377,10 @@ export class PagosErroresComponent {
     cargarErrores(): void {
 
         const finalBu = (this.buFiltro && this.buFiltro !== 'ALL') ? this.buFiltro : (sessionStorage.getItem('auth_bu') || '');
+        const backendSortField = this.sortField
+            ? this.sortFieldMap[this.sortField] ?? this.sortField
+            : '';
+
         this.pagoService
             .getPagosErroresFiltro(
                 '', // codigoProveedor
@@ -374,7 +393,7 @@ export class PagosErroresComponent {
                 this.formatDate(this.fechaFin),
                 this.pageIndex,
                 this.pageSize,
-                this.sortField,
+                backendSortField,
                 this.sortOrder === 1 ? 'ASC' : 'DESC',
                 finalBu
             ).subscribe({
