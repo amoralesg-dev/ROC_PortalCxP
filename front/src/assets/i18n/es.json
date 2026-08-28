@@ -5,7 +5,13 @@
      "success": "Éxito",
      "information": "Información",
      "warning": "Advertencia",
-     "error": "Error"
+     "error": "Error",
+     "bu": "BU",
+     "currency": "Moneda",
+     "amount": "Monto",
+     "paymentType": "Tipo de Pago",
+     "supplier": "Proveedor",
+     "rfc": "RFC"
   },
   "errorpage": {
     "title": "Errores de Pago",
@@ -36,6 +42,16 @@
     "errorRejectMultiple": "Error al rechazar registros",
 
     "errorLoading": "Error al cargar errores",
+    "bu": "BU",
+    "all": "Todas",
+    "filters": "Filtros",
+    "providerPlaceholder": "Proveedor...",
+    "rfcPlaceholder": "RFC...",
+    "currencyLabel": "Moneda",
+    "amountLabel": "Monto",
+    "paymentType": "Tipo Pago",
+    "search": "Buscar",
+    "clear": "Limpiar",
 
     "noErrorsTooltip": "Sin errores",
 
@@ -45,6 +61,8 @@
 
     "tableColumns": {
       "folio": "Folio",
+      "bu": "BU",
+      "sentDate": "Fecha Envío",
       "provider": "Proveedor",
       "rfc": "RFC",
       "name": "Nombre",
@@ -140,7 +158,19 @@
 
         "startDate": "Fecha inicio",
         "endDate": "Fecha fin",
-        "searchDate": "Filtrar por fecha",
+        "searchDate": "Filtrar",
+        "bu": "BU",
+        "sentDate": "FECHA ENVÍO",
+        "currencyLabel": "Moneda",
+        "amountLabel": "Monto",
+        "filters": "Filtros",
+        "providerPlaceholder": "Proveedor...",
+        "rfcPlaceholder": "RFC...",
+        "paymentType": "Tipo Pago",
+        "search": "Buscar",
+        "clear": "Limpiar",
+        "totalPaymentsCount": "Total Pagos",
+        "totalSum": "Monto Total",
         "classify": "Clasificar",
 
         "emptyMessage": "No se encontraron pagos pendientes bajo esta categoría.",
@@ -188,7 +218,9 @@
         "pendingPayments": "Pagos Pendientes de Clasificación",
         "sentPayments": "Pagos Enviados",
         "paymentErrors": "Errores de Pagos",
-        "pendingAnalytics": "Analítica"
+        "pendingAnalytics": "Analítica",
+        "businessUnit": "Unidad de Negocio",
+        "all": "Todas"
     },
     "pendingpage": {
         "title": "Pagos Pendientes de Clasificación",
@@ -204,6 +236,8 @@
 
         "supplierPlaceholder": "Ej. PRV01",
         "rfcPlaceholder": "Ej. ABC123456T1",
+        "amountPlaceholder": "Ej. 15000",
+        "providerPlaceholder": "Ej. Nombre o código",
 
         "paymentType": "Tipo de Pago",
         "status": "Estatus",
@@ -232,6 +266,8 @@
         "pending": "Pendiente",
 
         "folio": "FOLIO",
+        "bu": "BU",
+        "sentDate": "FECHA ENVÍO",
         "provider": "PROVEEDOR",
         "rfc": "RFC",
         "name": "NOMBRE",
@@ -290,6 +326,10 @@
         "files": "Archivos",
         "payments": "Pagos",
         "totalAmount": "Monto Total",
-        "searchFile": "Buscar archivo..."
+        "all": "Todas",
+        "searchFile": "Buscar archivo...",
+        "filters": "Filtros",
+        "search": "Buscar",
+        "clear": "Limpiar"
       }
 }
