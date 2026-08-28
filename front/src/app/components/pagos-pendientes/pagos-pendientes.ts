@@ -120,6 +120,21 @@ export class PagosPendientesComponent implements OnInit {
 
     pagosValidados = false;
 
+    private readonly sortFieldMap: Record<string, string> = {
+        id: 'id',
+        bu: 'empresa',
+        fechaEnvio: 'fechaEnvio',
+        proveedor: 'codigoProveedor',
+        rfc: 'rfcBeneficiario',
+        nombre: 'nombreBeneficiario',
+        monto: 'monto',
+        moneda: 'moneda',
+        descripcion: 'referencia',
+        archivo: 'nombreArchivo',
+        tipo: 'tipoPago',
+        estatus: 'estatus'
+    };
+
     private readonly destroyRef = inject(DestroyRef);
     private readonly authService = inject(AuthService);
 
@@ -300,6 +315,9 @@ export class PagosPendientesComponent implements OnInit {
     }
 
     cargarPagos(): void {
+        const backendSortField = this.sortField ? (this.sortFieldMap[this.sortField] ?? this.sortField) : '';
+        const sortDirection = this.sortOrder === 1 ? 'ASC' : 'DESC';
+
         this.pagoService
             .getPagosPendientesFiltro(
                 this.codigoProveedorFiltro,
@@ -310,7 +328,9 @@ export class PagosPendientesComponent implements OnInit {
                 this.monedaFiltro,
                 this.montoFiltro,
                 this.proveedorFiltro,
-                this.buFiltro
+                this.buFiltro,
+                backendSortField,
+                sortDirection
             )
             .subscribe({
                 next: (data: Page<PagoDto>) => {

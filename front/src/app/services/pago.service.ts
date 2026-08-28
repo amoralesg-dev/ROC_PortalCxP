@@ -74,7 +74,9 @@ export class PagoService {
     moneda?: string,
     monto?: string,
     proveedor?: string,
-    bu?: string
+    bu?: string,
+    sortField?: string,
+    sortOrder?: string
   ): Observable<Page<PagoDto>> {
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
     if (codigoProveedor) {
@@ -94,6 +96,12 @@ export class PagoService {
     }
     if (proveedor) {
       params = params.set('proveedor', proveedor);
+    }
+    if (sortField) {
+      params = params.set('sortField', sortField);
+    }
+    if (sortOrder) {
+      params = params.set('sortOrder', sortOrder);
     }
     const finalBu = bu || sessionStorage.getItem('auth_bu');
     if (finalBu) {
