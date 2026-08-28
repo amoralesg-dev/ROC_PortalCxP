@@ -99,6 +99,8 @@ export class PagosEnviadosComponent implements OnInit {
 
   private readonly sortFieldMap: Record<string, string> = {
     id: 'id',
+    bu: 'empresa',
+    fechaEnvio: 'fechaEnvio',
     codigoProveedor: 'codigoProveedor',
     rfcBeneficiario: 'rfcBeneficiario',
     nombreBeneficiario: 'nombreBeneficiario',
