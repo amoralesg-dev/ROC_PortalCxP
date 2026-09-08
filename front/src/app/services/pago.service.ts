@@ -27,6 +27,10 @@ export interface PagoDto {
   estatus?: string;
   referenciaManual?: string;
   bu?: string;
+  tipoPagoSeleccionado?: string;
+  tieneAba?: boolean;
+  tieneSwift?: boolean;
+  opcionesTipoPago?: string[];
 }
 export interface Page<T> {
   content: T[];
@@ -56,6 +60,13 @@ export interface ClasificarPagoItem {
 }
 export interface ClasificarPagosRequest {
   items: ClasificarPagoItem[];
+}
+export interface TipoPagoSeleccionadoItemDTO {
+  id: number;
+  tipoPagoSeleccionado: string;
+}
+export interface ActualizarTipoPagoSeleccionadoDTO {
+  items: TipoPagoSeleccionadoItemDTO[];
 }
 @Injectable({ providedIn: 'root' })
 export class PagoService {
@@ -336,10 +347,23 @@ actualizarReferenciasManuales(
     );
   }
 
+  actualizarTipoPagoSeleccionado(id: number, tipoPagoSeleccionado: string): Observable<string> {
+    return this.http.put(
+      `${this.baseUrl}/pagos/${id}/tipo-pago-seleccionado`,
+      { tipoPagoSeleccionado },
+      {
+        responseType: 'text'
+      }
+    );
+  }
 
-
-
-
-
-
+  actualizarTiposPagoSeleccionados(request: ActualizarTipoPagoSeleccionadoDTO): Observable<string> {
+    return this.http.put(
+      `${this.baseUrl}/pagos/tipos-pago-seleccionados`,
+      request,
+      {
+        responseType: 'text'
+      }
+    );
+  }
 }

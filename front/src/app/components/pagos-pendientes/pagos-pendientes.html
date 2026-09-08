@@ -24,6 +24,15 @@
         </p-button>
 
         <p-button
+            [label]="'pendingpage.saveTiposPago' | translate"
+            icon="pi pi-save"
+            severity="secondary"
+            [disabled]="!tieneTiposPagoModificados() || guardandoTipoPagoMasivo"
+            [loading]="guardandoTipoPagoMasivo"
+            (onClick)="guardarTiposPago()">
+        </p-button>
+
+        <p-button
             [label]="'pendingpage.save' | translate"
             icon="pi pi-save"
             severity="primary"
@@ -168,79 +177,173 @@
 
     </div>
 
-    <app-data-table
-        [columns]="columns"
-        [data]="pagos"
-        [rows]="pageSize"
+    <p-table
+        #dt
+        [value]="pagos"
+        [(selection)]="selectedRows"
+        (selectionChange)="onSelectionChange($event)"
+        dataKey="id"
         [lazy]="true"
+        [paginator]="true"
+        [rows]="pageSize"
+        [rowsPerPageOptions]="[5, 10, 20, 50]"
         [totalRecords]="totalElements"
-        [remoteFilter]="false"
-        [showSearch]="false"
-        [emptyTitle]="'pendingpage.emptyTitle' | translate"
-        [emptySubtitle]="'pendingpage.emptyMessage' | translate"
-        (lazyLoadChange)="onLazyLoad($event)"
-        [selectedRows]="selectedRows"
-        (rowsSelected)="onSelectionChange($event)">
+        (onPage)="onPage($event)"
+        (onLazyLoad)="onLazyLoad($event)"
+        [tableStyle]="{ 'width': '100%' }">
 
-        <ng-template #monto let-row>
-            <span class="pending-amount">
-                {{ row.monto | currency }}
-            </span>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 2.5rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                @for (column of columns; track column.field) {
+                    @if (column.sortable) {
+                        <th [pSortableColumn]="column.field" [style.width]="column.width" [ngClass]="column.styleClass">
+                            {{ column.header }}
+                            <p-sortIcon [field]="column.field"></p-sortIcon>
+                        </th>
+                    } @else {
+                        <th [style.width]="column.width" [ngClass]="column.styleClass">
+                            {{ column.header }}
+                        </th>
+                    }
+                }
+            </tr>
         </ng-template>
 
-        <ng-template #tipo let-row>
-            @if (row.tipo) {
-                <span class="tipo-badge">
-                    {{ row.tipo }}
-                </span>
-            }
+        <ng-template pTemplate="body" let-row>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                </td>
+                @for (column of columns; track column.field) {
+                    <td [style.width]="column.width" [ngClass]="column.styleClass">
+                        @if (column.field === 'monto') {
+                            <span class="pending-amount">
+                                {{ row.monto | currency }}
+                            </span>
+                        } @else if (column.field === 'tipo') {
+                            @if (row.tipo) {
+                                <span class="tipo-badge">
+                                    {{ row.tipo }}
+                                </span>
+                            }
+                        } @else if (column.field === 'referenciaManual') {
+                            <input
+                                pInputText
+                                type="text"
+                                size="small"
+                                class="manual-reference-input"
+                                [(ngModel)]="row.referenciaManual"
+                                maxlength="2000"
+                                [placeholder]="'pendingpage.referencePlaceholder' | translate"
+                                [pTooltip]="row.referenciaManual"
+                                tooltipPosition="top"
+                                [showDelay]="400" />
+                        } @else if (column.field === 'tipoPagoSeleccionado') {
+                            @if (aplicaTransferenciaAchWire(row.bu)) {
+                                @if (getOpcionesTipoPagoFila(row).length > 1) {
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <p-select
+                                            [(ngModel)]="row.tipoPagoSeleccionado"
+                                            [options]="getOpcionesTipoPagoFila(row)"
+                                            optionLabel="label"
+                                            optionValue="value"
+                                            size="small"
+                                            class="transfer-type-select"
+                                            [placeholder]="'pendingpage.selectTipoPago' | translate"
+                                            [disabled]="guardandoTipoPagoIndividualId === row.id || guardandoTipoPagoMasivo"
+                                            appendTo="body">
+                                        </p-select>
+                                        <p-button
+                                            icon="pi pi-save"
+                                            severity="info"
+                                            [rounded]="true"
+                                            [disabled]="guardandoTipoPagoIndividualId === row.id || guardandoTipoPagoMasivo"
+                                            [loading]="guardandoTipoPagoIndividualId === row.id"
+                                            (onClick)="guardarTipoPagoFila(row)"
+                                            [pTooltip]="'pendingpage.saveTipoPago' | translate"
+                                            tooltipPosition="left">
+                                        </p-button>
+                                    </div>
+                                } @else if (getOpcionesTipoPagoFila(row).length === 1) {
+                                    <span class="single-transfer-badge">
+                                        {{ getOpcionesTipoPagoFila(row)[0].label }}
+                                    </span>
+                                } @else {
+                                    <span
+                                        class="no-transfer-data-badge"
+                                        [pTooltip]="'pendingpage.sinDatosTransferenciaTooltip' | translate"
+                                        tooltipPosition="top">
+                                        <i class="pi pi-exclamation-circle"></i>
+                                        {{ 'pendingpage.sinDatosTransferencia' | translate }}
+                                    </span>
+                                }
+                            } @else {
+                                <span style="font-size: 0.85rem; color: #6c757d; font-weight: 500;">
+                                    {{ row.tipoPagoSeleccionado || 'WIRE' }}
+                                </span>
+                            }
+                        } @else if (column.type === 'actions') {
+                            <div class="pending-actions" style="display: flex; align-items: center; gap: 6px;">
+                                <p-button
+                                    icon="pi pi-save"
+                                    severity="primary"
+                                    [rounded]="true"
+                                    (onClick)="guardarReferencia(row)"
+                                    [pTooltip]="'pendingpage.saveManualReferenceTooltip' | translate"
+                                    tooltipPosition="left">
+                                </p-button>
+                                <p-button
+                                    icon="pi pi-times"
+                                    severity="danger"
+                                    [rounded]="true"
+                                    (onClick)="rechazarRegistro(row)"
+                                    [pTooltip]="'pendingpage.rejectTooltip' | translate"
+                                    tooltipPosition="left">
+                                </p-button>
+                            </div>
+                        } @else if (column.field === 'estatus') {
+                            <span
+                                class="status-badge"
+                                [ngClass]="{
+                                    'status-badge-pend': row.estatus === 'Pendiente'
+                                }">
+                                <i class="pi pi-clock"></i>
+                                {{ row.estatus | uppercase }}
+                            </span>
+                        } @else {
+                            <span
+                                [pTooltip]="column.tooltip ? row[column.field] : null"
+                                tooltipPosition="top">
+                                {{
+                                    column.truncateLength
+                                        ? (row[column.field] | slice:0:column.truncateLength)
+                                        : row[column.field]
+                                }}
+                            </span>
+                        }
+                    </td>
+                }
+            </tr>
         </ng-template>
 
-        <ng-template #referenciaManual let-row>
-            TEST {{ row.id }}
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="columns.length + 1">
+                    <div class="empty-state">
+                        <i class="pi pi-inbox"></i>
+                        <div class="empty-state-title">
+                            {{ 'pendingpage.emptyTitle' | translate }}
+                        </div>
+                        <div class="empty-state-subtitle">
+                            {{ 'pendingpage.emptyMessage' | translate }}
+                        </div>
+                    </div>
+                </td>
+            </tr>
         </ng-template>
-
-        <ng-template #actions let-row>
-
-            <div class="pending-actions">
-
-                <p-button
-                    icon="pi pi-save"
-                    severity="primary"
-                    [rounded]="true"
-                    (onClick)="guardarReferencia(row)"
-                    [pTooltip]="'pendingpage.saveManualReferences' | translate"
-                    tooltipPosition="left">
-                </p-button>
-                <p-button
-                    icon="pi pi-times"
-                    severity="danger"
-                    [rounded]="true"
-                    (onClick)="rechazarRegistro(row)"
-                    [pTooltip]="'pendingpage.reject' | translate"
-                    tooltipPosition="left">
-                </p-button>
-
-            </div>
-
-        </ng-template>
-
-        <ng-template #estatus let-row>
-
-            <span
-                class="status-badge"
-                [ngClass]="{
-                    'status-badge-pend': row.estatus === 'Pendiente'
-                }">
-
-                <i class="pi pi-clock"></i>
-
-                {{ row.estatus | uppercase }}
-
-            </span>
-
-        </ng-template>
-
-    </app-data-table>
+    </p-table>
 
 </app-page-content>

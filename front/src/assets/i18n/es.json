@@ -304,8 +304,25 @@
         "manualReferencesSaveError": "Error al guardar las referencias manuales",
         "referenceManualNoChanges": "No se detectaron cambios en la referencia manual",
         "saveManualReferences": "Guardar referencias",
+        "saveManualReferenceTooltip": "Guardar referencia manual",
 
+        "tipoPagoSeleccionadoColumn": "TIPO DE TRANSFERENCIA",
+        "selectTipoPago": "Seleccionar tipo de pago",
+        "selectTipoPagoMasivo": "Tipo pago masivo",
+        "applyTipoPagoMasivo": "Aplicar tipo pago",
+        "applyTipoPagoMasivoTooltip": "Aplica y guarda el tipo de pago a todos los seleccionados",
+        "saveTipoPago": "Guardar método de transferencia",
+        "saveTiposPago": "Guardar tipos de transferencia",
+        "rejectTooltip": "Rechazar registro",
+        "sinCambiosTipoPago": "El pago ya tiene asignado este tipo de pago.",
+        "tipoPagoInvalido": "El tipo de pago seleccionado es inválido. Use ACH o WIRE.",
+        "tipoPagoSaveSuccess": "Tipo de pago actualizado correctamente.",
+        "tipoPagoSaveError": "Error al actualizar tipo de pago.",
+        "tiposPagoSaveSuccess": "Tipos de pago actualizados correctamente.",
+        "tiposPagoSaveError": "Error al actualizar tipos de pago.",
 
+        "sinDatosTransferencia": "Sin datos",
+        "sinDatosTransferenciaTooltip": "El proveedor no cuenta con códigos ABA ni SWIFT registrados",
         "close": "Cerrar"
       },
       
