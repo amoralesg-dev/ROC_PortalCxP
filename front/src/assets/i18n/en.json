@@ -271,7 +271,25 @@
         "manualReferencesSaveError": "Error saving manual references",
         "referenceManualNoChanges": "No changes were detected in the manual reference",
         "saveManualReferences": "Save References",
+        "saveManualReferenceTooltip": "Save manual reference",
 
+        "tipoPagoSeleccionadoColumn": "TRANSFER TYPE",
+        "selectTipoPago": "Select payment type",
+        "selectTipoPagoMasivo": "Bulk payment type",
+        "applyTipoPagoMasivo": "Apply payment type",
+        "applyTipoPagoMasivoTooltip": "Applies and saves payment type to all selected rows",
+        "saveTipoPago": "Save transfer method",
+        "saveTiposPago": "Save transfer types",
+        "rejectTooltip": "Reject record",
+        "sinCambiosTipoPago": "Payment already has this payment type assigned.",
+        "tipoPagoInvalido": "Selected payment type is invalid. Use ACH or WIRE.",
+        "tipoPagoSaveSuccess": "Payment type updated successfully.",
+        "tipoPagoSaveError": "Error updating payment type.",
+        "tiposPagoSaveSuccess": "Payment types updated successfully.",
+        "tiposPagoSaveError": "Error updating payment types.",
+
+        "sinDatosTransferencia": "No data",
+        "sinDatosTransferenciaTooltip": "Supplier has neither ABA nor SWIFT routing codes registered",
         "close": "Close"
     },
     "analyticspage": {
