@@ -282,7 +282,7 @@
         "saveTiposPago": "Save transfer types",
         "rejectTooltip": "Reject record",
         "sinCambiosTipoPago": "Payment already has this payment type assigned.",
-        "tipoPagoInvalido": "Selected payment type is invalid. Use ACH or WIRE.",
+        "tipoPagoInvalido": "Selected payment type is invalid. Use ACH, WIRE, SPID or SPEI.",
         "tipoPagoSaveSuccess": "Payment type updated successfully.",
         "tipoPagoSaveError": "Error updating payment type.",
         "tiposPagoSaveSuccess": "Payment types updated successfully.",

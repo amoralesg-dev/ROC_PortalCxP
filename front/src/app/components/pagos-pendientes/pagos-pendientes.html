@@ -242,47 +242,41 @@
                                 tooltipPosition="top"
                                 [showDelay]="400" />
                         } @else if (column.field === 'tipoPagoSeleccionado') {
-                            @if (aplicaTransferenciaAchWire(row.bu)) {
-                                @if (getOpcionesTipoPagoFila(row).length > 1) {
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <p-select
-                                            [(ngModel)]="row.tipoPagoSeleccionado"
-                                            [options]="getOpcionesTipoPagoFila(row)"
-                                            optionLabel="label"
-                                            optionValue="value"
-                                            size="small"
-                                            class="transfer-type-select"
-                                            [placeholder]="'pendingpage.selectTipoPago' | translate"
-                                            [disabled]="guardandoTipoPagoIndividualId === row.id || guardandoTipoPagoMasivo"
-                                            appendTo="body">
-                                        </p-select>
-                                        <p-button
-                                            icon="pi pi-save"
-                                            severity="info"
-                                            [rounded]="true"
-                                            [disabled]="guardandoTipoPagoIndividualId === row.id || guardandoTipoPagoMasivo"
-                                            [loading]="guardandoTipoPagoIndividualId === row.id"
-                                            (onClick)="guardarTipoPagoFila(row)"
-                                            [pTooltip]="'pendingpage.saveTipoPago' | translate"
-                                            tooltipPosition="left">
-                                        </p-button>
-                                    </div>
-                                } @else if (getOpcionesTipoPagoFila(row).length === 1) {
-                                    <span class="single-transfer-badge">
-                                        {{ getOpcionesTipoPagoFila(row)[0].label }}
-                                    </span>
-                                } @else {
-                                    <span
-                                        class="no-transfer-data-badge"
-                                        [pTooltip]="'pendingpage.sinDatosTransferenciaTooltip' | translate"
-                                        tooltipPosition="top">
-                                        <i class="pi pi-exclamation-circle"></i>
-                                        {{ 'pendingpage.sinDatosTransferencia' | translate }}
-                                    </span>
-                                }
+                            @if (getOpcionesTipoPagoFila(row).length > 1) {
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <p-select
+                                        [(ngModel)]="row.tipoPagoSeleccionado"
+                                        [options]="getOpcionesTipoPagoFila(row)"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        size="small"
+                                        class="transfer-type-select"
+                                        [placeholder]="'pendingpage.selectTipoPago' | translate"
+                                        [disabled]="guardandoTipoPagoIndividualId === row.id || guardandoTipoPagoMasivo"
+                                        appendTo="body">
+                                    </p-select>
+                                    <p-button
+                                        icon="pi pi-save"
+                                        severity="info"
+                                        [rounded]="true"
+                                        [disabled]="guardandoTipoPagoIndividualId === row.id || guardandoTipoPagoMasivo"
+                                        [loading]="guardandoTipoPagoIndividualId === row.id"
+                                        (onClick)="guardarTipoPagoFila(row)"
+                                        [pTooltip]="'pendingpage.saveTipoPago' | translate"
+                                        tooltipPosition="left">
+                                    </p-button>
+                                </div>
+                            } @else if (getOpcionesTipoPagoFila(row).length === 1) {
+                                <span class="single-transfer-badge">
+                                    {{ getOpcionesTipoPagoFila(row)[0].label }}
+                                </span>
                             } @else {
-                                <span style="font-size: 0.85rem; color: #6c757d; font-weight: 500;">
-                                    {{ row.tipoPagoSeleccionado || 'WIRE' }}
+                                <span
+                                    class="no-transfer-data-badge"
+                                    [pTooltip]="'pendingpage.sinDatosTransferenciaTooltip' | translate"
+                                    tooltipPosition="top">
+                                    <i class="pi pi-exclamation-circle"></i>
+                                    {{ 'pendingpage.sinDatosTransferencia' | translate }}
                                 </span>
                             }
                         } @else if (column.type === 'actions') {

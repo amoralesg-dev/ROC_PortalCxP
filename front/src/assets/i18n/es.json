@@ -315,7 +315,7 @@
         "saveTiposPago": "Guardar tipos de transferencia",
         "rejectTooltip": "Rechazar registro",
         "sinCambiosTipoPago": "El pago ya tiene asignado este tipo de pago.",
-        "tipoPagoInvalido": "El tipo de pago seleccionado es inválido. Use ACH o WIRE.",
+        "tipoPagoInvalido": "El tipo de pago seleccionado es inválido. Use ACH, WIRE, SPID o SPEI.",
         "tipoPagoSaveSuccess": "Tipo de pago actualizado correctamente.",
         "tipoPagoSaveError": "Error al actualizar tipo de pago.",
         "tiposPagoSaveSuccess": "Tipos de pago actualizados correctamente.",

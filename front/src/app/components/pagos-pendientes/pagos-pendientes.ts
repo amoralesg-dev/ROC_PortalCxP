@@ -111,7 +111,9 @@ export class PagosPendientesComponent implements OnInit {
     selectedTipo: string | number = 'Todos';
     readonly opcionesTipoPago = [
         { label: 'ACH - ABA', value: 'ACH' },
-        { label: 'Wire - SWIFT', value: 'WIRE' }
+        { label: 'Wire - SWIFT', value: 'WIRE' },
+        { label: 'SPID - SWIFT', value: 'SPID' },
+        { label: 'SPEI / Book - SWIFT', value: 'SPEI' }
     ];
 
     guardandoTipoPagoIndividualId: number | null = null;
@@ -289,7 +291,7 @@ export class PagosPendientesComponent implements OnInit {
                             ?? this.translate.instant('pendingpage.tipoPagoSeleccionadoColumn'),
                         type: 'tipoPago' as any,
                         sortable: false,
-                        width: '160px'
+                        width: '180px'
                     },
 
                     {
@@ -878,10 +880,11 @@ export class PagosPendientesComponent implements OnInit {
         }
 
         const tipo = row.tipoPagoSeleccionado;
-        if (!tipo || (tipo !== 'ACH' && tipo !== 'WIRE')) {
+        const tiposPermitidos = ['ACH', 'WIRE', 'SPID', 'SPEI'];
+        if (!tipo || !tiposPermitidos.includes(tipo)) {
             this.toast.error(
                 this.translate.instant('pendingpage.tipoPagoInvalido') ||
-                    'El tipo de pago seleccionado es inválido. Use ACH o WIRE.'
+                    'El tipo de pago seleccionado es inválido. Use ACH, WIRE, SPID o SPEI.'
             );
             row.tipoPagoSeleccionado = row.tipoPagoSeleccionadoOriginal;
             return;
@@ -945,10 +948,7 @@ export class PagosPendientesComponent implements OnInit {
     /**
      * Construye dinámicamente las opciones del selector de tipo de transferencia
      * según los datos y códigos del proveedor asociados a la fila:
-     * - Caso 1 (ABA + SWIFT): [ACH - ABA, Wire - SWIFT]
-     * - Caso 2 (ABA sin SWIFT): [ACH - ABA]
-     * - Caso 3 (sin ABA con SWIFT): [Wire - SWIFT]
-     * - Caso 4 (sin ABA ni SWIFT): []
+     * Soporta: ACH, WIRE, SPID, SPEI.
      */
     getOpcionesTipoPagoFila(row: PagoPendienteRow): { label: string; value: string }[] {
         if (!row) {
@@ -964,6 +964,8 @@ export class PagosPendientesComponent implements OnInit {
             }
             if (row.tieneSwift) {
                 result.push({ label: 'Wire - SWIFT', value: 'WIRE' });
+                result.push({ label: 'SPID - SWIFT', value: 'SPID' });
+                result.push({ label: 'SPEI / Book - SWIFT', value: 'SPEI' });
             }
             return result;
         }
@@ -972,25 +974,21 @@ export class PagosPendientesComponent implements OnInit {
     }
 
     /**
-     * Comprueba si hay al menos una fila cuyo tipoPagoSeleccionado difiere del original
-     * y cuya empresa participe en la funcionalidad ACH/WIRE.
+     * Comprueba si hay al menos una fila cuyo tipoPagoSeleccionado difiere del original.
      */
     tieneTiposPagoModificados(): boolean {
         return this.pagos.some(
-            p => this.aplicaTransferenciaAchWire(p.bu) &&
-                 (p.tipoPagoSeleccionado || '') !== (p.tipoPagoSeleccionadoOriginal || '')
+            p => (p.tipoPagoSeleccionado || '') !== (p.tipoPagoSeleccionadoOriginal || '')
         );
     }
 
     /**
-     * Guarda los tipos de pago modificados enviando solo los registros que cambiaron
-     * y pertenecen a empresas autorizadas.
+     * Guarda los tipos de pago modificados enviando los registros que cambiaron.
      * Sigue exactamente el mismo patrón de guardarReferenciasManuales.
      */
     guardarTiposPago(): void {
         const modificados = this.pagos.filter(
-            p => this.aplicaTransferenciaAchWire(p.bu) &&
-                 (p.tipoPagoSeleccionado || '') !== (p.tipoPagoSeleccionadoOriginal || '')
+            p => (p.tipoPagoSeleccionado || '') !== (p.tipoPagoSeleccionadoOriginal || '')
         );
 
         if (!modificados.length) {
