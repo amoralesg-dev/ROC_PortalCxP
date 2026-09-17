@@ -65,6 +65,8 @@ export interface PagoPendienteRow {
     fechaEnvio?: string;
     tipoPagoSeleccionado?: string;
     tipoPagoSeleccionadoOriginal?: string;
+    tipoSugerido?: string;
+    advertenciaTipoPago?: string;
     tieneAba?: boolean;
     tieneSwift?: boolean;
     opcionesTipoPago?: string[];
@@ -381,6 +383,8 @@ export class PagosPendientesComponent implements OnInit {
                         fechaEnvio: item.fechaEnvio || '',
                         tipoPagoSeleccionado: (item as any).tipoPagoSeleccionado ?? undefined,
                         tipoPagoSeleccionadoOriginal: (item as any).tipoPagoSeleccionado ?? undefined,
+                        tipoSugerido: (item as any).tipoSugerido,
+                        advertenciaTipoPago: (item as any).advertenciaTipoPago,
                         tieneAba: item.tieneAba,
                         tieneSwift: item.tieneSwift,
                         opcionesTipoPago: item.opcionesTipoPago

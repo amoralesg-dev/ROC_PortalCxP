@@ -243,7 +243,15 @@
                                 [showDelay]="400" />
                         } @else if (column.field === 'tipoPagoSeleccionado') {
                             @if (getOpcionesTipoPagoFila(row).length > 1) {
-                                <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    @if (row.advertenciaTipoPago) {
+                                        <i
+                                            class="pi pi-exclamation-triangle"
+                                            style="color: #f59e0b; font-size: 1.1rem; cursor: help;"
+                                            [pTooltip]="row.advertenciaTipoPago"
+                                            tooltipPosition="top">
+                                        </i>
+                                    }
                                     <p-select
                                         [(ngModel)]="row.tipoPagoSeleccionado"
                                         [options]="getOpcionesTipoPagoFila(row)"
@@ -267,9 +275,19 @@
                                     </p-button>
                                 </div>
                             } @else if (getOpcionesTipoPagoFila(row).length === 1) {
-                                <span class="single-transfer-badge">
-                                    {{ getOpcionesTipoPagoFila(row)[0].label }}
-                                </span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    @if (row.advertenciaTipoPago) {
+                                        <i
+                                            class="pi pi-exclamation-triangle"
+                                            style="color: #f59e0b; font-size: 1.1rem; cursor: help;"
+                                            [pTooltip]="row.advertenciaTipoPago"
+                                            tooltipPosition="top">
+                                        </i>
+                                    }
+                                    <span class="single-transfer-badge" [pTooltip]="row.advertenciaTipoPago" tooltipPosition="top">
+                                        {{ getOpcionesTipoPagoFila(row)[0].label }}
+                                    </span>
+                                </div>
                             } @else {
                                 <span
                                     class="no-transfer-data-badge"

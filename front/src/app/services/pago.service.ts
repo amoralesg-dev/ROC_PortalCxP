@@ -28,6 +28,8 @@ export interface PagoDto {
   referenciaManual?: string;
   bu?: string;
   tipoPagoSeleccionado?: string;
+  tipoSugerido?: string;
+  advertenciaTipoPago?: string;
   tieneAba?: boolean;
   tieneSwift?: boolean;
   opcionesTipoPago?: string[];
