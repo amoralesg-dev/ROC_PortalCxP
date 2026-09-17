@@ -274,9 +274,12 @@ export class PagosTable implements OnInit, AfterViewInit {
         this.cargarPagos();
         this.cdr.detectChanges();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error al enviar los pagos:', error);
-        const errorMessage = error.error?.message || this.translate.instant('pendingpage.sendError');
+        const errorMessage = this.extractErrorMessage(
+          error,
+          this.translate.instant('pendingpage.sendError') || 'Error al enviar los pagos'
+        );
         this.snackBar.open(errorMessage, this.translate.instant('pendingpage.close'), {
           duration: 5000,
           panelClass: ['error-snackbar']
@@ -384,11 +387,10 @@ validarPagosStatus() {
             error
           );
 
-          const errorMessage =
-            error.error ||
-            this.translate.instant(
-              'pendingpage.referenceManualSaveError'
-            );
+          const errorMessage = this.extractErrorMessage(
+            error,
+            this.translate.instant('pendingpage.referenceManualSaveError') || 'Error al guardar referencia manual'
+          );
 
           this.snackBar.open(
             errorMessage,
@@ -473,11 +475,10 @@ validarPagosStatus() {
             error
           );
 
-          const errorMessage =
-            error.error ||
-            this.translate.instant(
-              'pendingpage.manualReferencesSaveError'
-            );
+          const errorMessage = this.extractErrorMessage(
+            error,
+            this.translate.instant('pendingpage.manualReferencesSaveError') || 'Error al guardar referencias manuales'
+          );
 
           this.snackBar.open(
             errorMessage,
@@ -492,5 +493,39 @@ validarPagosStatus() {
       });
   }
 
-  
+  private extractErrorMessage(error: any, fallbackMessage: string): string {
+    if (!error) {
+      return fallbackMessage;
+    }
+
+    if (error.error !== undefined && error.error !== null) {
+      if (typeof error.error === 'string') {
+        const trimmed = error.error.trim();
+        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (parsed && typeof parsed.message === 'string' && parsed.message.trim()) {
+              return parsed.message.trim();
+            }
+          } catch (_) {}
+        }
+        if (trimmed) {
+          return trimmed;
+        }
+      } else if (typeof error.error === 'object') {
+        if (typeof error.error.message === 'string' && error.error.message.trim()) {
+          return error.error.message.trim();
+        }
+        if (typeof error.error.error === 'string' && error.error.error.trim()) {
+          return error.error.error.trim();
+        }
+      }
+    }
+
+    if (typeof error.message === 'string' && error.message.trim() && !error.message.startsWith('Http failure response')) {
+      return error.message.trim();
+    }
+
+    return fallbackMessage;
+  }
 }
