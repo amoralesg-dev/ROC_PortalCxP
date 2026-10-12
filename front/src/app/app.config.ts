@@ -21,8 +21,11 @@ import {
   provideTranslateHttpLoader
 } from '@ngx-translate/http-loader';
 
+import { provideDynamicBaseHref } from './services/context-path.service';
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideDynamicBaseHref(),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
 
