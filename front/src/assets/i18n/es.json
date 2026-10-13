@@ -153,6 +153,7 @@
         "description": "DESCRIPCIÓN",
         "file": "ARCHIVO",
         "sendFile": "ARCHIVO DE ENVÍO",
+        "transferType": "TIPO TRANSFERENCIA",
         "paymentType": "TIPO DE PAGO",
         "status": "ESTATUS",
 
