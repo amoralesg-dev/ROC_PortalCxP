@@ -109,6 +109,7 @@ export class PagosEnviadosComponent implements OnInit {
     referencia: 'referencia',
     nombreArchivo: 'nombreArchivo',
     nombreArchivoEnvio: 'nombreArchivoEnvio',
+    tipoTransferencia: 'tipoTransferencia',
     tipoPago: 'tipoPago',
     estatus: 'estatus'
   };
@@ -234,6 +235,12 @@ export class PagosEnviadosComponent implements OnInit {
             width: '120px',
             truncateLength: 6,
             tooltip: true
+          },
+          {
+            field: 'tipoTransferencia',
+            header: columns.transferType || 'TIPO TRANSFERENCIA',
+            sortable: true,
+            width: '130px'
           },
           {
             field: 'tipoPago',
