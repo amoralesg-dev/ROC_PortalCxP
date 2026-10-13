@@ -8,12 +8,24 @@ import { PagosErroresComponent } from './components/pagos-errores/pagos-errores'
 import { PagosAnaliticaComponent } from './components/pagos-analitica/pagos-analitica';
 import { PagosPendientesComponent } from './components/pagos-pendientes/pagos-pendientes';
 
+import { CallbackComponent } from './components/callback/callback.component';
+import { AuthenticationService } from 'rassini-ui';
+
 export const authGuard = () => {
   const authService = inject(AuthService);
+  const corporateAuth = inject(AuthenticationService, { optional: true });
   const router = inject(Router);
 
   if (authService.isLoggedIn()) {
     return true;
+  }
+
+  // Si existe sesión OIDC activa en el navegador, intentar SSO silencioso
+  if (corporateAuth) {
+    if (corporateAuth.hasValidTokenInStorage()) {
+      authService.syncFromCorporateOidc();
+      return true;
+    }
   }
 
   router.navigate(['/login']);
@@ -21,6 +33,7 @@ export const authGuard = () => {
 };
 
 export const routes: Routes = [
+  { path: 'callback', component: CallbackComponent },
   { path: 'login', component: LoginComponent },
   { path: 'pagos-pendientes', component: PagosPendientesComponent, canActivate: [authGuard] },
   { path: 'pagos-enviados', component: PagosEnviadosComponent, canActivate: [authGuard] },

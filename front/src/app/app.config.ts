@@ -22,6 +22,8 @@ import {
 } from '@ngx-translate/http-loader';
 
 import { provideDynamicBaseHref } from './services/context-path.service';
+import { provideRassiniCorporate } from 'rassini-ui';
+import { CXP_OIDC_CONFIG } from './config/oidc.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,6 +44,9 @@ export const appConfig: ApplicationConfig = {
     }),
 
     provideRassiniTheme(),
+    provideRassiniCorporate({
+      oidc: CXP_OIDC_CONFIG
+    }),
 
     MessageService,
     ConfirmationService
