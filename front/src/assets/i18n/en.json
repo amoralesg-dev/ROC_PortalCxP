@@ -131,6 +131,7 @@
         "description": "DESCRIPTION",
         "file": "FILE",
         "sendFile": "SEND FILE",
+        "transferType": "TRANSFER TYPE",
         "paymentType": "PAYMENT TYPE",
         "status": "STATUS",
         "startDate": "Start date",
