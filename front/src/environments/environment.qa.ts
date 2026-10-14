@@ -3,6 +3,8 @@ export const environment = {
   environmentName: 'qa',
   baseUrl: 'http://10.15.1.25:8082/ms-pagos',
   oidcIssuer: 'https://rss-iam-qa.rassini.com/employee-portal',
+  employeePortalUrl: 'https://rss-iam-qa.rassini.com/employee-portal',
+  legacyLoginEnabled: false,
   allowedApiOrigins: [
     'http://10.15.1.25:8082',
     'https://rss-iam-qa.rassini.com'

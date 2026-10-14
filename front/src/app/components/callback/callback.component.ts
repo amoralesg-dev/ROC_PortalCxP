@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
       <h2>Procesando autenticación corporativa SSO IAM (OIDC / PKCE)...</h2>
       <p *ngIf="error" style="color: red; font-weight: bold;">Error: {{ error }}</p>
-      <p *ngIf="!error">Validando credenciales y extrayendo contexto de Business Units...</p>
+      <p *ngIf="!error">Validando credenciales y extrayendo contexto corporativo...</p>
     </div>
   `
 })
@@ -27,7 +27,7 @@ export class CallbackComponent implements OnInit {
   ngOnInit(): void {
     if (this.corporateAuth.isAuthenticated() || this.corporateAuth.hasValidTokenInStorage()) {
       this.authService.syncFromCorporateOidc();
-      this.router.navigateByUrl('/pagos-pendientes', { replaceUrl: true });
+      this.router.navigateByUrl('/dashboard', { replaceUrl: true });
       return;
     }
 
@@ -43,15 +43,15 @@ export class CallbackComponent implements OnInit {
       }
 
       if (!code || !state) {
-        console.warn('[CALLBACK OIDC] Sin código o estado, redirigiendo a /login');
-        this.router.navigateByUrl('/login', { replaceUrl: true });
+        console.warn('[CALLBACK OIDC] Sin código o estado, redirigiendo a /logout');
+        this.router.navigateByUrl('/logout', { replaceUrl: true });
         return;
       }
 
       this.corporateAuth.handleCallback(code, state).subscribe({
         next: () => {
           this.authService.syncFromCorporateOidc();
-          this.router.navigateByUrl('/pagos-pendientes', { replaceUrl: true });
+          this.router.navigateByUrl('/dashboard', { replaceUrl: true });
         },
         error: (err) => {
           this.error = err.message || 'Error al intercambiar el código por tokens en SSO IAM.';

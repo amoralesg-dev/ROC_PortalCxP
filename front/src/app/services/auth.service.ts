@@ -100,11 +100,12 @@ export class AuthService {
     sessionStorage.removeItem('auth_nombre');
     sessionStorage.removeItem('auth_bu');
     sessionStorage.removeItem('auth_rol');
+    sessionStorage.removeItem('auth_contingencia');
 
-    if (this.corporateAuth && this.corporateAuth.isAuthenticated()) {
+    if (this.corporateAuth && (this.corporateAuth.isAuthenticated() || this.corporateAuth.hasValidTokenInStorage())) {
       this.corporateAuth.logout();
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/logout']);
     }
   }
 
@@ -113,6 +114,14 @@ export class AuthService {
       return true;
     }
     return !!sessionStorage.getItem('auth_usuario');
+  }
+
+  getCurrentUsername(): string {
+    const user = this.corporateAuth?.currentUser();
+    if (user?.username) {
+      return user.username;
+    }
+    return sessionStorage.getItem('auth_usuario') || '';
   }
 
   /**
