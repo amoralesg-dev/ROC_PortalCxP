@@ -24,10 +24,54 @@ export class CallbackComponent implements OnInit {
 
   error: string | null = null;
 
+  private getAndClearTargetRoute(): string {
+    const rawRedirect = sessionStorage.getItem('rassini_redirect_url');
+    sessionStorage.removeItem('rassini_redirect_url');
+
+    if (!rawRedirect || rawRedirect.trim() === '') {
+      return '/dashboard';
+    }
+
+    try {
+      let targetPath = rawRedirect.trim();
+
+      // Si es una URL completa (ej. http://localhost:4200/portal-cxp/pagos-pendientes)
+      if (targetPath.startsWith('http://') || targetPath.startsWith('https://')) {
+        const parsed = new URL(targetPath);
+        targetPath = parsed.pathname + (parsed.search || '');
+      }
+
+      // Normalizar prefijo de subcontexto /portal-cxp
+      if (targetPath.startsWith('/portal-cxp/')) {
+        targetPath = targetPath.replace('/portal-cxp/', '/');
+      } else if (targetPath === '/portal-cxp') {
+        targetPath = '/';
+      }
+
+      // Evitar redirigir de vuelta a rutas técnicas de sesión
+      if (
+        targetPath === '/callback' ||
+        targetPath.startsWith('/callback') ||
+        targetPath === '/logout' ||
+        targetPath.startsWith('/logout') ||
+        targetPath === '/access-denied' ||
+        targetPath === '/' ||
+        targetPath === ''
+      ) {
+        return '/dashboard';
+      }
+
+      return targetPath.startsWith('/') ? targetPath : `/${targetPath}`;
+    } catch {
+      return '/dashboard';
+    }
+  }
+
   ngOnInit(): void {
     if (this.corporateAuth.isAuthenticated() || this.corporateAuth.hasValidTokenInStorage()) {
       this.authService.syncFromCorporateOidc();
-      this.router.navigateByUrl('/dashboard', { replaceUrl: true });
+      const target = this.getAndClearTargetRoute();
+      this.router.navigateByUrl(target, { replaceUrl: true });
       return;
     }
 
@@ -51,7 +95,8 @@ export class CallbackComponent implements OnInit {
       this.corporateAuth.handleCallback(code, state).subscribe({
         next: () => {
           this.authService.syncFromCorporateOidc();
-          this.router.navigateByUrl('/dashboard', { replaceUrl: true });
+          const target = this.getAndClearTargetRoute();
+          this.router.navigateByUrl(target, { replaceUrl: true });
         },
         error: (err) => {
           this.error = err.message || 'Error al intercambiar el código por tokens en SSO IAM.';
@@ -61,3 +106,4 @@ export class CallbackComponent implements OnInit {
     });
   }
 }
+
