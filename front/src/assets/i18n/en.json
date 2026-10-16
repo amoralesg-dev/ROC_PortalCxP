@@ -1,4 +1,5 @@
 {
+
     "common": {
         "search": "Search...",
         "success": "Success",
@@ -183,6 +184,11 @@
         "loginSuccess": "Login successful"
     },
     "menu": {
+        "CXP_ROOT": "Accounts Payable",
+        "CXP_PENDIENTES": "Pending Payments",
+        "CXP_ENVIADOS": "Sent Payments",
+        "CXP_ERRORES": "Payments with Errors",
+        "CXP_ANALITICA": "Pending Analytics",
         "financeArea": "Finance Area",
         "pendingPayments": "Pending Payments Classification",
         "sentPayments": "Sent Payments",

@@ -6,7 +6,8 @@ import {
   NavigationService, 
   RassiniShell,
   RassiniMenuItem,
-  CorporateNavigationMenu
+  CorporateNavigationMenu,
+  RassiniI18nService
 } from 'rassini-ui';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../environments/environment';
@@ -33,6 +34,7 @@ export class ShellLayoutComponent implements OnInit {
   readonly navService = inject(NavigationService);
   private readonly legacyAuth = inject(AuthService);
   private readonly router = inject(Router);
+  readonly i18n = inject(RassiniI18nService);
 
   onHostClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
@@ -45,6 +47,9 @@ export class ShellLayoutComponent implements OnInit {
   }
 
   readonly menuTree = computed<RassiniMenuItem[]>(() => {
+    // Suscripción reactiva explícita al cambio de idioma
+    this.i18n.currentLang();
+
     if (!this.authService.isAuthenticated()) {
       return [];
     }
@@ -52,12 +57,13 @@ export class ShellLayoutComponent implements OnInit {
     if (!rawMenus || rawMenus.length === 0) {
       return [
         {
+          code: 'CXP_ROOT',
           label: 'Cuentas por Pagar',
           items: [
-            { label: 'Pagos Pendientes', icon: 'pi pi-wallet', routerLink: '/pagos-pendientes' },
-            { label: 'Pagos Enviados', icon: 'pi pi-history', routerLink: '/pagos-enviados' },
-            { label: 'Pagos con Error', icon: 'pi pi-exclamation-circle', routerLink: '/pagos-errores' },
-            { label: 'Analítica Pendientes', icon: 'pi pi-chart-bar', routerLink: '/pagos-analitica' }
+            { code: 'CXP_PENDIENTES', label: 'Pagos Pendientes', icon: 'pi pi-wallet', routerLink: '/pagos-pendientes' },
+            { code: 'CXP_ENVIADOS', label: 'Pagos Enviados', icon: 'pi pi-history', routerLink: '/pagos-enviados' },
+            { code: 'CXP_ERRORES', label: 'Pagos con Error', icon: 'pi pi-exclamation-circle', routerLink: '/pagos-errores' },
+            { code: 'CXP_ANALITICA', label: 'Analítica Pendientes', icon: 'pi pi-chart-bar', routerLink: '/pagos-analitica' }
           ]
         }
       ];
@@ -113,6 +119,7 @@ export class ShellLayoutComponent implements OnInit {
 
       if (isLogoutOption) {
         return {
+          code: m.code,
           label: m.label,
           icon: m.icon || 'pi pi-sign-out',
           command: () => this.onLogout(),
@@ -126,6 +133,7 @@ export class ShellLayoutComponent implements OnInit {
 
       if (isLocalToCurrentApp) {
         return {
+          code: m.code,
           label: m.label,
           icon: m.icon || 'pi pi-circle',
           routerLink: targetRoute,
@@ -138,6 +146,7 @@ export class ShellLayoutComponent implements OnInit {
       }
 
       return {
+        code: m.code,
         label: m.label,
         icon: m.icon || 'pi pi-circle',
         routerLink: targetRoute,

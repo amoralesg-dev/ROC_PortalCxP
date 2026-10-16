@@ -215,6 +215,11 @@
         "loginSuccess": "Login exitoso"
     },
     "menu": {
+        "CXP_ROOT": "Cuentas por Pagar",
+        "CXP_PENDIENTES": "Pagos Pendientes",
+        "CXP_ENVIADOS": "Pagos Enviados",
+        "CXP_ERRORES": "Pagos con Error",
+        "CXP_ANALITICA": "Analítica Pendientes",
         "financeArea": "Área de Finanzas",
         "pendingPayments": "Pagos Pendientes de Clasificación",
         "sentPayments": "Pagos Enviados",
