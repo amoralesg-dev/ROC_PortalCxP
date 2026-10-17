@@ -52,7 +52,7 @@
         "tableColumns": {
             "folio": "ID",
             "bu": "BU",
-            "sentDate": "Send Date",
+            "sentDate": "SEND DATE",
             "provider": "SUPPLIER",
             "rfc": "Tax ID",
             "name": "NAME",
