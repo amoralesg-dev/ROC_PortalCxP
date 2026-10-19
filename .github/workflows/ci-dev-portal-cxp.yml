@@ -33,7 +33,7 @@ jobs:
           npm -v
 
       - name: Instalar dependencias
-        run: npm install
+        run: npm install --no-package-lock
 
       - name: Compilar Angular DEV Portal CxP
         run: npm run build:dev -- --base-href=/portal-cxp/
