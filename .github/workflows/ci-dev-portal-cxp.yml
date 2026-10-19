@@ -101,7 +101,7 @@ jobs:
           echo     ^</defaultDocument^>
           echo     ^<rewrite^>
           echo       ^<rules^>
-          echo         ^<rule name="Angular Routes" stopProcessing="true"^>
+          echo         ^<rule name="Angular Routes Portal CxP" stopProcessing="true"^>
           echo           ^<match url=".*" /^>
           echo           ^<conditions logicalGrouping="MatchAll"^>
           echo             ^<add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /^>
