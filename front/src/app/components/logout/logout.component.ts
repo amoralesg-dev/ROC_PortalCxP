@@ -19,7 +19,7 @@ export class LogoutComponent implements OnInit {
   private readonly navService = inject(NavigationService);
   private readonly legacyAuth = inject(AuthService);
 
-  readonly portalUrl = environment.employeePortalUrl || 'http://localhost:4205/employee-portal';
+  readonly portalUrl = environment.employeePortalUrl || '/employee-portal';
 
   ngOnInit(): void {
     this.navService.clear();

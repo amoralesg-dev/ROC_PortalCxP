@@ -41,7 +41,7 @@ export class ShellLayoutComponent implements OnInit {
     if (target && (target.classList?.contains('rui-logo') || target.closest('.rui-logo') || target.closest('.rui-topbar-left img'))) {
       event.preventDefault();
       event.stopPropagation();
-      const targetUrl = environment.employeePortalUrl || 'http://localhost:4205/employee-portal';
+      const targetUrl = environment.employeePortalUrl || '/employee-portal';
       window.location.href = targetUrl;
     }
   }

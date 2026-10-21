@@ -1,5 +1,16 @@
 import { CorporateOidcConfig } from 'rassini-ui';
 import { environment } from '../../environments/environment';
+import { resolveAppBaseHref } from '../services/context-path.service';
+
+function getBaseHrefFromDom(): string | null {
+  if (typeof document !== 'undefined') {
+    const baseEl = document.querySelector('base');
+    if (baseEl) {
+      return baseEl.getAttribute('href');
+    }
+  }
+  return null;
+}
 
 /**
  * Obtiene el redirectUri dinámicamente según window.location.origin y el contexto activo.
@@ -7,11 +18,12 @@ import { environment } from '../../environments/environment';
  */
 export function getOidcRedirectUri(): string {
   if (typeof window === 'undefined') {
-    return '/callback';
+    return '/portal-cxp/callback';
   }
   const origin = window.location.origin;
-  const pathname = window.location.pathname;
-  if (pathname === '/portal-cxp' || pathname.startsWith('/portal-cxp/')) {
+  const pathname = window.location.pathname || '/';
+  const baseHref = resolveAppBaseHref(pathname, getBaseHrefFromDom());
+  if (baseHref === '/portal-cxp/' || pathname === '/portal-cxp' || pathname.startsWith('/portal-cxp/') || environment.environmentName === 'dev') {
     return `${origin}/portal-cxp/callback`;
   }
   return `${origin}/callback`;
@@ -23,11 +35,12 @@ export function getOidcRedirectUri(): string {
  */
 export function getOidcPostLogoutRedirectUri(): string {
   if (typeof window === 'undefined') {
-    return 'http://localhost:4200/employee-portal/auth/login';
+    return `${environment.employeePortalUrl}/auth/login`;
   }
   const origin = window.location.origin;
-  const pathname = window.location.pathname;
-  if (pathname === '/portal-cxp' || pathname.startsWith('/portal-cxp/')) {
+  const pathname = window.location.pathname || '/';
+  const baseHref = resolveAppBaseHref(pathname, getBaseHrefFromDom());
+  if (baseHref === '/portal-cxp/' || pathname === '/portal-cxp' || pathname.startsWith('/portal-cxp/') || environment.environmentName === 'dev') {
     return `${origin}/portal-cxp/logout`;
   }
   return `${origin}/logout`;

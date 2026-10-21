@@ -24,21 +24,78 @@ export class CallbackComponent implements OnInit {
 
   error: string | null = null;
 
-  private getAndClearTargetRoute(): string {
-    const rawRedirect = sessionStorage.getItem('rassini_redirect_url');
-    sessionStorage.removeItem('rassini_redirect_url');
+  /**
+   * Valida si un origen (protocol + host + port) es de confianza dentro del ecosistema corporativo.
+   */
+  private isTrustedRedirectOrigin(origin: string): boolean {
+    const currentOrigin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+    if (currentOrigin && origin === currentOrigin) {
+      return true;
+    }
+    try {
+      const parsed = new URL(origin);
+      const host = parsed.hostname.toLowerCase();
+      return (
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '10.15.1.15' ||
+        host === '10.15.1.37' ||
+        host === 'rss-cxp-dev.rassini.com' ||
+        host.endsWith('.rassini.com')
+      );
+    } catch {
+      return false;
+    }
+  }
 
+  getAndClearTargetRoute(): string {
+    const storageAdapter = this.corporateAuth.getStorageAdapter?.();
+    const rawFromSession = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('rassini_redirect_url') : null;
+    const rawFromAdapter = storageAdapter ? storageAdapter.getItem('rassini_redirect_url') : null;
+    const rawFromPrefixed = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('rassini_MS_PAGOS_rassini_redirect_url') : null;
+
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('rassini_redirect_url');
+      sessionStorage.removeItem('rassini_MS_PAGOS_rassini_redirect_url');
+    }
+    if (storageAdapter) {
+      storageAdapter.removeItem('rassini_redirect_url');
+    }
+
+    const rawRedirect = rawFromSession || rawFromAdapter || rawFromPrefixed;
     if (!rawRedirect || rawRedirect.trim() === '') {
       return '/dashboard';
     }
 
     try {
       let targetPath = rawRedirect.trim();
+      const lower = targetPath.toLowerCase();
 
-      // Si es una URL completa (ej. http://localhost:4200/portal-cxp/pagos-pendientes)
-      if (targetPath.startsWith('http://') || targetPath.startsWith('https://')) {
+      // Bloquear esquemas peligrosos o URLs protocol-relative (//evil.com) para evitar Open Redirect
+      if (
+        targetPath.startsWith('//') ||
+        lower.startsWith('javascript:') ||
+        lower.startsWith('data:') ||
+        lower.startsWith('vbscript:') ||
+        lower.startsWith('file:')
+      ) {
+        return '/dashboard';
+      }
+
+      // Si es una URL completa (ej. https://rss-cxp-dev.rassini.com/portal-cxp/pagos-pendientes)
+      if (lower.startsWith('http://') || lower.startsWith('https://')) {
         const parsed = new URL(targetPath);
+        if (!this.isTrustedRedirectOrigin(parsed.origin)) {
+          console.warn('[CALLBACK OIDC] Origen externo no permitido rechazado:', parsed.origin);
+          return '/dashboard';
+        }
         targetPath = parsed.pathname + (parsed.search || '');
+      } else if (!targetPath.startsWith('/')) {
+        // Evitar rutas relativas ambiguas que puedan interpretarse como host externo (ej. evil.com/path)
+        if (targetPath.includes('://') || /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/|$)/.test(targetPath)) {
+          return '/dashboard';
+        }
+        targetPath = `/${targetPath}`;
       }
 
       // Normalizar prefijo de subcontexto /portal-cxp
@@ -48,13 +105,16 @@ export class CallbackComponent implements OnInit {
         targetPath = '/';
       }
 
-      // Evitar redirigir de vuelta a rutas técnicas de sesión
+      // Evitar redirigir de vuelta a rutas técnicas de sesión o a otro portal
       if (
         targetPath === '/callback' ||
-        targetPath.startsWith('/callback') ||
+        targetPath.startsWith('/callback?') ||
+        targetPath.startsWith('/callback/') ||
         targetPath === '/logout' ||
-        targetPath.startsWith('/logout') ||
+        targetPath.startsWith('/logout?') ||
+        targetPath.startsWith('/logout/') ||
         targetPath === '/access-denied' ||
+        targetPath.startsWith('/employee-portal') ||
         targetPath === '/' ||
         targetPath === ''
       ) {
