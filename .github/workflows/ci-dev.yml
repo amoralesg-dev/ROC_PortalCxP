@@ -3,7 +3,6 @@ name: CI CD ROC_PortalCxP
 on:
   push:
     branches:
-      - dev
       - main
 
   workflow_dispatch:
@@ -138,7 +137,7 @@ jobs:
 
   deploy-dev:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: false
     runs-on: [self-hosted, Windows, X64, frontend, angular, dev]
 
     steps:

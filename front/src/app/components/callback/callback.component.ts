@@ -128,9 +128,17 @@ export class CallbackComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.corporateAuth.isAuthenticated() || this.corporateAuth.hasValidTokenInStorage()) {
+    const isAuth = this.corporateAuth.isAuthenticated();
+    const hasValidToken = this.corporateAuth.hasValidTokenInStorage();
+    console.log('[CALLBACK OIDC] ngOnInit | isAuthenticated=', isAuth, '| hasValidTokenInStorage=', hasValidToken);
+
+    if (isAuth || hasValidToken) {
+      if (!isAuth && hasValidToken) {
+        this.corporateAuth.restoreSession();
+      }
       this.authService.syncFromCorporateOidc();
       const target = this.getAndClearTargetRoute();
+      console.log('[CALLBACK OIDC] Sesión corporativa lista. Navegando a ruta destino:', target);
       this.router.navigateByUrl(target, { replaceUrl: true });
       return;
     }
@@ -152,10 +160,12 @@ export class CallbackComponent implements OnInit {
         return;
       }
 
+      console.log('[CALLBACK OIDC] Ejecutando handleCallback en CallbackComponent...');
       this.corporateAuth.handleCallback(code, state).subscribe({
         next: () => {
           this.authService.syncFromCorporateOidc();
           const target = this.getAndClearTargetRoute();
+          console.log('[CALLBACK OIDC] Intercambio exitoso. Navegando a ruta destino:', target);
           this.router.navigateByUrl(target, { replaceUrl: true });
         },
         error: (err) => {
