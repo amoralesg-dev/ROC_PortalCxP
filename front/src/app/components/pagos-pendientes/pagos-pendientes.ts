@@ -175,7 +175,7 @@ export class PagosPendientesComponent implements OnInit {
         this.inicializarColumnas();
         this.cargarCatalogos();
         
-        const usuario = sessionStorage.getItem('auth_usuario') || '';
+        const usuario = this.authService.getCurrentUsername();
         if (usuario) {
             this.authService.getUserBus(usuario).subscribe(bus => {
                 this.busDisponibles = bus;
