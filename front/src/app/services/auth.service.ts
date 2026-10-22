@@ -1,7 +1,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, finalize, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthenticationService, CorporateUser, CorporateBusinessUnit } from 'rassini-ui';
@@ -97,15 +97,25 @@ export class AuthService {
   }
 
   logout() {
-    sessionStorage.removeItem('auth_usuario');
-    sessionStorage.removeItem('auth_nombre');
-    sessionStorage.removeItem('auth_bu');
-    sessionStorage.removeItem('auth_rol');
-    sessionStorage.removeItem('auth_contingencia');
+    const clearLocalSession = () => {
+      sessionStorage.removeItem('auth_usuario');
+      sessionStorage.removeItem('auth_nombre');
+      sessionStorage.removeItem('auth_bu');
+      sessionStorage.removeItem('auth_rol');
+      sessionStorage.removeItem('auth_contingencia');
+    };
 
     if (this.corporateAuth && (this.corporateAuth.isAuthenticated() || this.corporateAuth.hasValidTokenInStorage())) {
-      this.corporateAuth.logout();
+      const logoutUrl = `${environment.oidcIssuer}/api/v1/auth/logout`;
+      this.http.post(logoutUrl, {}, { withCredentials: true }).pipe(
+        finalize(() => {
+          this.corporateAuth?.logout(false);
+          clearLocalSession();
+          this.router.navigate(['/logout']);
+        })
+      ).subscribe();
     } else {
+      clearLocalSession();
       this.router.navigate(['/logout']);
     }
   }
