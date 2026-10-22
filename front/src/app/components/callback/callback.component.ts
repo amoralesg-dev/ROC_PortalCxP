@@ -38,8 +38,6 @@ export class CallbackComponent implements OnInit {
       return (
         host === 'localhost' ||
         host === '127.0.0.1' ||
-        host === '10.15.1.15' ||
-        host === '10.15.1.37' ||
         host === 'rss-cxp-dev.rassini.com' ||
         host.endsWith('.rassini.com')
       );
