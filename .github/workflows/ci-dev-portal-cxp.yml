@@ -34,7 +34,7 @@ jobs:
           npm -v
 
       - name: Instalar dependencias
-        run: npm install --no-package-lock
+        run: npm ci
 
       - name: Compilar Angular DEV Portal CxP
         run: npm run build:dev -- --base-href=/portal-cxp/
@@ -172,7 +172,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $url = 'https://rss-cxp-dev.rassini.com/portal-cxp/callback/test'
-          $response = curl.exe -k -s $url
+          $response = (curl.exe -k -s $url) -join "`n"
           Write-Host $response
           if (-not $response.Contains('<base href="/portal-cxp/"')) {
             throw "La ruta $url no devolvio <base href=`"/portal-cxp/`">."
