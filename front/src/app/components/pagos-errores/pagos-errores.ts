@@ -110,7 +110,7 @@ export class PagosErroresComponent {
         this.cargarCatalogos();
         this.loadErrorsMessages();
 
-        const usuario = this.authService.getCurrentUsername();
+        const usuario = sessionStorage.getItem('auth_usuario') || '';
         if (usuario) {
             this.authService.getUserBus(usuario).subscribe(bus => {
                 this.busDisponibles = bus;

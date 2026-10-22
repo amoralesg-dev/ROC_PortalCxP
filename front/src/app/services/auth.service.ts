@@ -1,3 +1,4 @@
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
@@ -48,10 +49,9 @@ export class AuthService {
     const hasAllBus: boolean = this.corporateAuth.hasAllBusinessUnits() || false;
 
     if (user) {
-      const userEmail = (user.email || user.username || '').trim();
-      const displayName = (user.username || user.email || '').trim();
-      sessionStorage.setItem('auth_usuario', userEmail);
-      sessionStorage.setItem('auth_nombre', displayName);
+      const username = user.username || user.email || '';
+      sessionStorage.setItem('auth_usuario', username);
+      sessionStorage.setItem('auth_nombre', username);
 
       // Business units resueltas directamente desde los claims corporativos
       let buValue = '';
@@ -67,8 +67,7 @@ export class AuthService {
       sessionStorage.setItem('auth_rol', rolValue);
 
       console.log('[AUTH SERVICE] Sincronizado exitosamente desde OIDC Claims:', {
-        usuario: userEmail,
-        username: displayName,
+        username,
         bu: buValue,
         roles: rolValue,
         hasAllBus,
@@ -77,25 +76,9 @@ export class AuthService {
     }
   }
 
-  getUserBus(usuario?: string): Observable<BuDto[]> {
-    const resolvedUser = this.resolveBusLookupUser(usuario);
-    return this.http.get<BuDto[]>(`${this.baseUrl}/usuarios/${resolvedUser}/bus`);
-  }
-
-  /**
-   * Resuelve el identificador de usuario para consultar /usuarios/{correo}/bus en ms-pagos,
-   * priorizando siempre el campo email de la sesión corporativa OIDC (igual que /api/v1/auth/me).
-   */
-  resolveBusLookupUser(usuarioParam?: string): string {
-    const corporateEmail = this.corporateAuth?.currentUser()?.email?.trim();
-    if (corporateEmail) {
-      return corporateEmail;
-    }
-    const storedUser = (sessionStorage.getItem('auth_usuario') || '').trim();
-    if (storedUser && storedUser.includes('@')) {
-      return storedUser;
-    }
-    return (usuarioParam || storedUser || this.corporateAuth?.currentUser()?.username || '').trim();
+  getUserBus(usuario: string): Observable<BuDto[]> {
+    const correo = this.corporateAuth?.currentUser()?.email || usuario;
+    return this.http.get<BuDto[]>(`${this.baseUrl}/usuarios/${correo}/bus`);
   }
 
   /**
@@ -136,9 +119,6 @@ export class AuthService {
 
   getCurrentUsername(): string {
     const user = this.corporateAuth?.currentUser();
-    if (user?.email) {
-      return user.email;
-    }
     if (user?.username) {
       return user.username;
     }
