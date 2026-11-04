@@ -1,0 +1,363 @@
+name: CI CD ROC PortalCxP LEGACY PROD
+
+on:
+  push:
+    branches:
+      - main-legacy
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roc-portalcxp-legacy-prod
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ROC PortalCxP Legacy PROD
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validar versiones
+        run: |
+          node -v
+          npm -v
+
+      - name: Instalar dependencias
+        run: npm install --no-package-lock
+
+      - name: Compilar Angular Legacy PROD
+        if: github.ref == 'refs/heads/main-legacy'
+        run: npm run build:prod
+
+      - name: Validar build generado
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_PATH="dist/front/browser"
+
+          test -d "$BUILD_PATH"
+          test -f "$BUILD_PATH/index.html"
+          compgen -G "$BUILD_PATH/main*.js" > /dev/null
+          compgen -G "$BUILD_PATH/styles*.css" > /dev/null
+          test -d "$BUILD_PATH/assets"
+
+          node - <<'NODE'
+          const fs = require('fs');
+
+          const indexPath = 'dist/front/browser/index.html';
+          const html = fs.readFileSync(indexPath, 'utf8');
+
+          if (html.includes('/portal-cxp/')) {
+            console.error('El build legacy PROD no debe usar base-href /portal-cxp/.');
+            process.exit(1);
+          }
+
+          if (!html.includes('<base href="/"')) {
+            console.error('index.html no contiene <base href="/">.');
+            process.exit(1);
+          }
+
+          console.log('Base href legacy PROD (/) validado correctamente.');
+          NODE
+
+      - name: Validar configuracion Legacy PROD compilada
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_PATH="dist/front/browser"
+          EXPECTED_URL="http://10.15.1.25:8082/ms-pagos"
+
+          INVALID_PATTERNS=(
+            "http://10.15.1.15:8082/ms-pagos"
+            "http://localhost:8082/ms-pagos"
+          )
+
+          for PATTERN in "${INVALID_PATTERNS[@]}"; do
+            if grep -RIFq \
+              --include="*.js" \
+              "$PATTERN" \
+              "$BUILD_PATH"; then
+              echo "URL incorrecta encontrada en build Legacy PROD:"
+              echo "$PATTERN"
+              exit 1
+            fi
+          done
+
+          if ! grep -RIFq \
+            --include="*.js" \
+            "$EXPECTED_URL" \
+            "$BUILD_PATH"; then
+            echo "No se encontro la URL Legacy PROD esperada:"
+            echo "$EXPECTED_URL"
+            exit 1
+          fi
+
+          echo "Configuracion Legacy PROD validada:"
+          echo "$EXPECTED_URL"
+
+      - name: Subir build Angular Legacy PROD
+        uses: actions/upload-artifact@v4
+        with:
+          name: roc-portalcxp-legacy-prod-front
+          path: front/dist/front/browser
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy-prod-legacy:
+    name: Deploy ROC PortalCxP Legacy PROD
+    needs: build
+
+    if: >
+      github.ref == 'refs/heads/main-legacy' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+
+    runs-on:
+      - self-hosted
+      - Windows
+      - X64
+      - frontend
+      - angular
+      - prod
+
+    steps:
+      - name: Preparar carpeta temporal
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $deployPath = 'C:\deploy\ROC_PortalCxP_Legacy_PROD'
+
+          New-Item -ItemType Directory -Path $deployPath -Force | Out-Null
+
+          Get-ChildItem -Path $deployPath -Force -ErrorAction SilentlyContinue |
+            Remove-Item -Recurse -Force
+
+          Write-Host "Carpeta temporal preparada: $deployPath"
+
+      - name: Descargar build Angular Legacy PROD
+        uses: actions/download-artifact@v4
+        with:
+          name: roc-portalcxp-legacy-prod-front
+          path: C:\deploy\ROC_PortalCxP_Legacy_PROD
+
+      - name: Validar artifact descargado
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $deployPath = 'C:\deploy\ROC_PortalCxP_Legacy_PROD'
+
+          $requiredItems = @(
+            'index.html',
+            'assets'
+          )
+
+          foreach ($item in $requiredItems) {
+            $itemPath = Join-Path $deployPath $item
+            if (-not (Test-Path $itemPath)) {
+              throw "No existe en el artifact: $itemPath"
+            }
+          }
+
+          $mainFiles = Get-ChildItem -Path $deployPath -Filter 'main*.js' -ErrorAction SilentlyContinue
+          if (-not $mainFiles) {
+            throw "No existe archivo main*.js en el artifact: $deployPath"
+          }
+
+          $styleFiles = Get-ChildItem -Path $deployPath -Filter 'styles*.css' -ErrorAction SilentlyContinue
+          if (-not $styleFiles) {
+            throw "No existe archivo styles*.css en el artifact: $deployPath"
+          }
+
+          $indexPath = Join-Path $deployPath 'index.html'
+          $html = Get-Content -Path $indexPath -Raw
+
+          if (-not $html.Contains('<base href="/"')) {
+            throw 'El artifact Legacy PROD no contiene <base href="/"> en index.html.'
+          }
+
+          Write-Host 'Artifact Legacy PROD descargado y validado correctamente.'
+
+      - name: Crear carpetas de despliegue Legacy PROD
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\legacy-cxp\current'
+          $backupPath = 'C:\apps-front\ROC_Apps\legacy-cxp\backup'
+
+          New-Item -ItemType Directory -Path $currentPath -Force | Out-Null
+          New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
+
+          Write-Host 'Carpetas de despliegue Legacy PROD preparadas.'
+
+      - name: Respaldar version actual
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\legacy-cxp\current'
+          $backupPath = 'C:\apps-front\ROC_Apps\legacy-cxp\backup'
+          $backupFile = Join-Path $backupPath "legacy-cxp-prod-$env:GITHUB_RUN_NUMBER.zip"
+          $currentIndex = Join-Path $currentPath 'index.html'
+
+          if (Test-Path $currentIndex) {
+            Compress-Archive `
+              -Path "$currentPath\*" `
+              -DestinationPath $backupFile `
+              -Force
+
+            Write-Host "Backup generado: $backupFile"
+          }
+          else {
+            Write-Host 'Primer despliegue sin version anterior en legacy-cxp.'
+          }
+
+      - name: Conservar ultimos 6 backups
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $backupPath = 'C:\apps-front\ROC_Apps\legacy-cxp\backup'
+
+          Get-ChildItem `
+            -Path $backupPath `
+            -Filter 'legacy-cxp-prod-*.zip' `
+            -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -Skip 6 |
+            Remove-Item -Force
+
+          Write-Host 'Backups conservados:'
+
+          Get-ChildItem `
+            -Path $backupPath `
+            -Filter 'legacy-cxp-prod-*.zip' `
+            -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object Name, Length, LastWriteTime
+
+      - name: Publicar nuevo build Legacy PROD
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $sourcePath = 'C:\deploy\ROC_PortalCxP_Legacy_PROD'
+          $currentPath = 'C:\apps-front\ROC_Apps\legacy-cxp\current'
+
+          Get-ChildItem -Path $currentPath -Force -ErrorAction SilentlyContinue |
+            Remove-Item -Recurse -Force
+
+          Copy-Item `
+            -Path "$sourcePath\*" `
+            -Destination $currentPath `
+            -Recurse `
+            -Force `
+            -ErrorAction Stop
+
+          $indexPath = Join-Path $currentPath 'index.html'
+          if (-not (Test-Path $indexPath)) {
+            throw 'No se copio index.html al destino Legacy PROD.'
+          }
+
+          Write-Host 'Build Legacy PROD publicado correctamente.'
+
+      - name: Crear web.config para Angular IIS Legacy PROD
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $webConfigPath = 'C:\apps-front\ROC_Apps\legacy-cxp\current\web.config'
+
+          $webConfig = @'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <defaultDocument>
+                <files>
+                  <clear />
+                  <add value="index.html" />
+                </files>
+              </defaultDocument>
+              <rewrite>
+                <rules>
+                  <rule name="Angular Routes" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="/index.html" />
+                  </rule>
+                </rules>
+              </rewrite>
+            </system.webServer>
+          </configuration>
+          '@
+
+          Set-Content -Path $webConfigPath -Value $webConfig -Encoding UTF8
+
+          if (-not (Test-Path $webConfigPath)) {
+            throw 'No se genero web.config en Legacy PROD.'
+          }
+
+          Write-Host 'web.config generado correctamente en Legacy PROD.'
+
+      - name: Validar archivos publicados y web.config Legacy PROD
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\legacy-cxp\current'
+
+          $requiredItems = @(
+            'index.html',
+            'assets',
+            'web.config'
+          )
+
+          foreach ($item in $requiredItems) {
+            $itemPath = Join-Path $currentPath $item
+            if (-not (Test-Path $itemPath)) {
+              throw "Falta en la publicacion Legacy PROD: $itemPath"
+            }
+          }
+
+          $mainFiles = Get-ChildItem -Path $currentPath -Filter 'main*.js' -ErrorAction SilentlyContinue
+          if (-not $mainFiles) {
+            throw "Falta archivo main*.js en la publicacion Legacy PROD: $currentPath"
+          }
+
+          $styleFiles = Get-ChildItem -Path $currentPath -Filter 'styles*.css' -ErrorAction SilentlyContinue
+          if (-not $styleFiles) {
+            throw "Falta archivo styles*.css en la publicacion Legacy PROD: $currentPath"
+          }
+
+          $webConfigPath = Join-Path $currentPath 'web.config'
+          $rulesText = Get-Content -Path $webConfigPath -Raw
+
+          if ($rulesText -notmatch 'Angular Routes') {
+            throw 'No se encontro la regla Angular Routes en web.config.'
+          }
+
+          Get-ChildItem -Path $currentPath |
+            Select-Object Name, Length, LastWriteTime |
+            Out-Host
+
+          Write-Host 'Publicacion Legacy PROD validada correctamente.'
