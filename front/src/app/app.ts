@@ -1,23 +1,12 @@
-import { Component, signal, OnInit } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { FormsModule } from '@angular/forms';
-import { SelectModule } from 'primeng/select';
-
-import { AuthService, BuDto } from './services/auth.service';
-import { environment } from '../environments/environment';
-
-import { TranslateService,TranslatePipe  } from '@ngx-translate/core';
-
+import { RouterOutlet } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AppToast,
   AppConfirmDialog,
-  AppLoader
+  AppLoader,
+  RassiniI18nService
 } from 'rassini-ui';
 
 @Component({
@@ -26,100 +15,47 @@ import {
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatListModule,
     AppToast,
     AppConfirmDialog,
-    AppLoader,
-    TranslatePipe,
-    FormsModule,
-    SelectModule
+    AppLoader
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
-
-  protected readonly title = signal('Rassini - Pagos');
-
-  readonly environmentName =
-    environment.environmentName.toUpperCase();
-
-  readonly isProduction =
-    environment.production;
-
-  readonly environmentClass =
-    this.getEnvironmentClass();
-
-  private getEnvironmentClass(): string {
-
-    if (this.isProduction) {
-      return 'environment-prod';
-    }
-
-    if (environment.environmentName === 'dev') {
-      return 'environment-dev';
-    }
-
-    return 'environment-local';
-
-  }
-
   constructor(
-    public authService: AuthService,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly ruiI18n: RassiniI18nService
   ) {
-
-    console.log('APP ROOT');
-
-    const browserLang =
-      navigator.language
-        .split('-')[0]
-        .toLowerCase();
-
-    const supportedLanguages = [
-      'es',
-      'en'
-    ];
-
-    const language =
-      supportedLanguages.includes(browserLang)
-        ? browserLang
-        : 'es';
-
-    console.log(
-      'Idioma navegador:',
-      navigator.language
-    );
-
-    console.log(
-      'Idioma seleccionado:',
-      language
-    );
-
-    this.translate.use(language).subscribe(() => {
-
-        console.log(
-            'Idioma cargado:',
-            language
-        );
-
+    // 1. Conectar resolver de rassini-ui con el TranslateService de ngx-translate
+    this.ruiI18n.setExternalResolver((key: string, lang: any) => {
+      const res = this.translate.instant(key);
+      return res && res !== key ? res : undefined;
     });
+
+    // 2. Normalizar e inicializar idioma
+    const browserLang = navigator.language.split('-')[0].toLowerCase();
+    const supportedLanguages = ['es', 'en'];
+    const language = supportedLanguages.includes(browserLang) ? browserLang : 'es';
+
+    const ruiLang = this.ruiI18n.normalizeLanguage(language);
+    this.ruiI18n.setLanguage(ruiLang);
     this.translate.setFallbackLang('es');
 
+    this.translate.use(language).subscribe(() => {
+      // Re-notificar a rassini-ui para re-evaluar reactivamente los textos
+      this.ruiI18n.setLanguage(ruiLang);
+    });
+
+    this.translate.onLangChange.subscribe((event) => {
+      const normalized = this.ruiI18n.normalizeLanguage(event.lang);
+      if (this.ruiI18n.currentLang() !== normalized) {
+        this.ruiI18n.setLanguage(normalized);
+      }
+    });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    console.log('[APP ROOT] Initialized with Rassini Corporate Shell');
   }
-
-  logout(): void {
-
-    this.authService.logout();
-
-  }
-
 }

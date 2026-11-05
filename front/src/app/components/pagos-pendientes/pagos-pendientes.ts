@@ -166,6 +166,12 @@ export class PagosPendientesComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        this.translate.onLangChange
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.inicializarColumnas();
+            });
+
         this.inicializarColumnas();
         this.cargarCatalogos();
         
@@ -191,7 +197,7 @@ export class PagosPendientesComponent implements OnInit {
 
     private inicializarColumnas(): void {
         this.translate
-            .get('pendingpage.tableColumns')
+            .get('pendingpage')
             .subscribe(columns => {
 
                 this.columns = [
@@ -212,7 +218,7 @@ export class PagosPendientesComponent implements OnInit {
                     {
                         field: 'fechaEnvio',
                         header: columns?.sentDate
-                            ?? 'FECHA ENVÍO',
+                            ?? this.translate.instant('pendingpage.sentDate'),
                         sortable: true,
                         width: '120px'
                     },

@@ -1,0 +1,399 @@
+name: CI CD ROC PortalCxP PROD
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roc-portalcxp-prod
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ROC PortalCxP PROD
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validar versiones
+        run: |
+          node -v
+          npm -v
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar Angular PROD Portal CxP
+        run: npm run build:prod -- --base-href=/portal-cxp/
+
+      - name: Validar carpeta build y archivos requeridos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_PATH="dist/front/browser"
+
+          test -d "$BUILD_PATH"
+          test -f "$BUILD_PATH/index.html"
+          compgen -G "$BUILD_PATH/main*.js" > /dev/null
+          compgen -G "$BUILD_PATH/styles*.css" > /dev/null
+          test -d "$BUILD_PATH/assets"
+
+          ls -la "$BUILD_PATH"
+
+      - name: Validar base href /portal-cxp/
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          indexPath="dist/front/browser/index.html"
+
+          node - <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('dist/front/browser/index.html', 'utf8');
+
+          if (!html.includes('<base href="/portal-cxp/">')) {
+            console.error('ERROR: index.html no contiene exactamente <base href="/portal-cxp/">');
+            process.exit(1);
+          }
+
+          if (html.includes('<base href="/">')) {
+            console.error('ERROR: index.html contiene <base href="/"> no permitido en integrado');
+            process.exit(1);
+          }
+
+          console.log('Validacion exitosa: base-href exacto /portal-cxp/ detectado en index.html');
+          NODE
+
+      - name: Validar configuracion PROD compilada
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_PATH="dist/front/browser"
+          EXPECTED_MS_PAGOS="http://10.15.1.25:8082/ms-pagos"
+          EXPECTED_PORTAL_URL="https://rss-cxp.rassini.com/employee-portal"
+          EXPECTED_OIDC_ISSUER="https://rss-cxp.rassini.com/employee-portal"
+
+          INVALID_PATTERNS=(
+            "rss-cxp-dev.rassini.com"
+            "rss-iam.rassini.com"
+            "rss-iam-dev.rassini.com"
+            "http://10.15.1.15:8082"
+            "http://10.15.1.15:8083"
+            "http://localhost:8082"
+            "http://localhost:8083"
+          )
+
+          for PATTERN in "${INVALID_PATTERNS[@]}"; do
+            if grep -RIFq --include="*.js" "$PATTERN" "$BUILD_PATH"; then
+              echo "ERROR: Patron no permitido encontrado en build PROD: $PATTERN"
+              exit 1
+            fi
+          done
+
+          if ! grep -RIFq --include="*.js" "$EXPECTED_MS_PAGOS" "$BUILD_PATH"; then
+            echo "ERROR: No se encontro la URL esperada de ms-pagos PROD ($EXPECTED_MS_PAGOS)"
+            exit 1
+          fi
+
+          if ! grep -RIFq --include="*.js" "$EXPECTED_PORTAL_URL" "$BUILD_PATH"; then
+            echo "ERROR: No se encontro employeePortalUrl esperado de PROD ($EXPECTED_PORTAL_URL)"
+            exit 1
+          fi
+
+          if ! grep -RIFq --include="*.js" "$EXPECTED_OIDC_ISSUER" "$BUILD_PATH"; then
+            echo "ERROR: No se encontro oidcIssuer esperado de PROD ($EXPECTED_OIDC_ISSUER)"
+            exit 1
+          fi
+
+          echo "Validacion exitosa: configuracion PROD verificada correctamente en bundles."
+
+      - name: Subir build Angular
+        uses: actions/upload-artifact@v4
+        with:
+          name: roc-portalcxp-front
+          path: front/dist/front/browser
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy-prod:
+    name: Deploy ROC PortalCxP PROD
+    needs: build
+    if: >
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, Windows, X64, frontend, angular, prod]
+
+    steps:
+      - name: Preparar carpeta temporal
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $deployPath = 'C:\deploy\ROC_PortalCxP_PROD'
+
+          New-Item -ItemType Directory -Path $deployPath -Force | Out-Null
+
+          Get-ChildItem -Path $deployPath -Force -ErrorAction SilentlyContinue |
+            Remove-Item -Recurse -Force
+
+          Write-Host "Carpeta temporal preparada: $deployPath"
+
+      - name: Descargar build Angular
+        uses: actions/download-artifact@v4
+        with:
+          name: roc-portalcxp-front
+          path: C:\deploy\ROC_PortalCxP_PROD
+
+      - name: Validar artifact descargado
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $deployPath = 'C:\deploy\ROC_PortalCxP_PROD'
+
+          $requiredItems = @(
+            'index.html',
+            'assets'
+          )
+
+          foreach ($item in $requiredItems) {
+            $itemPath = Join-Path $deployPath $item
+            if (-not (Test-Path $itemPath)) {
+              throw "No existe en el artifact descargado: $itemPath"
+            }
+          }
+
+          $mainFiles = Get-ChildItem -Path $deployPath -Filter 'main*.js' -ErrorAction SilentlyContinue
+          if (-not $mainFiles) {
+            throw "No existe archivo main*.js en el artifact descargado: $deployPath"
+          }
+
+          $styleFiles = Get-ChildItem -Path $deployPath -Filter 'styles*.css' -ErrorAction SilentlyContinue
+          if (-not $styleFiles) {
+            throw "No existe archivo styles*.css en el artifact descargado: $deployPath"
+          }
+
+          $indexPath = Join-Path $deployPath 'index.html'
+          $html = Get-Content -Path $indexPath -Raw
+
+          if (-not $html.Contains('<base href="/portal-cxp/">')) {
+            throw 'El artifact no contiene <base href="/portal-cxp/"> en index.html.'
+          }
+
+          if ($html.Contains('<base href="/">')) {
+            throw 'El artifact contiene <base href="/"> no permitido en integrado.'
+          }
+
+          Write-Host 'Artifact descargado y validado correctamente.'
+
+      - name: Crear carpetas de despliegue si no existen
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+          $backupPath = 'C:\apps-front\ROC_Apps\portal-cxp\backup'
+
+          New-Item -ItemType Directory -Path $currentPath -Force | Out-Null
+          New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
+
+          Write-Host 'Carpetas de despliegue preparadas.'
+
+      - name: Respaldar version actual
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+          $backupPath = 'C:\apps-front\ROC_Apps\portal-cxp\backup'
+          $backupFile = Join-Path $backupPath "portal-cxp-prod-$env:GITHUB_RUN_NUMBER.zip"
+          $currentIndex = Join-Path $currentPath 'index.html'
+
+          if (Test-Path $currentIndex) {
+            Compress-Archive `
+              -Path "$currentPath\*" `
+              -DestinationPath $backupFile `
+              -Force
+
+            Write-Host "Backup generado: $backupFile"
+          }
+          else {
+            Write-Host 'Primer despliegue sin version anterior en portal-cxp\current.'
+          }
+
+      - name: Conservar ultimos 6 backups
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $backupPath = 'C:\apps-front\ROC_Apps\portal-cxp\backup'
+
+          Get-ChildItem `
+            -Path $backupPath `
+            -Filter 'portal-cxp-prod-*.zip' `
+            -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -Skip 6 |
+            Remove-Item -Force
+
+          Write-Host 'Backups conservados:'
+
+          Get-ChildItem `
+            -Path $backupPath `
+            -Filter 'portal-cxp-prod-*.zip' `
+            -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object Name, Length, LastWriteTime
+
+      - name: Limpiar unicamente carpeta current de portal-cxp
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+
+          # Barrera de proteccion estricta de ruta
+          $normalized = [System.IO.Path]::GetFullPath($currentPath).TrimEnd('\')
+          $expected = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+          if ($normalized -ne $expected) {
+            throw "OPERACION BLOQUEADA: Ruta de limpieza inesperada ($normalized)"
+          }
+
+          Get-ChildItem -Path $currentPath -Force -ErrorAction SilentlyContinue |
+            Remove-Item -Recurse -Force
+
+          Write-Host "Carpeta $currentPath limpiada correctamente."
+
+      - name: Publicar nuevo build
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $sourcePath = 'C:\deploy\ROC_PortalCxP_PROD'
+          $currentPath = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+
+          Copy-Item `
+            -Path "$sourcePath\*" `
+            -Destination $currentPath `
+            -Recurse `
+            -Force `
+            -ErrorAction Stop
+
+          $indexPath = Join-Path $currentPath 'index.html'
+          if (-not (Test-Path $indexPath)) {
+            throw 'No se copio index.html al destino portal-cxp\current.'
+          }
+
+          Write-Host 'Build publicado correctamente en portal-cxp\current.'
+
+      - name: Crear web.config para Angular IIS
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $webConfigPath = 'C:\apps-front\ROC_Apps\portal-cxp\current\web.config'
+
+          $webConfig = @'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <defaultDocument>
+                <files>
+                  <clear />
+                  <add value="index.html" />
+                </files>
+              </defaultDocument>
+              <rewrite>
+                <rules>
+                  <clear />
+                  <rule name="Angular Routes Portal CxP" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="index.html" />
+                  </rule>
+                </rules>
+              </rewrite>
+            </system.webServer>
+          </configuration>
+          '@
+
+          Set-Content -Path $webConfigPath -Value $webConfig -Encoding UTF8
+
+          if (-not (Test-Path $webConfigPath)) {
+            throw 'No se genero web.config en portal-cxp\current.'
+          }
+
+          Write-Host 'web.config generado correctamente en portal-cxp\current.'
+
+      - name: Validar publicacion final directamente en disco
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+
+          $requiredItems = @(
+            'index.html',
+            'assets',
+            'web.config'
+          )
+
+          foreach ($item in $requiredItems) {
+            $itemPath = Join-Path $currentPath $item
+            if (-not (Test-Path $itemPath)) {
+              throw "Falta en la publicacion en disco: $itemPath"
+            }
+          }
+
+          $mainFiles = Get-ChildItem -Path $currentPath -Filter 'main*.js' -ErrorAction SilentlyContinue
+          if (-not $mainFiles) {
+            throw "Falta archivo main*.js en la publicacion en disco: $currentPath"
+          }
+
+          $styleFiles = Get-ChildItem -Path $currentPath -Filter 'styles*.css' -ErrorAction SilentlyContinue
+          if (-not $styleFiles) {
+            throw "Falta archivo styles*.css en la publicacion en disco: $currentPath"
+          }
+
+          $indexPath = Join-Path $currentPath 'index.html'
+          $html = Get-Content -Path $indexPath -Raw
+          if (-not $html.Contains('<base href="/portal-cxp/">')) {
+            throw 'El index.html publicado en disco no contiene <base href="/portal-cxp/">.'
+          }
+
+          $webConfigPath = Join-Path $currentPath 'web.config'
+          $rulesText = Get-Content -Path $webConfigPath -Raw
+          if ($rulesText -notmatch 'Angular Routes Portal CxP') {
+            throw 'No se encontro la regla Angular Routes Portal CxP en web.config.'
+          }
+          if ($rulesText -notmatch '<action type="Rewrite" url="index.html"') {
+            throw 'La accion de rewrite no apunta a url="index.html" relativa en web.config.'
+          }
+
+          Get-ChildItem -Path $currentPath |
+            Select-Object Name, Length, LastWriteTime |
+            Out-Host
+
+          Write-Host 'Publicacion final en disco validada exitosamente.'

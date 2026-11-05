@@ -1,0 +1,180 @@
+name: CI CD ROC PortalCxP DEV
+
+on:
+  push:
+    branches:
+      - dev
+      - feature/integrate-cxp-portal
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validar versiones
+        run: |
+          node -v
+          npm -v
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar Angular DEV Portal CxP
+        run: npm run build:dev -- --base-href=/portal-cxp/
+
+      - name: Validar carpeta build
+        run: ls -la dist/front/browser
+
+      - name: Subir build Angular
+        uses: actions/upload-artifact@v4
+        with:
+          name: roc-portalcxp-front
+          path: front/dist/front/browser
+          if-no-files-found: error
+
+  deploy-dev:
+    needs: build
+    if: >
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/feature/integrate-cxp-portal')
+    runs-on: [self-hosted, Windows, X64, frontend, angular, dev]
+
+    steps:
+      - name: Descargar build Angular
+        uses: actions/download-artifact@v4
+        with:
+          name: roc-portalcxp-front
+          path: C:\deploy\ROC_PortalCxP
+
+      - name: Validar artifact descargado
+        shell: cmd
+        run: dir C:\deploy\ROC_PortalCxP
+
+      - name: Crear carpeta backup si no existe
+        shell: cmd
+        run: |
+          if not exist C:\apps-front\ROC_Apps\portal-cxp\backup mkdir C:\apps-front\ROC_Apps\portal-cxp\backup
+
+      - name: Respaldar version actual
+        shell: cmd
+        run: |
+          if exist C:\apps-front\ROC_Apps\portal-cxp\current\index.html (
+            powershell -Command "Compress-Archive -Path 'C:\apps-front\ROC_Apps\portal-cxp\current\*' -DestinationPath 'C:\apps-front\ROC_Apps\portal-cxp\backup\portal-cxp-%GITHUB_RUN_NUMBER%.zip' -Force"
+          )
+
+      - name: Limpiar carpeta current
+        shell: cmd
+        run: |
+          powershell -Command "Remove-Item -Path 'C:\apps-front\ROC_Apps\portal-cxp\current\*' -Recurse -Force"
+
+      - name: Copiar nuevo build
+        shell: cmd
+        run: |
+          xcopy C:\deploy\ROC_PortalCxP\* C:\apps-front\ROC_Apps\portal-cxp\current\ /E /I /Y
+
+      - name: Crear web.config para Angular IIS
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $webConfigPath = 'C:\apps-front\ROC_Apps\portal-cxp\current\web.config'
+
+          $webConfig = @'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <defaultDocument>
+                <files>
+                  <clear />
+                  <add value="index.html" />
+                </files>
+              </defaultDocument>
+              <rewrite>
+                <rules>
+                  <clear />
+                  <rule name="Angular Routes Portal CxP" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="index.html" />
+                  </rule>
+                </rules>
+              </rewrite>
+            </system.webServer>
+          </configuration>
+          '@
+
+          Set-Content -Path $webConfigPath -Value $webConfig -Encoding UTF8
+
+          if (-not (Test-Path $webConfigPath)) {
+            throw 'No se genero web.config en portal-cxp.'
+          }
+
+          Write-Host 'web.config generado correctamente en portal-cxp.'
+
+      - name: Inspeccionar y validar configuracion IIS y herencia de rewrite
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentPath = 'C:\apps-front\ROC_Apps\portal-cxp\current'
+          $indexPath = Join-Path $currentPath 'index.html'
+          $html = Get-Content -Path $indexPath -Raw
+
+          if (-not $html.Contains('/portal-cxp/')) {
+            throw 'El index.html publicado no contiene /portal-cxp/.'
+          }
+
+          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+          if (Test-Path $appcmd) {
+            Write-Host "=== Sitios IIS ==="
+            & $appcmd list site
+            Write-Host "=== Aplicaciones IIS ==="
+            & $appcmd list app
+            Write-Host "=== Directorios Virtuales IIS ==="
+            & $appcmd list vdir
+            Write-Host "=== Reglas Rewrite efectivas en ROC_Apps ==="
+            & $appcmd list config 'ROC_Apps' /section:system.webServer/rewrite/rules
+            Write-Host "=== Reglas Rewrite efectivas en ROC_Apps/portal-cxp ==="
+            $rules = & $appcmd list config 'ROC_Apps/portal-cxp' /section:system.webServer/rewrite/rules
+            $rulesText = $rules -join "`n"
+            Write-Host $rulesText
+
+            if ($rulesText -notmatch 'Angular Routes Portal CxP') {
+              throw 'No se encontro la regla Angular Routes Portal CxP en IIS.'
+            }
+            if ($rulesText -match 'action type="Rewrite" url="/index.html"') {
+              throw 'portal-cxp sigue heredando la regla url="/index.html" del sitio raiz.'
+            }
+          }
+
+      - name: Validar ruta callback por HTTPS
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $url = 'https://rss-cxp-dev.rassini.com/portal-cxp/callback/test'
+          $response = (curl.exe -k -s $url) -join "`n"
+          Write-Host $response
+          if (-not $response.Contains('<base href="/portal-cxp/"')) {
+            throw "La ruta $url no devolvio <base href=`"/portal-cxp/`">."
+          }
+          Write-Host 'Validacion exitosa: /portal-cxp/callback/test devuelve <base href="/portal-cxp/">.'
