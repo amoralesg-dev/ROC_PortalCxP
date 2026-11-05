@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthenticationService } from 'rassini-ui';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-callback',
@@ -25,7 +26,8 @@ export class CallbackComponent implements OnInit {
   error: string | null = null;
 
   /**
-   * Valida si un origen (protocol + host + port) es de confianza dentro del ecosistema corporativo.
+   * Valida si un origen (protocol + host + port) es de confianza dentro del ecosistema corporativo
+   * comparando contra los orígenes explícitos configurados en environment.allowedApiOrigins.
    */
   private isTrustedRedirectOrigin(origin: string): boolean {
     const currentOrigin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
@@ -33,16 +35,15 @@ export class CallbackComponent implements OnInit {
       return true;
     }
     try {
-      const parsed = new URL(origin);
-      const host = parsed.hostname.toLowerCase();
-      return (
-        host === 'localhost' ||
-        host === '127.0.0.1' ||
-        host === '10.15.1.15' ||
-        host === '10.15.1.37' ||
-        host === 'rss-cxp-dev.rassini.com' ||
-        host.endsWith('.rassini.com')
-      );
+      const targetOrigin = new URL(origin).origin;
+      const allowedOrigins: string[] = environment.allowedApiOrigins || [];
+      return allowedOrigins.some(allowed => {
+        try {
+          return new URL(allowed).origin === targetOrigin;
+        } catch {
+          return false;
+        }
+      });
     } catch {
       return false;
     }
@@ -176,4 +177,3 @@ export class CallbackComponent implements OnInit {
     });
   }
 }
-

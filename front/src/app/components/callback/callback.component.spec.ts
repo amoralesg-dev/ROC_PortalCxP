@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
@@ -20,6 +21,11 @@ describe('CallbackComponent & OIDC Configuration', () => {
   let queryParamsSubject = of({ code: 'valid-auth-code', state: 'valid-state-123' });
 
   beforeEach(() => {
+    environment.allowedApiOrigins = [
+      'https://rss-cxp-dev.rassini.com',
+      'http://localhost:8082',
+      'http://localhost:8083'
+    ];
     sessionStorage.clear();
     routerMock = {
       navigateByUrl: vi.fn()
