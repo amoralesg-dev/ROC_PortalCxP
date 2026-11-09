@@ -111,6 +111,8 @@
         "ERR044": "Duplicate record found in file or database",
         "ERR045": "No supplier exists for the supplier code",
         "ERR046": "No mapping exists for the business unit",
+        "ERR048": "Supplier BANKOFAM does not have required SWIFT Routing Code for automatic SPID dispatch.",
+        "ERR049": "Unable to resolve the DealType configured for BANKOFAM automation.",
         "ERR998": "File contains errors in other records"
     },
     "sentpage": {
@@ -198,6 +200,7 @@
         "all": "All"
     },
     "pendingpage": {
+        
         "title": "Pending Payments Classification",
         "subtitle": "Pending payments management",
 
@@ -256,7 +259,8 @@
         "actions": "ACTIONS",
 
         "referencePlaceholder": "Enter reference",
-
+        
+        "emptyTitle": "No pending payments exist",
         "emptyMessage": "No pending payments were found under this category.",
 
         "selectPage": "Select page",
