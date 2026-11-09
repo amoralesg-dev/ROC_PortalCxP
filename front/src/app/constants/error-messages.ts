@@ -49,6 +49,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
 
         ERR044: 'Registro duplicado en archivo o base de datos',
         ERR045: 'No existe supplier para el código proveedor',
+        ERR046: 'No existe mapeo para la business unit',
+        ERR048: 'El proveedor BANKOFAM no cuenta con Routing Code SWIFT requerido para el envío automático SPID.',
+        ERR049: 'No fue posible resolver el DealType configurado para la automatización BANKOFAM.',
         ERR998: 'Archivo contiene errores en otros registros'    
 
     }
