@@ -191,6 +191,7 @@
         "paymentErrors": "Payment Errors",
         "pendingAnalytics": "Analytics",
         "businessUnit": "Business Unit",
+        "supplierBankHistory": "Supplier bank history",
         "all": "All"
     },
     "pendingpage": {

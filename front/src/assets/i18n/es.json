@@ -223,6 +223,7 @@
         "paymentErrors": "Errores de Pagos",
         "pendingAnalytics": "Analítica",
         "businessUnit": "Unidad de Negocio",
+        "supplierBankHistory": "Historial bancario de proveedores",
         "all": "Todas"
     },
     "pendingpage": {
