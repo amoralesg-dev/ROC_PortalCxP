@@ -47,10 +47,10 @@ describe('ProveedoresHistorialBancarioComponent', () => {
 
   it('searches suppliers with filters and renders results with versionCount and masked account', async () => {
     component.supplierCodeFiltro = 'P001';
-    component.supplierIdFiltro = '7';
+    component.erpIdQadFiltro = 'ERP007';
     component.buscar();
     await render();
-    expect(svc.searchSuppliers).toHaveBeenCalledWith(expect.objectContaining({ supplierCode: 'P001', supplierId: 7, page: 0, size: 10 }));
+    expect(svc.searchSuppliers).toHaveBeenCalledWith(expect.objectContaining({ supplierCode: 'P001', erpIdQad: 'ERP007', page: 0, size: 10 }));
     expect(el().querySelectorAll('.supplier-row').length).toBe(1);
     expect(el().querySelector('.version-count')?.textContent?.trim()).toBe('3');
     expect(el().textContent).toContain('******1234');
