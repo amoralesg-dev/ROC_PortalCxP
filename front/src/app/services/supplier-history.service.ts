@@ -29,7 +29,7 @@ export const SENSITIVE_FIELDS: string[] = ['accountNumber', 'intermediaryAccount
 export type SortOrder = 'ASC' | 'DESC';
 
 export interface SupplierSearchFilter {
-  supplierId?: number | null;
+  erpIdQad?: string;
   supplierCode?: string;
   supplierName?: string;
   taxId?: string;
@@ -46,7 +46,7 @@ export interface SupplierSummaryDto {
   supplierName: string;
   rfc?: string;
   businessUnitCode?: string;
-  accountNumber?: string; // masked
+  accountNumber?: string;
   bankCurrency?: string;
   bankName?: string;
   versionCount: number;
@@ -103,7 +103,7 @@ export class SupplierHistoryService {
 
   searchSuppliers(filter: SupplierSearchFilter): Observable<Page<SupplierSummaryDto>> {
     let params = new HttpParams().set('page', String(filter.page ?? 0)).set('size', String(filter.size ?? 10));
-    if (filter.supplierId != null) params = params.set('supplierId', String(filter.supplierId));
+    if (filter.erpIdQad?.trim()) params = params.set('erpIdQad', filter.erpIdQad.trim());
     if (filter.supplierCode?.trim()) params = params.set('supplierCode', filter.supplierCode.trim());
     if (filter.supplierName?.trim()) params = params.set('supplierName', filter.supplierName.trim());
     if (filter.taxId?.trim()) params = params.set('taxId', filter.taxId.trim());

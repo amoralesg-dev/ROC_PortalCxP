@@ -72,6 +72,7 @@ export class PagosErroresComponent {
         proveedor: 'codigoProveedor',
         rfc: 'rfcBeneficiario',
         nombre: 'nombreBeneficiario',
+        cuentaBeneficiario: 'cuentaBeneficiario',
         monto: 'monto',
         moneda: 'moneda',
         descripcion: 'referencia',
@@ -594,6 +595,12 @@ export class PagosErroresComponent {
                         width: '120px',
                         truncateLength: 10,
                         tooltip: true
+                    },
+                    {
+                        field: 'cuentaBeneficiario',
+                        header: columns.account || 'Cuenta',
+                        sortable: true,
+                        width: '130px'
                     },
                     {
                         field: 'monto',
