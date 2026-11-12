@@ -7,6 +7,7 @@ import { AuthService } from './services/auth.service';
 import { PagosErroresComponent } from './components/pagos-errores/pagos-errores';
 import { PagosAnaliticaComponent } from './components/pagos-analitica/pagos-analitica';
 import { PagosPendientesComponent } from './components/pagos-pendientes/pagos-pendientes';
+import { ProveedoresHistorialBancarioComponent } from './components/proveedores-historial-bancario/proveedores-historial-bancario';
 
 export const authGuard = () => {
   const authService = inject(AuthService);
@@ -27,5 +28,6 @@ export const routes: Routes = [
   { path: '', redirectTo: '/pagos-pendientes', pathMatch: 'full' },
   { path: 'pagos-errores', component: PagosErroresComponent, canActivate: [authGuard] },
   { path: 'pagos-analitica', component: PagosAnaliticaComponent, canActivate: [authGuard]},
+  { path: 'proveedores-historial-bancario', component: ProveedoresHistorialBancarioComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '/pagos-pendientes' }
 ];

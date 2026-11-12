@@ -223,6 +223,7 @@
         "paymentErrors": "Errores de Pagos",
         "pendingAnalytics": "Analítica",
         "businessUnit": "Unidad de Negocio",
+        "supplierBankHistory": "Historial bancario de proveedores",
         "all": "Todas"
     },
     "pendingpage": {
@@ -353,5 +354,50 @@
         "filters": "Filtros",
         "search": "Buscar",
         "clear": "Limpiar"
-      }
+      },
+  "supplierHistory": {
+    "subtitle": "Consulta y compara versiones de los datos bancarios de proveedores",
+    "bankName": "Banco",
+    "versionCount": "Versiones",
+    "notFound": "No se encontró el proveedor o la versión solicitada",
+    "differsFromCurrent": "Difiere del vigente",
+    "changedInVersion": "Cambió en esta versión",
+    "title": "Historial bancario de proveedores",
+    "supplierId": "ID proveedor",
+    "supplierCode": "Código proveedor",
+    "supplierName": "Nombre proveedor",
+    "taxId": "RFC / Tax ID",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "viewVersions": "Versiones",
+    "versionsOf": "Versiones de",
+    "version": "Versión",
+    "createdAt": "Fecha de creación",
+    "changedFields": "Campos modificados",
+    "compare": "Comparar",
+    "comparison": "Comparación histórico vs vigente",
+    "field": "Campo",
+    "historicValue": "Valor histórico",
+    "currentValue": "Valor vigente",
+    "loading": "Cargando...",
+    "noSuppliers": "No se encontraron proveedores",
+    "noVersions": "El proveedor no tiene versiones bancarias registradas",
+    "errorSuppliers": "Error al buscar proveedores",
+    "errorVersions": "Error al cargar las versiones",
+    "errorDetail": "Error al cargar el detalle de la versión",
+    "fields": {
+      "beneficiaryBankName": "Banco beneficiario",
+      "beneficiaryAccountName": "Titular de la cuenta",
+      "accountNumber": "Cuenta / IBAN",
+      "bankCurrency": "Moneda bancaria",
+      "bankCountry": "País del banco",
+      "routingCodeAba": "ABA",
+      "routingCodeSwift": "SWIFT/BIC",
+      "intermediaryBankName": "Banco intermediario",
+      "intermediaryAccount": "Cuenta intermediaria",
+      "intermediaryAccountCountry": "País cuenta intermediaria",
+      "intermediaryRoutingCodeAba": "ABA intermediario",
+      "intermediaryRoutingCodeSwift": "SWIFT intermediario"
+    }
+  }
 }
