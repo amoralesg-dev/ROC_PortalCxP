@@ -46,7 +46,7 @@ export interface SupplierSummaryDto {
   supplierName: string;
   rfc?: string;
   businessUnitCode?: string;
-  accountNumber?: string; // masked
+  accountNumber?: string;
   bankCurrency?: string;
   bankName?: string;
   versionCount: number;
