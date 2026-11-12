@@ -104,6 +104,7 @@ export class PagosEnviadosComponent implements OnInit {
     codigoProveedor: 'codigoProveedor',
     rfcBeneficiario: 'rfcBeneficiario',
     nombreBeneficiario: 'nombreBeneficiario',
+    cuentaBeneficiario: 'cuentaBeneficiario',
     monto: 'monto',
     moneda: 'moneda',
     referencia: 'referencia',
@@ -198,6 +199,12 @@ export class PagosEnviadosComponent implements OnInit {
             width: '120px',
             truncateLength: 10,
             tooltip: true
+          },
+          {
+            field: 'cuentaBeneficiario',
+            header: columns.account || 'CUENTA',
+            sortable: true,
+            width: '130px'
           },
           {
             field: 'monto',
