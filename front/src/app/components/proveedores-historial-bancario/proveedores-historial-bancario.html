@@ -1,0 +1,109 @@
+<app-page-header
+  [title]="'supplierHistory.title' | translate"
+  [subtitle]="'supplierHistory.subtitle' | translate"
+  icon="pi pi-history">
+</app-page-header>
+
+<app-page-content>
+  <form class="shb-filters" (ngSubmit)="buscar()">
+    <input pInputText name="supplierId" [(ngModel)]="supplierIdFiltro" [placeholder]="'supplierHistory.supplierId' | translate" />
+    <input pInputText name="supplierCode" [(ngModel)]="supplierCodeFiltro" [placeholder]="'supplierHistory.supplierCode' | translate" />
+    <input pInputText name="supplierName" [(ngModel)]="supplierNameFiltro" [placeholder]="'supplierHistory.supplierName' | translate" />
+    <input pInputText name="taxId" [(ngModel)]="taxIdFiltro" [placeholder]="'supplierHistory.taxId' | translate" />
+    <p-button type="submit" icon="pi pi-search" [label]="'supplierHistory.search' | translate" data-testid="btn-search"></p-button>
+    <p-button type="button" icon="pi pi-times" severity="secondary" [label]="'supplierHistory.clear' | translate" (onClick)="limpiar()"></p-button>
+  </form>
+
+  <div *ngIf="suppliersError" class="shb-error" data-testid="suppliers-error">{{ 'supplierHistory.errorSuppliers' | translate }}</div>
+
+  <p-table *ngIf="searched" data-testid="suppliers-table" [value]="suppliers" [lazy]="true" (onLazyLoad)="onSuppliersLazyLoad($event)"
+    [paginator]="true" [rows]="suppliersSize" [totalRecords]="suppliersTotal" [rowsPerPageOptions]="[10, 20, 50]"
+    [loading]="loadingSuppliers" dataKey="id">
+    <ng-template #header>
+      <tr>
+        <th>ID</th>
+        <th>{{ 'supplierHistory.supplierCode' | translate }}</th>
+        <th>{{ 'supplierHistory.supplierName' | translate }}</th>
+        <th>{{ 'supplierHistory.taxId' | translate }}</th>
+        <th>BU</th>
+        <th>{{ 'supplierHistory.fields.accountNumber' | translate }}</th>
+        <th>{{ 'common.currency' | translate }}</th>
+        <th>{{ 'supplierHistory.bankName' | translate }}</th>
+        <th>{{ 'supplierHistory.versionCount' | translate }}</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-s>
+      <tr [class.shb-selected]="selectedSupplier?.id === s.id" class="supplier-row">
+        <td>{{ s.id }}</td>
+        <td>{{ s.supplierCode }}</td>
+        <td>{{ s.supplierName }}</td>
+        <td>{{ s.rfc }}</td>
+        <td>{{ s.businessUnitCode }}</td>
+        <td>{{ display(s.accountNumber) }}</td>
+        <td>{{ display(s.bankCurrency) }}</td>
+        <td>{{ display(s.bankName) }}</td>
+        <td class="version-count">{{ s.versionCount ?? 0 }}</td>
+        <td><p-button size="small" icon="pi pi-history" [label]="'supplierHistory.viewVersions' | translate" (onClick)="selectSupplier(s)"></p-button></td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr><td colspan="10" data-testid="suppliers-empty">{{ 'supplierHistory.noSuppliers' | translate }}</td></tr>
+    </ng-template>
+  </p-table>
+
+  <section *ngIf="selectedSupplier" class="shb-section" data-testid="versions-section">
+    <h3>{{ 'supplierHistory.versionsOf' | translate }} {{ selectedSupplier.supplierCode }} - {{ selectedSupplier.supplierName }}</h3>
+    <div *ngIf="versionsError" class="shb-error" data-testid="versions-error">{{ (versionsNotFound ? 'supplierHistory.notFound' : 'supplierHistory.errorVersions') | translate }}</div>
+    <p-table [value]="versions" [lazy]="true" (onLazyLoad)="onVersionsLazyLoad($event)" [paginator]="true"
+      [rows]="versionsSize" [totalRecords]="versionsTotal" [loading]="loadingVersions" dataKey="versionNumber">
+      <ng-template #header>
+        <tr>
+          <th>{{ 'supplierHistory.version' | translate }}</th>
+          <th>{{ 'supplierHistory.createdAt' | translate }}</th>
+          <th>{{ 'supplierHistory.changedFields' | translate }}</th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-v>
+        <tr class="version-row" [class.shb-selected]="selectedVersion?.versionNumber === v.versionNumber">
+          <td>{{ v.versionNumber }}</td>
+          <td>{{ v.createdAt | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+          <td>
+            <span *ngFor="let f of v.changedFields" class="shb-chip">{{ fieldLabelKey(f) | translate }}</span>
+          </td>
+          <td><p-button size="small" icon="pi pi-eye" [label]="'supplierHistory.compare' | translate" (onClick)="selectVersion(v)"></p-button></td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr><td colspan="4" data-testid="versions-empty">{{ 'supplierHistory.noVersions' | translate }}</td></tr>
+      </ng-template>
+    </p-table>
+  </section>
+
+  <section *ngIf="selectedVersion" class="shb-section" data-testid="detail-section">
+    <h3>{{ 'supplierHistory.comparison' | translate }} - {{ 'supplierHistory.version' | translate }} {{ selectedVersion.versionNumber }}
+      <p-button size="small" icon="pi pi-times" [text]="true" (onClick)="closeDetail()"></p-button>
+    </h3>
+    <div *ngIf="loadingDetail" class="shb-loading" data-testid="detail-loading"><i class="pi pi-spin pi-spinner"></i> {{ 'supplierHistory.loading' | translate }}</div>
+    <div *ngIf="detailError" class="shb-error" data-testid="detail-error">{{ (detailNotFound ? 'supplierHistory.notFound' : 'supplierHistory.errorDetail') | translate }}</div>
+    <table *ngIf="detail" class="shb-compare" data-testid="compare-table">
+      <thead>
+        <tr>
+          <th>{{ 'supplierHistory.field' | translate }}</th>
+          <th>{{ 'supplierHistory.historicValue' | translate }}</th>
+          <th>{{ 'supplierHistory.currentValue' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of rows" class="compare-row" [class.shb-changed]="f.differsFromCurrent || f.changedInVersion" [attr.data-field]="f.field">
+          <td>
+            {{ fieldLabelKey(f.field) | translate }}
+          </td>
+          <td class="hist-value">{{ display(f.versionValue) }}</td>
+          <td class="curr-value">{{ display(f.currentValue) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</app-page-content>

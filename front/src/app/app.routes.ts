@@ -9,6 +9,7 @@ import { PagosPendientesComponent } from './components/pagos-pendientes/pagos-pe
 import { PagosEnviadosComponent } from './components/pagos-enviados/pagos-enviados';
 import { PagosErroresComponent } from './components/pagos-errores/pagos-errores';
 import { PagosAnaliticaComponent } from './components/pagos-analitica/pagos-analitica';
+import { ProveedoresHistorialBancarioComponent } from './components/proveedores-historial-bancario/proveedores-historial-bancario';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {
   ContingenciaLayoutComponent,
@@ -91,6 +92,10 @@ export const routes: Routes = [
         path: 'pagos-analitica',
         component: PagosAnaliticaComponent
       },
+      {
+        path: 'proveedores-historial-bancario',
+        component: ProveedoresHistorialBancarioComponent
+      },
       // Soporte resiliente para rutas que incluyan prefijo /portal-cxp
       {
         path: 'portal-cxp/dashboard',
@@ -115,6 +120,11 @@ export const routes: Routes = [
       {
         path: 'portal-cxp/pagos-analitica',
         redirectTo: 'pagos-analitica',
+        pathMatch: 'full'
+      },
+      {
+        path: 'portal-cxp/proveedores-historial-bancario',
+        redirectTo: 'proveedores-historial-bancario',
         pathMatch: 'full'
       }
     ]
