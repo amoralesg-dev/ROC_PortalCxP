@@ -48,7 +48,7 @@ export class ProveedoresHistorialBancarioComponent {
   private readonly cdr = inject(ChangeDetectorRef);
 
   // search filters
-  supplierIdFiltro = '';
+  erpIdQadFiltro = '';
   supplierCodeFiltro = '';
   supplierNameFiltro = '';
   taxIdFiltro = '';
@@ -87,7 +87,7 @@ export class ProveedoresHistorialBancarioComponent {
   }
 
   limpiar(): void {
-    this.supplierIdFiltro = '';
+    this.erpIdQadFiltro = '';
     this.supplierCodeFiltro = '';
     this.supplierNameFiltro = '';
     this.taxIdFiltro = '';
@@ -107,13 +107,12 @@ export class ProveedoresHistorialBancarioComponent {
   }
 
   loadSuppliers(): void {
-    const id = this.supplierIdFiltro?.toString().trim();
     this.loadingSuppliers = true;
     this.suppliersError = false;
     this.searched = true;
     this.service
       .searchSuppliers({
-        supplierId: id && /^\d+$/.test(id) ? Number(id) : null,
+        erpIdQad: this.erpIdQadFiltro,
         supplierCode: this.supplierCodeFiltro,
         supplierName: this.supplierNameFiltro,
         taxId: this.taxIdFiltro,
