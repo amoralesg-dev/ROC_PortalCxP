@@ -11,14 +11,14 @@ describe('ProveedoresHistorialBancarioComponent', () => {
   let component: ProveedoresHistorialBancarioComponent;
   let svc: { searchSuppliers: any; getVersions: any; getVersionDetail: any };
 
-  const supplier = { id: 7, supplierCode: 'P001', supplierName: 'ACME', rfc: 'RFC1', businessUnitCode: 'BU1', accountNumber: '******1234', bankCurrency: 'USD', bankName: 'BANK X', versionCount: 3 };
+  const supplier = { id: 7, supplierCode: 'P001', supplierName: 'ACME', rfc: 'RFC1', businessUnitCode: 'BU1', accountNumber: '012345678901234', bankCurrency: 'USD', bankName: 'BANK X', versionCount: 3 };
   const page = (content: any[]) => ({ content, totalElements: content.length, totalPages: 1, number: 0, size: 10, empty: !content.length, first: true, last: true, numberOfElements: content.length });
   const version = { supplierId: 7, versionNumber: 1, createdAt: '2026-01-01T10:00:00', current: false, changedFields: ['routing_code_swift'] };
   const versionsRes = (content: any[]) => ({ current: { supplierId: 7, current: true }, versions: page(content) });
   const detail = {
     supplierId: 7, versionNumber: 1, createdAt: '2026-01-01T10:00:00', changedFields: ['routing_code_swift'],
-    versionBank: { routingCodeSwift: 'OLDSWIFT', accountNumber: '******1234', bankCurrency: 'USD', bankCountry: 'US' },
-    currentBank: { routingCodeSwift: 'NEWSWIFT', accountNumber: '******1234', bankCurrency: 'MXN', bankCountry: 'US' },
+    versionBank: { routingCodeSwift: 'OLDSWIFT', accountNumber: '012345678901234', bankCurrency: 'USD', bankCountry: 'US' },
+    currentBank: { routingCodeSwift: 'NEWSWIFT', accountNumber: '012345678901234', bankCurrency: 'MXN', bankCountry: 'US' },
     diffs: [
       { field: 'routing_code_swift', differsFromCurrent: true, changedInVersion: true },
       { field: 'bank_currency', differsFromCurrent: true, changedInVersion: false },
@@ -45,7 +45,7 @@ describe('ProveedoresHistorialBancarioComponent', () => {
     await render();
   });
 
-  it('searches suppliers with filters and renders results with versionCount and masked account', async () => {
+  it('searches suppliers with filters and renders results with versionCount and unmasked account', async () => {
     component.supplierCodeFiltro = 'P001';
     component.erpIdQadFiltro = 'ERP007';
     component.buscar();
@@ -53,7 +53,7 @@ describe('ProveedoresHistorialBancarioComponent', () => {
     expect(svc.searchSuppliers).toHaveBeenCalledWith(expect.objectContaining({ supplierCode: 'P001', erpIdQad: 'ERP007', page: 0, size: 10 }));
     expect(el().querySelectorAll('.supplier-row').length).toBe(1);
     expect(el().querySelector('.version-count')?.textContent?.trim()).toBe('3');
-    expect(el().textContent).toContain('******1234');
+    expect(el().textContent).toContain('012345678901234');
   });
 
   it('shows error when supplier search fails', async () => {
@@ -107,7 +107,7 @@ describe('ProveedoresHistorialBancarioComponent', () => {
 
     const acct = row('accountNumber');
     expect(acct.classList.contains('shb-changed')).toBe(false);
-    expect(acct.querySelector('.hist-value')?.textContent?.trim()).toBe('******1234');
+    expect(acct.querySelector('.hist-value')?.textContent?.trim()).toBe('012345678901234');
     expect(row('bankCountry').classList.contains('shb-changed')).toBe(false);
   });
 
